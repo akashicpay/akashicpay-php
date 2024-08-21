@@ -1,0 +1,11 @@
+<phpunit bootstrap="vendor/autoload.php"
+         colors="true">
+    <testsuites>
+        <testsuite name="AkashicPayTest">
+            <directory>./tests</directory>
+        </testsuite>
+    </testsuites>
+    <logging>
+        <junit outputFile="junit.xml"/>
+    </logging>
+</phpunit>
