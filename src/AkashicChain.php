@@ -32,18 +32,18 @@ class AkashicChain
     /**
      * Check for errors in the AkashicChain response
      *
-     * @param ActiveLedgerResponse $response
+     * @param $response
      * @throws \Exception
      */
-    public function checkForAkashicChainError(
-        ActiveLedgerResponse $response
-    ): void {
-        if ($response->summary->commit) {
+    public function checkForAkashicChainError($response): void
+    {
+        $commit = $response['$summary']["commit"] ?? null;
+        if ($commit) {
             return;
         }
         throw new \Exception(
             "AkashicChain Failure: " .
-                ($response->summary->errors[0] ?? "Unknown error")
+                ($response['$summary']["errors"][0] ?? "Unknown error")
         );
     }
 
@@ -51,21 +51,19 @@ class AkashicChain
      * Create a key creation transaction
      *
      * @param NetworkSymbol $coinSymbol
-     * @param string $otkIdentity
+     * @param $otk
      * @param string $identifier
      * @return IBaseTransaction
      */
-    public function keyCreateTransaction(
-        NetworkSymbol $coinSymbol,
-        string $otkIdentity
-    ) {
-        return [
+    public function keyCreateTransaction($coinSymbol, $otk)
+    {
+        $txBody = [
             '$tx' => [
                 '$namespace' => $this->contracts::CONTRACT_NAMESPACE,
                 '$contract' => $this->contracts::CREATE,
                 '$i' => [
                     "owner" => [
-                        '$stream' => $otkIdentity,
+                        '$stream' => $otk["identity"],
                         "symbol" => self::getACSymbol($coinSymbol),
                         "network" => self::getACNetwork($coinSymbol),
                         "business" => true,
@@ -75,6 +73,9 @@ class AkashicChain
             ],
             '$sigs' => [],
         ];
+
+        // Sign Transaction
+        return self::signTransaction($txBody, $otk);
     }
 
     /**
@@ -86,7 +87,7 @@ class AkashicChain
      */
     public function differentialConsensusTransaction($otk, $key, $identifier)
     {
-        return [
+        $txBody = [
             '$tx' => [
                 '$namespace' => $this->contracts::CONTRACT_NAMESPACE,
                 '$contract' => $this->contracts::DIFF_CONSENSUS,
@@ -107,6 +108,9 @@ class AkashicChain
             ],
             '$sigs' => [],
         ];
+
+        // Sign Transaction
+        return self::signTransaction($txBody, $otk);
     }
 
     /**
@@ -137,7 +141,7 @@ class AkashicChain
         return self::signTransaction($txBody, $otk);
     }
 
-    public function l2Transaction(array $params): IBaseTransaction
+    public function l2Transaction(array $params)
     {
         $otk = $params["otk"];
         $coinSymbol = $params["coinSymbol"];
@@ -153,7 +157,7 @@ class AkashicChain
                 '$entry' => "transfer",
                 '$i' => [
                     "owner" => [
-                        '$stream' => $otk->identity,
+                        '$stream' => $otk["identity"],
                         "network" => $coinSymbol,
                         "token" => $tokenSymbol,
                         "amount" => $amount,
@@ -164,8 +168,11 @@ class AkashicChain
                 ],
                 "_dbIndex" => $this->dbIndex,
                 "metadata" => $initiatedToNonL2
-                    ? ["initiatedToNonL2" => $initiatedToNonL2]
-                    : [],
+                    ? [
+                        "initiatedToNonL2" => $initiatedToNonL2,
+                        "identifier" => $identifier,
+                    ]
+                    : ["identifier" => $identifier],
             ],
             '$sigs' => [],
         ];
@@ -174,7 +181,7 @@ class AkashicChain
         return self::signTransaction($txBody, $otk);
     }
 
-    public function l2ToL1SignTransaction(array $params): IBaseTransaction
+    public function l2ToL1SignTransaction(array $params)
     {
         $otk = $params["otk"];
         $keyLedgerId = $params["keyLedgerId"];
@@ -183,6 +190,7 @@ class AkashicChain
         $toAddress = $params["toAddress"];
         $tokenSymbol = $params["tokenSymbol"] ?? self::NITR0GEN_NATIVE_COIN;
         $identifier = $params["identifier"];
+        $feesEstimate = $params["feesEstimate"];
 
         $o = [
             $keyLedgerId => ["amount" => $amount],
@@ -203,7 +211,7 @@ class AkashicChain
                 '$entry' => "sign",
                 '$i' => [
                     "owner" => [
-                        '$stream' => $otk->identity,
+                        '$stream' => $otk["identity"],
                         "network" => $coinSymbol,
                         "token" => $tokenSymbol,
                         "amount" => $amount,
@@ -214,7 +222,10 @@ class AkashicChain
                 ],
                 '$o' => $o,
                 "_dbIndex" => $this->dbIndex,
-                "metadata" => $identifier ? ["identifier" => $identifier] : [],
+                "metadata" => [
+                    "identifier" => $identifier,
+                    "feesEstimate" => $feesEstimate,
+                ],
             ],
             '$sigs' => [],
         ];
@@ -229,7 +240,7 @@ class AkashicChain
      * @param NetworkSymbol $coinSymbol
      * @return string
      */
-    private function getACSymbol(NetworkSymbol $coinSymbol): string
+    private function getACSymbol($coinSymbol): string
     {
         if (in_array($coinSymbol, TronSymbol::VALUES, true)) {
             return "trx";
@@ -248,13 +259,13 @@ class AkashicChain
     private function getACNetwork(string $coinSymbol): string
     {
         switch ($coinSymbol) {
-            case NetworkSymbol::Ethereum_Mainnet:
+            case NetworkSymbol::ETHEREUM_MAINNET:
                 return "ETH";
-            case NetworkSymbol::Ethereum_Sepolia:
+            case NetworkSymbol::ETHEREUM_SEPOLIA:
                 return "SEP";
-            case NetworkSymbol::Tron:
+            case NetworkSymbol::TRON:
                 return "trx";
-            case NetworkSymbol::Tron_Shasta:
+            case NetworkSymbol::TRON_SHASTA:
                 return "shasta";
             default:
                 return $coinSymbol;
@@ -275,7 +286,7 @@ class AkashicChain
                 isset($txBody['$sigs'])
             ) {
                 // Sign the transaction in the array
-                $identifier = $otk["name"] ?? "default";
+                $identifier = $otk["identity"] ?? $otk["name"];
 
                 $txBody['$sigs'][$identifier] = $key->sign($txBody['$tx']);
 

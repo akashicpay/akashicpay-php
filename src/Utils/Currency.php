@@ -1,8 +1,8 @@
 <?php
 
-namespace AkashicPay\Utils;
+namespace Akashic\Utils;
 
-use AkashicPay\L1Network;
+use Akashic\L1Network;
 
 class Currency
 {

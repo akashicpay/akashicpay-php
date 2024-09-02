@@ -471,6 +471,11 @@ Search.appendIndex(
             "summary": "",
             "url": "classes/Akashic-Constants-AkashicEndpoints.html#constant_IDENTIFIER_LOOKUP"
         },                {
+            "fqsen": "\\Akashic\\Constants\\AkashicEndpoints\u003A\u003AIS_BP",
+            "name": "IS_BP",
+            "summary": "",
+            "url": "classes/Akashic-Constants-AkashicEndpoints.html#constant_IS_BP"
+        },                {
             "fqsen": "\\Akashic\\Constants\\AkashicError",
             "name": "AkashicError",
             "summary": "",
