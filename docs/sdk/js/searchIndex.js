@@ -856,40 +856,40 @@ Search.appendIndex(
             "summary": "",
             "url": "classes/Akashic-OTK-Otk.html#method_generateOTK"
         },                {
-            "fqsen": "\\AkashicPay\\Utils\\Currency",
+            "fqsen": "\\Akashic\\Utils\\Currency",
             "name": "Currency",
             "summary": "",
-            "url": "classes/AkashicPay-Utils-Currency.html"
+            "url": "classes/Akashic-Utils-Currency.html"
         },                {
-            "fqsen": "\\AkashicPay\\Utils\\Currency\u003A\u003AconvertToDecimals\u0028\u0029",
+            "fqsen": "\\Akashic\\Utils\\Currency\u003A\u003AconvertToDecimals\u0028\u0029",
             "name": "convertToDecimals",
             "summary": "Method\u0020for\u0020safe\u0020conversion\u0020from\u0020coin\/token\u0020decimals.",
-            "url": "classes/AkashicPay-Utils-Currency.html#method_convertToDecimals"
+            "url": "classes/Akashic-Utils-Currency.html#method_convertToDecimals"
         },                {
-            "fqsen": "\\AkashicPay\\Utils\\Currency\u003A\u003AgetConversionFactor\u0028\u0029",
+            "fqsen": "\\Akashic\\Utils\\Currency\u003A\u003AgetConversionFactor\u0028\u0029",
             "name": "getConversionFactor",
             "summary": "Get\u0020the\u0020conversion\u0020factor\u0020based\u0020on\u0020the\u0020coin\u0020or\u0020token\u0020symbol.",
-            "url": "classes/AkashicPay-Utils-Currency.html#method_getConversionFactor"
+            "url": "classes/Akashic-Utils-Currency.html#method_getConversionFactor"
         },                {
-            "fqsen": "\\AkashicPay\\Utils\\Prefix",
+            "fqsen": "\\Akashic\\Utils\\Prefix",
             "name": "Prefix",
             "summary": "",
-            "url": "classes/AkashicPay-Utils-Prefix.html"
+            "url": "classes/Akashic-Utils-Prefix.html"
         },                {
-            "fqsen": "\\AkashicPay\\Utils\\Prefix\u003A\u003AprefixWithAS\u0028\u0029",
+            "fqsen": "\\Akashic\\Utils\\Prefix\u003A\u003AprefixWithAS\u0028\u0029",
             "name": "prefixWithAS",
             "summary": "Ensures\u0020a\u0020UMID\/L2\u0020address\u0020has\u0020exactly\u0020one\u0020\u0022AS\u0022\u0020prefix.\u0020It\u0020is\u0020idempotent.",
-            "url": "classes/AkashicPay-Utils-Prefix.html#method_prefixWithAS"
+            "url": "classes/Akashic-Utils-Prefix.html#method_prefixWithAS"
         },                {
-            "fqsen": "\\AkashicPay\\Utils\\Prefix\u003A\u003AremoveASPrefix\u0028\u0029",
+            "fqsen": "\\Akashic\\Utils\\Prefix\u003A\u003AremoveASPrefix\u0028\u0029",
             "name": "removeASPrefix",
             "summary": "Ensures\u0020a\u0020UMID\/L2\u0020address\u0020doesn\u0027t\u0020have\u0020an\u0020\u0022AS\u0022\u0020prefix.\u0020It\u0020is\u0020idempotent.",
-            "url": "classes/AkashicPay-Utils-Prefix.html#method_removeASPrefix"
+            "url": "classes/Akashic-Utils-Prefix.html#method_removeASPrefix"
         },                {
-            "fqsen": "\\AkashicPay\\Utils\\Prefix\u003A\u003AL2_REGEX_WITH_OPTIONAL_PREFIX",
+            "fqsen": "\\Akashic\\Utils\\Prefix\u003A\u003AL2_REGEX_WITH_OPTIONAL_PREFIX",
             "name": "L2_REGEX_WITH_OPTIONAL_PREFIX",
             "summary": "Regular\u0020expression\u0020for\u0020matching\u0020a\u0020UMID\/L2\u0020address\u0020with\u0020or\u0020without\u0020the\u0020\u0022AS\u0022\u0020prefix.",
-            "url": "classes/AkashicPay-Utils-Prefix.html#constant_L2_REGEX_WITH_OPTIONAL_PREFIX"
+            "url": "classes/Akashic-Utils-Prefix.html#constant_L2_REGEX_WITH_OPTIONAL_PREFIX"
         },                {
             "fqsen": "\\",
             "name": "\\",
@@ -931,14 +931,9 @@ Search.appendIndex(
             "summary": "",
             "url": "namespaces/akashic-otk.html"
         },                {
-            "fqsen": "\\AkashicPay\\Utils",
+            "fqsen": "\\Akashic\\Utils",
             "name": "Utils",
             "summary": "",
-            "url": "namespaces/akashicpay-utils.html"
-        },                {
-            "fqsen": "\\AkashicPay",
-            "name": "AkashicPay",
-            "summary": "",
-            "url": "namespaces/akashicpay.html"
+            "url": "namespaces/akashic-utils.html"
         }            ]
 );

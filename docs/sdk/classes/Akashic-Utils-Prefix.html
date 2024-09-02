@@ -112,12 +112,12 @@
                                 <section>
                                         <ul class="phpdocumentor-breadcrumbs">
             <li class="phpdocumentor-breadcrumb"><a href="namespaces/akashic.html">Akashic</a></li>
-            <li class="phpdocumentor-breadcrumb"><a href="namespaces/akashic-constants.html">Constants</a></li>
+            <li class="phpdocumentor-breadcrumb"><a href="namespaces/akashic-utils.html">Utils</a></li>
     </ul>
 
     <article class="phpdocumentor-element -class">
         <h2 class="phpdocumentor-content__title">
-    TestNetContracts
+    Prefix
 
     
             <div class="phpdocumentor-element__package">
@@ -136,7 +136,7 @@
 </div>
 
         <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="Constants/TestNetContracts.php"><a href="files/constants-testnetcontracts.html"><abbr title="Constants/TestNetContracts.php">TestNetContracts.php</abbr></a></abbr>
+    <abbr class="phpdocumentor-element-found-in__file" title="Utils/Prefix.php"><a href="files/utils-prefix.html"><abbr title="Utils/Prefix.php">Prefix.php</abbr></a></abbr>
     :
     <span class="phpdocumentor-element-found-in__line">5</span>
 
@@ -153,7 +153,7 @@
 
 <h3 id="toc">
     Table of Contents
-    <a href="classes/Akashic-Constants-TestNetContracts.html#toc" class="headerlink"><i class="fas fa-link"></i></a>
+    <a href="classes/Akashic-Utils-Prefix.html#toc" class="headerlink"><i class="fas fa-link"></i></a>
 
 </h3>
 
@@ -165,44 +165,42 @@
 
 <h4 id="toc-constants">
     Constants
-    <a href="classes/Akashic-Constants-TestNetContracts.html#toc-constants" class="headerlink"><i class="fas fa-link"></i></a>
+    <a href="classes/Akashic-Utils-Prefix.html#toc-constants" class="headerlink"><i class="fas fa-link"></i></a>
 
 </h4>
 <dl class="phpdocumentor-table-of-contents">
-            <dt class="phpdocumentor-table-of-contents__entry -constant -public">
-    <a class="" href="classes/Akashic-Constants-TestNetContracts.html#constant_CONTRACT_NAMESPACE">CONTRACT_NAMESPACE</a>
+            <dt class="phpdocumentor-table-of-contents__entry -constant -private">
+    <a class="" href="classes/Akashic-Utils-Prefix.html#constant_L2_REGEX_WITH_OPTIONAL_PREFIX">L2_REGEX_WITH_OPTIONAL_PREFIX</a>
     <span>
-        &nbsp;= &quot;akashic&quot;                            </span>
+        &nbsp;= &#039;/^(AS)?[A-Fa-f\d]{64}$/&#039;                            </span>
 </dt>
-
-            <dt class="phpdocumentor-table-of-contents__entry -constant -public">
-    <a class="" href="classes/Akashic-Constants-TestNetContracts.html#constant_CREATE">CREATE</a>
-    <span>
-        &nbsp;= &quot;c4f1186c58f49db2fdba401a1b36832902325d11a2e69ac6ef800836274c6894@5.1.4&quot;                            </span>
-</dt>
-
-            <dt class="phpdocumentor-table-of-contents__entry -constant -public">
-    <a class="" href="classes/Akashic-Constants-TestNetContracts.html#constant_CRYPTO_TRANSFER">CRYPTO_TRANSFER</a>
-    <span>
-        &nbsp;= &quot;d1903e29ea83413ecc759d129f7a21e4f8039ac5650360cf83d993343b5ffaa6@5.1.21&quot;                            </span>
-</dt>
-
-            <dt class="phpdocumentor-table-of-contents__entry -constant -public">
-    <a class="" href="classes/Akashic-Constants-TestNetContracts.html#constant_DIFF_CONSENSUS">DIFF_CONSENSUS</a>
-    <span>
-        &nbsp;= &quot;76869d5f632c283324b0cb7c8e16ba14eec2cf5d6d7b3f4521cc9b6a12818623@3.0.3&quot;                            </span>
-</dt>
-
-            <dt class="phpdocumentor-table-of-contents__entry -constant -public">
-    <a class="" href="classes/Akashic-Constants-TestNetContracts.html#constant_ONBOARD">ONBOARD</a>
-    <span>
-        &nbsp;= &quot;b089a212ac22f57e2bef7d8a7f25702ebda98173939be2eba1ac0c2523d77383@5.0.3&quot;                            </span>
-</dt>
+<dd>Regular expression for matching a UMID/L2 address with or without the &quot;AS&quot; prefix.</dd>
 
     </dl>
 
 
 
+<h4 id="toc-methods">
+    Methods
+    <a href="classes/Akashic-Utils-Prefix.html#toc-methods" class="headerlink"><i class="fas fa-link"></i></a>
+
+</h4>
+<dl class="phpdocumentor-table-of-contents">
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a class="" href="classes/Akashic-Utils-Prefix.html#method_prefixWithAS">prefixWithAS()</a>
+    <span>
+                                &nbsp;: string    </span>
+</dt>
+<dd>Ensures a UMID/L2 address has exactly one &quot;AS&quot; prefix. It is idempotent.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a class="" href="classes/Akashic-Utils-Prefix.html#method_removeASPrefix">removeASPrefix()</a>
+    <span>
+                                &nbsp;: string    </span>
+</dt>
+<dd>Ensures a UMID/L2 address doesn&#039;t have an &quot;AS&quot; prefix. It is idempotent.</dd>
+
+    </dl>
 
 
 
@@ -210,154 +208,31 @@
     <section class="phpdocumentor-constants">
         <h3 class="phpdocumentor-elements__header" id="constants">
             Constants
-            <a href="classes/Akashic-Constants-TestNetContracts.html#constants" class="headerlink"><i class="fas fa-link"></i></a>
+            <a href="classes/Akashic-Utils-Prefix.html#constants" class="headerlink"><i class="fas fa-link"></i></a>
 
         </h3>
-                    <article class="phpdocumentor-element -constant -public ">
-    <h4 class="phpdocumentor-element__name" id="constant_CONTRACT_NAMESPACE">
-        CONTRACT_NAMESPACE
-        <a href="classes/Akashic-Constants-TestNetContracts.html#constant_CONTRACT_NAMESPACE" class="headerlink"><i class="fas fa-link"></i></a>
+                    <article class="phpdocumentor-element -constant -private ">
+    <h4 class="phpdocumentor-element__name" id="constant_L2_REGEX_WITH_OPTIONAL_PREFIX">
+        L2_REGEX_WITH_OPTIONAL_PREFIX
+        <a href="classes/Akashic-Utils-Prefix.html#constant_L2_REGEX_WITH_OPTIONAL_PREFIX" class="headerlink"><i class="fas fa-link"></i></a>
 
     </h4>
 
     <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="Constants/TestNetContracts.php"><a href="files/constants-testnetcontracts.html"><abbr title="Constants/TestNetContracts.php">TestNetContracts.php</abbr></a></abbr>
-    :
-    <span class="phpdocumentor-element-found-in__line">7</span>
-
-    </aside>
-
-    
-    
-    <code class="phpdocumentor-signature phpdocumentor-code ">
-    <span class="phpdocumentor-signature__visibility">public</span>
-        <span class="phpdocumentor-signature__type">mixed</span>
-    <span class="phpdocumentor-signature__name">CONTRACT_NAMESPACE</span>
-    = <span class="phpdocumentor-signature__default-value">&quot;akashic&quot;</span>
-</code>
-
-
-    
-    
-    
-
-    
-
-</article>
-                    <article class="phpdocumentor-element -constant -public ">
-    <h4 class="phpdocumentor-element__name" id="constant_CREATE">
-        CREATE
-        <a href="classes/Akashic-Constants-TestNetContracts.html#constant_CREATE" class="headerlink"><i class="fas fa-link"></i></a>
-
-    </h4>
-
-    <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="Constants/TestNetContracts.php"><a href="files/constants-testnetcontracts.html"><abbr title="Constants/TestNetContracts.php">TestNetContracts.php</abbr></a></abbr>
-    :
-    <span class="phpdocumentor-element-found-in__line">8</span>
-
-    </aside>
-
-    
-    
-    <code class="phpdocumentor-signature phpdocumentor-code ">
-    <span class="phpdocumentor-signature__visibility">public</span>
-        <span class="phpdocumentor-signature__type">mixed</span>
-    <span class="phpdocumentor-signature__name">CREATE</span>
-    = <span class="phpdocumentor-signature__default-value">&quot;c4f1186c58f49db2fdba401a1b36832902325d11a2e69ac6ef800836274c6894@5.1.4&quot;</span>
-</code>
-
-
-    
-    
-    
-
-    
-
-</article>
-                    <article class="phpdocumentor-element -constant -public ">
-    <h4 class="phpdocumentor-element__name" id="constant_CRYPTO_TRANSFER">
-        CRYPTO_TRANSFER
-        <a href="classes/Akashic-Constants-TestNetContracts.html#constant_CRYPTO_TRANSFER" class="headerlink"><i class="fas fa-link"></i></a>
-
-    </h4>
-
-    <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="Constants/TestNetContracts.php"><a href="files/constants-testnetcontracts.html"><abbr title="Constants/TestNetContracts.php">TestNetContracts.php</abbr></a></abbr>
-    :
-    <span class="phpdocumentor-element-found-in__line">11</span>
-
-    </aside>
-
-    
-    
-    <code class="phpdocumentor-signature phpdocumentor-code ">
-    <span class="phpdocumentor-signature__visibility">public</span>
-        <span class="phpdocumentor-signature__type">mixed</span>
-    <span class="phpdocumentor-signature__name">CRYPTO_TRANSFER</span>
-    = <span class="phpdocumentor-signature__default-value">&quot;d1903e29ea83413ecc759d129f7a21e4f8039ac5650360cf83d993343b5ffaa6@5.1.21&quot;</span>
-</code>
-
-
-    
-    
-    
-
-    
-
-</article>
-                    <article class="phpdocumentor-element -constant -public ">
-    <h4 class="phpdocumentor-element__name" id="constant_DIFF_CONSENSUS">
-        DIFF_CONSENSUS
-        <a href="classes/Akashic-Constants-TestNetContracts.html#constant_DIFF_CONSENSUS" class="headerlink"><i class="fas fa-link"></i></a>
-
-    </h4>
-
-    <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="Constants/TestNetContracts.php"><a href="files/constants-testnetcontracts.html"><abbr title="Constants/TestNetContracts.php">TestNetContracts.php</abbr></a></abbr>
-    :
-    <span class="phpdocumentor-element-found-in__line">9</span>
-
-    </aside>
-
-    
-    
-    <code class="phpdocumentor-signature phpdocumentor-code ">
-    <span class="phpdocumentor-signature__visibility">public</span>
-        <span class="phpdocumentor-signature__type">mixed</span>
-    <span class="phpdocumentor-signature__name">DIFF_CONSENSUS</span>
-    = <span class="phpdocumentor-signature__default-value">&quot;76869d5f632c283324b0cb7c8e16ba14eec2cf5d6d7b3f4521cc9b6a12818623@3.0.3&quot;</span>
-</code>
-
-
-    
-    
-    
-
-    
-
-</article>
-                    <article class="phpdocumentor-element -constant -public ">
-    <h4 class="phpdocumentor-element__name" id="constant_ONBOARD">
-        ONBOARD
-        <a href="classes/Akashic-Constants-TestNetContracts.html#constant_ONBOARD" class="headerlink"><i class="fas fa-link"></i></a>
-
-    </h4>
-
-    <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="Constants/TestNetContracts.php"><a href="files/constants-testnetcontracts.html"><abbr title="Constants/TestNetContracts.php">TestNetContracts.php</abbr></a></abbr>
+    <abbr class="phpdocumentor-element-found-in__file" title="Utils/Prefix.php"><a href="files/utils-prefix.html"><abbr title="Utils/Prefix.php">Prefix.php</abbr></a></abbr>
     :
     <span class="phpdocumentor-element-found-in__line">10</span>
 
     </aside>
 
-    
+        <p class="phpdocumentor-summary">Regular expression for matching a UMID/L2 address with or without the &quot;AS&quot; prefix.</p>
+
     
     <code class="phpdocumentor-signature phpdocumentor-code ">
-    <span class="phpdocumentor-signature__visibility">public</span>
+    <span class="phpdocumentor-signature__visibility">private</span>
         <span class="phpdocumentor-signature__type">mixed</span>
-    <span class="phpdocumentor-signature__name">ONBOARD</span>
-    = <span class="phpdocumentor-signature__default-value">&quot;b089a212ac22f57e2bef7d8a7f25702ebda98173939be2eba1ac0c2523d77383@5.0.3&quot;</span>
+    <span class="phpdocumentor-signature__name">L2_REGEX_WITH_OPTIONAL_PREFIX</span>
+    = <span class="phpdocumentor-signature__default-value">&#039;/^(AS)?[A-Fa-f\d]{64}$/&#039;</span>
 </code>
 
 
@@ -372,12 +247,163 @@
 
         
 
-        
+            <section class="phpdocumentor-methods">
+        <h3 class="phpdocumentor-elements__header" id="methods">
+            Methods
+            <a href="classes/Akashic-Utils-Prefix.html#methods" class="headerlink"><i class="fas fa-link"></i></a>
+
+        </h3>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                    -static                    "
+>
+    <h4 class="phpdocumentor-element__name" id="method_prefixWithAS">
+        prefixWithAS()
+        <a href="classes/Akashic-Utils-Prefix.html#method_prefixWithAS" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="Utils/Prefix.php"><a href="files/utils-prefix.html"><abbr title="Utils/Prefix.php">Prefix.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">19</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Ensures a UMID/L2 address has exactly one &quot;AS&quot; prefix. It is idempotent.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+            <span class="phpdocumentor-signature__static">static</span>        <span class="phpdocumentor-signature__name">prefixWithAS</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$umid</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$umid</span>
+                : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The UMID/L2 address to check and potentially prefix.</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="classes/Akashic-Utils-Prefix.html#method_prefixWithAS#tags" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">throws</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                <span class="phpdocumentor-tag-link"><abbr title="\Exception">Exception</abbr></span>
+                                                            
+                                                 <section class="phpdocumentor-description"><p>if the UMID does not match the regex with or without the prefix.</p>
+</section>
+
+                                    </dd>
+                                            </dl>
+
+    
+
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">string</span>
+                    &mdash;
+                <section class="phpdocumentor-description"><p>The UMID/L2 address with the &quot;AS&quot; prefix.</p>
+</section>
+
+            </section>
+
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                    -static                    "
+>
+    <h4 class="phpdocumentor-element__name" id="method_removeASPrefix">
+        removeASPrefix()
+        <a href="classes/Akashic-Utils-Prefix.html#method_removeASPrefix" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="Utils/Prefix.php"><a href="files/utils-prefix.html"><abbr title="Utils/Prefix.php">Prefix.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">41</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Ensures a UMID/L2 address doesn&#039;t have an &quot;AS&quot; prefix. It is idempotent.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+            <span class="phpdocumentor-signature__static">static</span>        <span class="phpdocumentor-signature__name">removeASPrefix</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$umid</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$umid</span>
+                : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The UMID/L2 address to check and potentially remove the prefix from.</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="classes/Akashic-Utils-Prefix.html#method_removeASPrefix#tags" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">throws</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                <span class="phpdocumentor-tag-link"><abbr title="\Exception">Exception</abbr></span>
+                                                            
+                                                 <section class="phpdocumentor-description"><p>if the UMID does not match the regex with or without the prefix.</p>
+</section>
+
+                                    </dd>
+                                            </dl>
+
+    
+
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">string</span>
+                    &mdash;
+                <section class="phpdocumentor-description"><p>The UMID/L2 address without the &quot;AS&quot; prefix.</p>
+</section>
+
+            </section>
+
+</article>
+            </section>
+
         <div class="phpdocumentor-modal" id="source-view">
     <div class="phpdocumentor-modal-bg" data-exit-button></div>
     <div class="phpdocumentor-modal-container">
         <div class="phpdocumentor-modal-content">
-            <pre style="max-height: 500px; overflow-y: scroll" data-src="files/Constants/TestNetContracts.php.txt" class="language-php line-numbers linkable-line-numbers"></pre>
+            <pre style="max-height: 500px; overflow-y: scroll" data-src="files/Utils/Prefix.php.txt" class="language-php line-numbers linkable-line-numbers"></pre>
         </div>
         <button data-exit-button class="phpdocumentor-modal__close">&times;</button>
     </div>
@@ -476,21 +502,25 @@
             <li class="phpdocumentor-on-this-page-section__title">Table Of Contents</li>
             <li>
                 <ul class="phpdocumentor-list -clean">
-                                        <li><a href="classes/Akashic-Constants-TestNetContracts.html#toc-constants">Constants</a></li>
-                                                                            </ul>
+                                        <li><a href="classes/Akashic-Utils-Prefix.html#toc-constants">Constants</a></li>
+                                                                                <li><a href="classes/Akashic-Utils-Prefix.html#toc-methods">Methods</a></li>
+                                    </ul>
             </li>
                             <li class="phpdocumentor-on-this-page-section__title">Constants</li>
                 <li>
                     <ul class="phpdocumentor-list -clean">
-                                                    <li class=""><a href="classes/Akashic-Constants-TestNetContracts.html#constant_CONTRACT_NAMESPACE">CONTRACT_NAMESPACE</a></li>
-                                                    <li class=""><a href="classes/Akashic-Constants-TestNetContracts.html#constant_CREATE">CREATE</a></li>
-                                                    <li class=""><a href="classes/Akashic-Constants-TestNetContracts.html#constant_CRYPTO_TRANSFER">CRYPTO_TRANSFER</a></li>
-                                                    <li class=""><a href="classes/Akashic-Constants-TestNetContracts.html#constant_DIFF_CONSENSUS">DIFF_CONSENSUS</a></li>
-                                                    <li class=""><a href="classes/Akashic-Constants-TestNetContracts.html#constant_ONBOARD">ONBOARD</a></li>
+                                                    <li class=""><a href="classes/Akashic-Utils-Prefix.html#constant_L2_REGEX_WITH_OPTIONAL_PREFIX">L2_REGEX_WITH_OPTIONAL_PREFIX</a></li>
                                             </ul>
                 </li>
             
             
+                        <li class="phpdocumentor-on-this-page-section__title">Methods</li>
+            <li>
+                <ul class="phpdocumentor-list -clean">
+                                            <li class=""><a href="classes/Akashic-Utils-Prefix.html#method_prefixWithAS">prefixWithAS()</a></li>
+                                            <li class=""><a href="classes/Akashic-Utils-Prefix.html#method_removeASPrefix">removeASPrefix()</a></li>
+                                    </ul>
+            </li>
                     </ul>
     </section>
 
@@ -508,7 +538,7 @@
     </section>
 </section>
         </div>
-        <a href="classes/Akashic-Constants-TestNetContracts.html#top" class="phpdocumentor-back-to-top"><i class="fas fa-chevron-circle-up"></i></a>
+        <a href="classes/Akashic-Utils-Prefix.html#top" class="phpdocumentor-back-to-top"><i class="fas fa-chevron-circle-up"></i></a>
 
     </main>
 
