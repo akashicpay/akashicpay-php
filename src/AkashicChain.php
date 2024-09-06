@@ -191,6 +191,7 @@ class AkashicChain
         $tokenSymbol = $params["tokenSymbol"] ?? self::NITR0GEN_NATIVE_COIN;
         $identifier = $params["identifier"];
         $feesEstimate = $params["feesEstimate"];
+        $ethGasPrice = $params["ethGasPrice"];
 
         $o = [
             $keyLedgerId => ["amount" => $amount],
@@ -218,6 +219,7 @@ class AkashicChain
                         "to" => $toAddress,
                         "contractAddress" => $contractAddress,
                         "delegated" => true,
+                        "gas" => $ethGasPrice,
                     ],
                 ],
                 '$o' => $o,
