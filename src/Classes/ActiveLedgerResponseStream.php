@@ -2,11 +2,16 @@
 
 namespace Akashic\Classes;
 
-class ActiveLedgerResponseStreams
+/** @api */
+class ActiveLedgerResponseStream
 {
-    /** @var array */
+    /**
+     * @var array
+     */
     public array $new = [];
 
-    /** @var array */
+    /**
+     * @var array
+     */
     public array $updated = [];
 }

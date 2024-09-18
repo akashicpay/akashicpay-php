@@ -2,6 +2,8 @@
 
 namespace Akashic\Utils;
 
+use Exception;
+
 class Prefix
 {
     /**
@@ -12,14 +14,14 @@ class Prefix
     /**
      * Ensures a UMID/L2 address has exactly one "AS" prefix. It is idempotent.
      *
-     * @param string $umid The UMID/L2 address to check and potentially prefix.
+     * @param  string $umid The UMID/L2 address to check and potentially prefix.
      * @return string The UMID/L2 address with the "AS" prefix.
-     * @throws \Exception if the UMID does not match the regex with or without the prefix.
+     * @throws Exception if the UMID does not match the regex with or without the prefix.
      */
     public static function prefixWithAS(string $umid): string
     {
         if (!preg_match(self::L2_REGEX_WITH_OPTIONAL_PREFIX, $umid, $matches)) {
-            throw new \Exception(
+            throw new Exception(
                 "{$umid} does not match regex with or without prefix"
             );
         }
@@ -34,14 +36,15 @@ class Prefix
     /**
      * Ensures a UMID/L2 address doesn't have an "AS" prefix. It is idempotent.
      *
-     * @param string $umid The UMID/L2 address to check and potentially remove the prefix from.
+     * @param  string $umid The UMID/L2 address to check and potentially remove the prefix from.
      * @return string The UMID/L2 address without the "AS" prefix.
-     * @throws \Exception if the UMID does not match the regex with or without the prefix.
+     * @throws Exception if the UMID does not match the regex with or without the prefix.
+     * @api
      */
     public static function removeASPrefix(string $umid): string
     {
         if (!preg_match(self::L2_REGEX_WITH_OPTIONAL_PREFIX, $umid, $matches)) {
-            throw new \Exception(
+            throw new Exception(
                 "{$umid} does not match regex with or without prefix"
             );
         }

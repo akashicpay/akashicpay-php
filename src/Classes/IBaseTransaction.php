@@ -1,22 +1,30 @@
 <?php
 
 namespace Akashic\Classes;
-namespace Akashic\IBaseTransactionTxBody;
 
+/** @api */
 class IBaseTransaction
 {
-    /** @var bool|null */
+    /**
+     * @var bool|null
+     * @api
+     */
     public ?bool $selfsign = null;
 
-    /** @var mixed */
+    /**
+     * @var mixed
+     */
     public $sigs;
 
-    /** @var IBaseTransactionTxBody */
+    /**
+     * @var IBaseTransactionTxBody
+     */
     public IBaseTransactionTxBody $tx;
 
     /**
      * BaseTransaction constructor.
-     * @param mixed $sigs
+     *
+     * @param mixed                  $sigs
      * @param IBaseTransactionTxBody $tx
      */
     public function __construct($sigs, IBaseTransactionTxBody $tx)

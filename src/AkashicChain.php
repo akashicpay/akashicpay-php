@@ -7,15 +7,13 @@ use Akashic\Constants\TestNetContracts;
 use Akashic\Constants\NetworkSymbol;
 use Akashic\Constants\EthereumSymbol;
 use Akashic\Constants\TronSymbol;
-use Akashic\KeyPair;
-use Akashic\Classes\ActiveLedgerResponse;
 use Akashic\Classes\IBaseTransaction;
-use Akashic\L1Network;
 use Akashic\Constants\Environment;
+use Akashic\Constants\AkashicError;
+use Exception;
 
 class AkashicChain
 {
-    public const L2_REGEX = '/^AS[A-Fa-f\d]{64}$/';
     public const NITR0GEN_NATIVE_COIN = "#native";
     private $contracts;
     private $dbIndex;
@@ -32,8 +30,8 @@ class AkashicChain
     /**
      * Check for errors in the AkashicChain response
      *
-     * @param $response
-     * @throws \Exception
+     * @param  $response
+     * @throws Exception
      */
     public function checkForAkashicChainError($response): void
     {
@@ -41,18 +39,60 @@ class AkashicChain
         if ($commit) {
             return;
         }
-        throw new \Exception(
-            "AkashicChain Failure: " .
-                ($response['$summary']["errors"][0] ?? "Unknown error")
+        $errorMessage = $this->convertChainErrorToAkashicError(
+            $response['$summary']["errors"][0] ?? "Unknown error"
         );
+
+        throw new Exception("AkashicChain Failure: " . $errorMessage);
+    }
+
+    /**
+     * Converts chain error to Akashic error based on predefined conditions.
+     *
+     * @param  string $error
+     * @return string
+     */
+    private function convertChainErrorToAkashicError(string $error): string
+    {
+        if ($this->isChainErrorSavingsExceeded($error)) {
+            return AkashicError::SAVINGS_EXCEEDED;
+        }
+
+        if (strpos($error, "Stream(s) not found") !== false) {
+            return AkashicError::L2_ADDRESS_NOT_FOUND;
+        }
+
+        return $error;
+    }
+
+    /**
+     * Checks if the error is related to savings exceeded.
+     *
+     * @param  string $error
+     * @return bool
+     */
+    private function isChainErrorSavingsExceeded(string $error): bool
+    {
+        $messages = [
+            "balance is not sufficient",
+            "Couldn't parse integer",
+            "Part-Balance to low",
+        ];
+
+        foreach ($messages as $msg) {
+            if (strpos($error, $msg) !== false) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
      * Create a key creation transaction
      *
-     * @param NetworkSymbol $coinSymbol
-     * @param $otk
-     * @param string $identifier
+     * @param  NetworkSymbol $coinSymbol
+     * @param  $otk
      * @return IBaseTransaction
      */
     public function keyCreateTransaction($coinSymbol, $otk)
@@ -64,8 +104,8 @@ class AkashicChain
                 '$i' => [
                     "owner" => [
                         '$stream' => $otk["identity"],
-                        "symbol" => self::getACSymbol($coinSymbol),
-                        "network" => self::getACNetwork($coinSymbol),
+                        "symbol" => $this->getACSymbol($coinSymbol),
+                        "network" => $this->getACNetwork($coinSymbol),
                         "business" => true,
                     ],
                 ],
@@ -81,8 +121,8 @@ class AkashicChain
     /**
      * Create a differential consensus transaction
      *
-     * @param $otk
-     * @param $key
+     * @param  $otk
+     * @param  $key
      * @return IBaseTransaction
      */
     public function differentialConsensusTransaction($otk, $key, $identifier)
@@ -116,7 +156,7 @@ class AkashicChain
     /**
      * Create an onboard OTK transaction
      *
-     * @param $otk
+     * @param  $otk
      * @return IBaseTransaction
      */
     public function onboardOtkTransaction($otk)
@@ -170,15 +210,15 @@ class AkashicChain
                 "metadata" => $initiatedToNonL2
                     ? [
                         "initiatedToNonL2" => $initiatedToNonL2,
-                        "identifier" => $identifier,
+                        "identifier" => $params["identifier"],
                     ]
-                    : ["identifier" => $identifier],
+                    : ["identifier" => $params["identifier"]],
             ],
             '$sigs' => [],
         ];
 
         // Sign Transaction
-        return self::signTransaction($txBody, $otk);
+        return $this->signTransaction($txBody, $otk);
     }
 
     public function l2ToL1SignTransaction(array $params)
@@ -233,20 +273,22 @@ class AkashicChain
         ];
 
         // Sign Transaction
-        return self::signTransaction($txBody, $otk);
+        return $this->signTransaction($txBody, $otk);
     }
 
     /**
      * Get the AC Symbol for the given coin symbol
      *
-     * @param NetworkSymbol $coinSymbol
+     * @param  NetworkSymbol $coinSymbol
      * @return string
      */
     private function getACSymbol($coinSymbol): string
     {
         if (in_array($coinSymbol, TronSymbol::VALUES, true)) {
             return "trx";
-        } elseif (in_array($coinSymbol, EthereumSymbol::VALUES, true)) {
+        }
+
+        if (in_array($coinSymbol, EthereumSymbol::VALUES, true)) {
             return "eth";
         }
         return $coinSymbol;
@@ -255,7 +297,7 @@ class AkashicChain
     /**
      * Get the AC Network for the given coin symbol
      *
-     * @param NetworkSymbol $coinSymbol
+     * @param  NetworkSymbol $coinSymbol
      * @return string
      */
     private function getACNetwork(string $coinSymbol): string
@@ -282,22 +324,20 @@ class AkashicChain
             if (is_string($txBody)) {
                 // Sign the string
                 return $key->sign($txBody);
-            } elseif (
-                is_array($txBody) &&
-                isset($txBody['$tx']) &&
-                isset($txBody['$sigs'])
-            ) {
+            }
+
+            if (is_array($txBody) && isset($txBody['$tx'], $txBody['$sigs'])) {
                 // Sign the transaction in the array
                 $identifier = $otk["identity"] ?? $otk["name"];
 
                 $txBody['$sigs'][$identifier] = $key->sign($txBody['$tx']);
 
                 return $txBody;
-            } else {
-                throw new \Exception("Invalid transaction body provided");
             }
-        } catch (\Exception $e) {
-            throw new \Exception(
+
+            throw new Exception("Invalid transaction body provided");
+        } catch (Exception $e) {
+            throw new Exception(
                 "Error signing transaction: " . $e->getMessage()
             );
         }

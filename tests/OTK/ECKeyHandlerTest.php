@@ -1,5 +1,7 @@
 <?php
 
+namespace Akashic\Tests\OTK;
+
 use PHPUnit\Framework\TestCase;
 use Akashic\OTK\ECKeyHandler;
 
@@ -13,7 +15,8 @@ J2A2AozpVCEU4kj7Tw8GsZb6PkjG23ALlP2Q==
 -----END EC PRIVATE KEY-----
 EOD;
 
-    private $publicKeyDer = '042404a8b2d62124c2858b94913a2df53e0d3b324f57e0cda47c1945db16a8cfc6c18c8b9230eb71f1c0c0cf97eb3e82c32694c08ef8f52fbeab3a65d4';
+    private $publicKeyDer = '042404a8b2d62124c2858b94913a2df53e0d3b324f57e0cd' .
+    'a47c1945db16a8cfc6c18c8b9230eb71f1c0c0cf97eb3e82c32694c08ef8f52fbeab3a65d4';
 
     public function testDecodeECPrivateKey()
     {
@@ -26,7 +29,15 @@ EOD;
         $publicKey = hex2bin($this->publicKeyDer);
         $encodedPublicKey = ECKeyHandler::encodeECPublicKey($publicKey);
 
-        $this->assertStringContainsString('-----BEGIN PUBLIC KEY-----', $encodedPublicKey, "Encoded EC public key should contain PEM header.");
-        $this->assertStringContainsString('-----END PUBLIC KEY-----', $encodedPublicKey, "Encoded EC public key should contain PEM footer.");
+        $this->assertStringContainsString(
+            '-----BEGIN PUBLIC KEY-----',
+            $encodedPublicKey,
+            "Encoded EC public key should contain PEM header."
+        );
+        $this->assertStringContainsString(
+            '-----END PUBLIC KEY-----',
+            $encodedPublicKey,
+            "Encoded EC public key should contain PEM footer."
+        );
     }
 }

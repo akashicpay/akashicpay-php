@@ -1,5 +1,7 @@
 <?php
 
+namespace Akashic\Tests\OTK;
+
 use PHPUnit\Framework\TestCase;
 use Akashic\OTK\Otk;
 use Akashic\Constants\KeyType;

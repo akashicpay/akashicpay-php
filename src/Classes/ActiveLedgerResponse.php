@@ -1,20 +1,24 @@
 <?php
 
 namespace Akashic\Classes;
-namespace Akashic\ActiveLedgerResponseStreams;
-namespace Akashic\ActiveLedgerResponseSummary;
 
+/** @api */
 class ActiveLedgerResponse
 {
+    /** @api */
     public string $umid;
 
     public ActiveLedgerResponseSummary $summary;
 
-    public ActiveLedgerResponseStreams $streams;
+    public ActiveLedgerResponseStream $streams;
 
-    /** @var array|null */
+    /**
+     * @var array|null
+     */
     public ?array $responses = null;
 
-    /** @var mixed */
+    /**
+     * @var mixed
+     */
     public $debug = null;
 }

@@ -8,12 +8,6 @@ A library to interact with the AkashicChain network, written in PHP.
 composer require akashic/akashic-pay
 ```
 
-OR if you are using PHP 8
-
-```bash
-composer require akashic/akashic-pay --ignore-platform-reqs
-```
-
 # Usage
 
 ```php
