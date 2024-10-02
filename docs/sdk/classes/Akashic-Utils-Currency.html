@@ -112,12 +112,12 @@
                                 <section>
                                         <ul class="phpdocumentor-breadcrumbs">
             <li class="phpdocumentor-breadcrumb"><a href="namespaces/akashic.html">Akashic</a></li>
-            <li class="phpdocumentor-breadcrumb"><a href="namespaces/akashic-constants.html">Constants</a></li>
+            <li class="phpdocumentor-breadcrumb"><a href="namespaces/akashic-utils.html">Utils</a></li>
     </ul>
 
     <article class="phpdocumentor-element -class">
         <h2 class="phpdocumentor-content__title">
-    TestNetContracts
+    Currency
 
     
             <div class="phpdocumentor-element__package">
@@ -136,9 +136,9 @@
 </div>
 
         <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="Constants/TestNetContracts.php"><a href="files/constants-testnetcontracts.html"><abbr title="Constants/TestNetContracts.php">TestNetContracts.php</abbr></a></abbr>
+    <abbr class="phpdocumentor-element-found-in__file" title="Utils/Currency.php"><a href="files/utils-currency.html"><abbr title="Utils/Currency.php">Currency.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">5</span>
+    <span class="phpdocumentor-element-found-in__line">7</span>
 
     </aside>
 
@@ -153,7 +153,7 @@
 
 <h3 id="toc">
     Table of Contents
-    <a href="classes/Akashic-Constants-TestNetContracts.html#toc" class="headerlink"><i class="fas fa-link"></i></a>
+    <a href="classes/Akashic-Utils-Currency.html#toc" class="headerlink"><i class="fas fa-link"></i></a>
 
 </h3>
 
@@ -163,221 +163,169 @@
 
 
 
-<h4 id="toc-constants">
-    Constants
-    <a href="classes/Akashic-Constants-TestNetContracts.html#toc-constants" class="headerlink"><i class="fas fa-link"></i></a>
+
+
+
+<h4 id="toc-methods">
+    Methods
+    <a href="classes/Akashic-Utils-Currency.html#toc-methods" class="headerlink"><i class="fas fa-link"></i></a>
 
 </h4>
 <dl class="phpdocumentor-table-of-contents">
-            <dt class="phpdocumentor-table-of-contents__entry -constant -public">
-    <a class="" href="classes/Akashic-Constants-TestNetContracts.html#constant_CONTRACT_NAMESPACE">CONTRACT_NAMESPACE</a>
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a class="" href="classes/Akashic-Utils-Currency.html#method_convertToDecimals">convertToDecimals()</a>
     <span>
-        &nbsp;= &quot;akashic&quot;                            </span>
+                                &nbsp;: string    </span>
 </dt>
+<dd>Method for safe conversion from coin/token decimals.</dd>
 
-            <dt class="phpdocumentor-table-of-contents__entry -constant -public">
-    <a class="" href="classes/Akashic-Constants-TestNetContracts.html#constant_CREATE">CREATE</a>
+            <dt class="phpdocumentor-table-of-contents__entry -method -private">
+    <a class="" href="classes/Akashic-Utils-Currency.html#method_getConversionFactor">getConversionFactor()</a>
     <span>
-        &nbsp;= &quot;c4f1186c58f49db2fdba401a1b36832902325d11a2e69ac6ef800836274c6894@5.1.4&quot;                            </span>
+                                &nbsp;: int    </span>
 </dt>
-
-            <dt class="phpdocumentor-table-of-contents__entry -constant -public">
-    <a class="" href="classes/Akashic-Constants-TestNetContracts.html#constant_CRYPTO_TRANSFER">CRYPTO_TRANSFER</a>
-    <span>
-        &nbsp;= &quot;d1903e29ea83413ecc759d129f7a21e4f8039ac5650360cf83d993343b5ffaa6@5.1.21&quot;                            </span>
-</dt>
-
-            <dt class="phpdocumentor-table-of-contents__entry -constant -public">
-    <a class="" href="classes/Akashic-Constants-TestNetContracts.html#constant_DIFF_CONSENSUS">DIFF_CONSENSUS</a>
-    <span>
-        &nbsp;= &quot;76869d5f632c283324b0cb7c8e16ba14eec2cf5d6d7b3f4521cc9b6a12818623@3.0.3&quot;                            </span>
-</dt>
-
-            <dt class="phpdocumentor-table-of-contents__entry -constant -public">
-    <a class="" href="classes/Akashic-Constants-TestNetContracts.html#constant_ONBOARD">ONBOARD</a>
-    <span>
-        &nbsp;= &quot;b089a212ac22f57e2bef7d8a7f25702ebda98173939be2eba1ac0c2523d77383@5.0.3&quot;                            </span>
-</dt>
+<dd>Get the conversion factor based on the coin or token symbol.</dd>
 
     </dl>
 
 
 
-
-
+        
 
         
-    <section class="phpdocumentor-constants">
-        <h3 class="phpdocumentor-elements__header" id="constants">
-            Constants
-            <a href="classes/Akashic-Constants-TestNetContracts.html#constants" class="headerlink"><i class="fas fa-link"></i></a>
+
+            <section class="phpdocumentor-methods">
+        <h3 class="phpdocumentor-elements__header" id="methods">
+            Methods
+            <a href="classes/Akashic-Utils-Currency.html#methods" class="headerlink"><i class="fas fa-link"></i></a>
 
         </h3>
-                    <article class="phpdocumentor-element -constant -public ">
-    <h4 class="phpdocumentor-element__name" id="constant_CONTRACT_NAMESPACE">
-        CONTRACT_NAMESPACE
-        <a href="classes/Akashic-Constants-TestNetContracts.html#constant_CONTRACT_NAMESPACE" class="headerlink"><i class="fas fa-link"></i></a>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                    -static                    "
+>
+    <h4 class="phpdocumentor-element__name" id="method_convertToDecimals">
+        convertToDecimals()
+        <a href="classes/Akashic-Utils-Currency.html#method_convertToDecimals" class="headerlink"><i class="fas fa-link"></i></a>
 
     </h4>
-
     <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="Constants/TestNetContracts.php"><a href="files/constants-testnetcontracts.html"><abbr title="Constants/TestNetContracts.php">TestNetContracts.php</abbr></a></abbr>
+    <abbr class="phpdocumentor-element-found-in__file" title="Utils/Currency.php"><a href="files/utils-currency.html"><abbr title="Utils/Currency.php">Currency.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">7</span>
+    <span class="phpdocumentor-element-found-in__line">17</span>
 
     </aside>
 
-    
-    
-    <code class="phpdocumentor-signature phpdocumentor-code ">
+        <p class="phpdocumentor-summary">Method for safe conversion from coin/token decimals.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-        <span class="phpdocumentor-signature__type">mixed</span>
-    <span class="phpdocumentor-signature__name">CONTRACT_NAMESPACE</span>
-    = <span class="phpdocumentor-signature__default-value">&quot;akashic&quot;</span>
-</code>
+            <span class="phpdocumentor-signature__static">static</span>        <span class="phpdocumentor-signature__name">convertToDecimals</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$amount</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type"><abbr title="\Akashic\Utils\NetworkSymbol">NetworkSymbol</abbr>&nbsp;</span><span class="phpdocumentor-signature__argument__name">$coinSymbol</span></span><span class="phpdocumentor-signature__argument"><span>[</span><span>, </span><span class="phpdocumentor-signature__argument__return-type"><abbr title="\Akashic\Utils\TokenSymbol">TokenSymbol</abbr>|null&nbsp;</span><span class="phpdocumentor-signature__argument__name">$tokenSymbol</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">null</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
 
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$amount</span>
+                : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$coinSymbol</span>
+                : <span class="phpdocumentor-signature__argument__return-type"><abbr title="\Akashic\Utils\NetworkSymbol">NetworkSymbol</abbr></span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$tokenSymbol</span>
+                : <span class="phpdocumentor-signature__argument__return-type"><abbr title="\Akashic\Utils\TokenSymbol">TokenSymbol</abbr>|null</span>
+                 = <span class="phpdocumentor-signature__argument__default-value">null</span>            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                
+            </dd>
+            </dl>
 
     
-    
-    
 
     
+
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">string</span>
+            </section>
 
 </article>
-                    <article class="phpdocumentor-element -constant -public ">
-    <h4 class="phpdocumentor-element__name" id="constant_CREATE">
-        CREATE
-        <a href="classes/Akashic-Constants-TestNetContracts.html#constant_CREATE" class="headerlink"><i class="fas fa-link"></i></a>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -private
+                                    -static                    "
+>
+    <h4 class="phpdocumentor-element__name" id="method_getConversionFactor">
+        getConversionFactor()
+        <a href="classes/Akashic-Utils-Currency.html#method_getConversionFactor" class="headerlink"><i class="fas fa-link"></i></a>
 
     </h4>
-
     <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="Constants/TestNetContracts.php"><a href="files/constants-testnetcontracts.html"><abbr title="Constants/TestNetContracts.php">TestNetContracts.php</abbr></a></abbr>
+    <abbr class="phpdocumentor-element-found-in__file" title="Utils/Currency.php"><a href="files/utils-currency.html"><abbr title="Utils/Currency.php">Currency.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">8</span>
+    <span class="phpdocumentor-element-found-in__line">38</span>
 
     </aside>
 
+        <p class="phpdocumentor-summary">Get the conversion factor based on the coin or token symbol.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">private</span>
+            <span class="phpdocumentor-signature__static">static</span>        <span class="phpdocumentor-signature__name">getConversionFactor</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$coinSymbol</span></span><span class="phpdocumentor-signature__argument"><span>[</span><span>, </span><span class="phpdocumentor-signature__argument__return-type">string|null&nbsp;</span><span class="phpdocumentor-signature__argument__name">$tokenSymbol</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">null</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">int</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
     
     
-    <code class="phpdocumentor-signature phpdocumentor-code ">
-    <span class="phpdocumentor-signature__visibility">public</span>
-        <span class="phpdocumentor-signature__type">mixed</span>
-    <span class="phpdocumentor-signature__name">CREATE</span>
-    = <span class="phpdocumentor-signature__default-value">&quot;c4f1186c58f49db2fdba401a1b36832902325d11a2e69ac6ef800836274c6894@5.1.4&quot;</span>
-</code>
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$coinSymbol</span>
+                : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$tokenSymbol</span>
+                : <span class="phpdocumentor-signature__argument__return-type">string|null</span>
+                 = <span class="phpdocumentor-signature__argument__default-value">null</span>            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                
+            </dd>
+            </dl>
 
-
-    
-    
-    
-
-    
-
-</article>
-                    <article class="phpdocumentor-element -constant -public ">
-    <h4 class="phpdocumentor-element__name" id="constant_CRYPTO_TRANSFER">
-        CRYPTO_TRANSFER
-        <a href="classes/Akashic-Constants-TestNetContracts.html#constant_CRYPTO_TRANSFER" class="headerlink"><i class="fas fa-link"></i></a>
-
-    </h4>
-
-    <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="Constants/TestNetContracts.php"><a href="files/constants-testnetcontracts.html"><abbr title="Constants/TestNetContracts.php">TestNetContracts.php</abbr></a></abbr>
-    :
-    <span class="phpdocumentor-element-found-in__line">11</span>
-
-    </aside>
-
-    
-    
-    <code class="phpdocumentor-signature phpdocumentor-code ">
-    <span class="phpdocumentor-signature__visibility">public</span>
-        <span class="phpdocumentor-signature__type">mixed</span>
-    <span class="phpdocumentor-signature__name">CRYPTO_TRANSFER</span>
-    = <span class="phpdocumentor-signature__default-value">&quot;d1903e29ea83413ecc759d129f7a21e4f8039ac5650360cf83d993343b5ffaa6@5.1.21&quot;</span>
-</code>
-
-
-    
-    
     
 
     
 
-</article>
-                    <article class="phpdocumentor-element -constant -public ">
-    <h4 class="phpdocumentor-element__name" id="constant_DIFF_CONSENSUS">
-        DIFF_CONSENSUS
-        <a href="classes/Akashic-Constants-TestNetContracts.html#constant_DIFF_CONSENSUS" class="headerlink"><i class="fas fa-link"></i></a>
-
-    </h4>
-
-    <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="Constants/TestNetContracts.php"><a href="files/constants-testnetcontracts.html"><abbr title="Constants/TestNetContracts.php">TestNetContracts.php</abbr></a></abbr>
-    :
-    <span class="phpdocumentor-element-found-in__line">9</span>
-
-    </aside>
-
-    
-    
-    <code class="phpdocumentor-signature phpdocumentor-code ">
-    <span class="phpdocumentor-signature__visibility">public</span>
-        <span class="phpdocumentor-signature__type">mixed</span>
-    <span class="phpdocumentor-signature__name">DIFF_CONSENSUS</span>
-    = <span class="phpdocumentor-signature__default-value">&quot;76869d5f632c283324b0cb7c8e16ba14eec2cf5d6d7b3f4521cc9b6a12818623@3.0.3&quot;</span>
-</code>
-
-
-    
-    
-    
-
-    
-
-</article>
-                    <article class="phpdocumentor-element -constant -public ">
-    <h4 class="phpdocumentor-element__name" id="constant_ONBOARD">
-        ONBOARD
-        <a href="classes/Akashic-Constants-TestNetContracts.html#constant_ONBOARD" class="headerlink"><i class="fas fa-link"></i></a>
-
-    </h4>
-
-    <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="Constants/TestNetContracts.php"><a href="files/constants-testnetcontracts.html"><abbr title="Constants/TestNetContracts.php">TestNetContracts.php</abbr></a></abbr>
-    :
-    <span class="phpdocumentor-element-found-in__line">10</span>
-
-    </aside>
-
-    
-    
-    <code class="phpdocumentor-signature phpdocumentor-code ">
-    <span class="phpdocumentor-signature__visibility">public</span>
-        <span class="phpdocumentor-signature__type">mixed</span>
-    <span class="phpdocumentor-signature__name">ONBOARD</span>
-    = <span class="phpdocumentor-signature__default-value">&quot;b089a212ac22f57e2bef7d8a7f25702ebda98173939be2eba1ac0c2523d77383@5.0.3&quot;</span>
-</code>
-
-
-    
-    
-    
-
-    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">int</span>
+            </section>
 
 </article>
             </section>
 
-        
-
-        
         <div class="phpdocumentor-modal" id="source-view">
     <div class="phpdocumentor-modal-bg" data-exit-button></div>
     <div class="phpdocumentor-modal-container">
         <div class="phpdocumentor-modal-content">
-            <pre style="max-height: 500px; overflow-y: scroll" data-src="files/Constants/TestNetContracts.php.txt" class="language-php line-numbers linkable-line-numbers"></pre>
+            <pre style="max-height: 500px; overflow-y: scroll" data-src="files/Utils/Currency.php.txt" class="language-php line-numbers linkable-line-numbers"></pre>
         </div>
         <button data-exit-button class="phpdocumentor-modal__close">&times;</button>
     </div>
@@ -476,21 +424,18 @@
             <li class="phpdocumentor-on-this-page-section__title">Table Of Contents</li>
             <li>
                 <ul class="phpdocumentor-list -clean">
-                                        <li><a href="classes/Akashic-Constants-TestNetContracts.html#toc-constants">Constants</a></li>
-                                                                            </ul>
+                                                                                <li><a href="classes/Akashic-Utils-Currency.html#toc-methods">Methods</a></li>
+                                    </ul>
             </li>
-                            <li class="phpdocumentor-on-this-page-section__title">Constants</li>
-                <li>
-                    <ul class="phpdocumentor-list -clean">
-                                                    <li class=""><a href="classes/Akashic-Constants-TestNetContracts.html#constant_CONTRACT_NAMESPACE">CONTRACT_NAMESPACE</a></li>
-                                                    <li class=""><a href="classes/Akashic-Constants-TestNetContracts.html#constant_CREATE">CREATE</a></li>
-                                                    <li class=""><a href="classes/Akashic-Constants-TestNetContracts.html#constant_CRYPTO_TRANSFER">CRYPTO_TRANSFER</a></li>
-                                                    <li class=""><a href="classes/Akashic-Constants-TestNetContracts.html#constant_DIFF_CONSENSUS">DIFF_CONSENSUS</a></li>
-                                                    <li class=""><a href="classes/Akashic-Constants-TestNetContracts.html#constant_ONBOARD">ONBOARD</a></li>
-                                            </ul>
-                </li>
             
             
+                        <li class="phpdocumentor-on-this-page-section__title">Methods</li>
+            <li>
+                <ul class="phpdocumentor-list -clean">
+                                            <li class=""><a href="classes/Akashic-Utils-Currency.html#method_convertToDecimals">convertToDecimals()</a></li>
+                                            <li class=""><a href="classes/Akashic-Utils-Currency.html#method_getConversionFactor">getConversionFactor()</a></li>
+                                    </ul>
+            </li>
                     </ul>
     </section>
 
@@ -508,7 +453,7 @@
     </section>
 </section>
         </div>
-        <a href="classes/Akashic-Constants-TestNetContracts.html#top" class="phpdocumentor-back-to-top"><i class="fas fa-chevron-circle-up"></i></a>
+        <a href="classes/Akashic-Utils-Currency.html#top" class="phpdocumentor-back-to-top"><i class="fas fa-chevron-circle-up"></i></a>
 
     </main>
 

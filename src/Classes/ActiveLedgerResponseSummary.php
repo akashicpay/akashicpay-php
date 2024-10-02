@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Akashic\Classes;
 
+/** @api */
 class ActiveLedgerResponseSummary
 {
     public int $total;

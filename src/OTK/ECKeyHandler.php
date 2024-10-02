@@ -1,15 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Akashic\OTK;
 
 use FG\ASN1\ASNObject;
-use FG\ASN1\Universal\Sequence;
-use FG\ASN1\Universal\Integer;
-use FG\ASN1\Universal\OctetString;
+use FG\ASN1\Exception\ParserException;
 use FG\ASN1\Universal\BitString;
 use FG\ASN1\Universal\ObjectIdentifier;
-use FG\ASN1\Composite\ASNObject as CompositeASNObject;
-use FG\ASN1\Exception\ParserException;
+use FG\ASN1\Universal\OctetString;
+use FG\ASN1\Universal\Sequence;
+use RuntimeException;
+
+use function base64_decode;
+use function base64_encode;
+use function bin2hex;
+use function chunk_split;
+use function preg_replace;
+use function str_replace;
 
 class ECKeyHandler
 {
@@ -23,21 +31,21 @@ class ECKeyHandler
             }
         }
 
-        throw new \RuntimeException('PPK not found inside ASN');
+        throw new RuntimeException('PPK not found inside ASN');
     }
 
-    public static function decodeECPrivateKey($pkcs8pem, $label = 'EC PRIVATE KEY')
+    public static function decodeECPrivateKey($pkcs8pem)
     {
         // Strip the PEM headers and decode the base64 content
-        $pkcs8pem = preg_replace('/-----BEGIN .*?-----/', '', $pkcs8pem);
-        $pkcs8pem = preg_replace('/-----END .*?-----/', '', $pkcs8pem);
-        $pkcs8pem = str_replace(["\r", "\n"], '', $pkcs8pem);
+        $pkcs8pem   = preg_replace('/-----BEGIN .*?-----/', '', $pkcs8pem);
+        $pkcs8pem   = preg_replace('/-----END .*?-----/', '', $pkcs8pem);
+        $pkcs8pem   = str_replace(["\r", "\n"], '', $pkcs8pem);
         $binaryData = base64_decode($pkcs8pem);
 
         try {
             $asn = ASNObject::fromBinary($binaryData);
         } catch (ParserException $e) {
-            throw new \RuntimeException('Failed to decode PKCS8 PEM: ' . $e->getMessage());
+            throw new RuntimeException('Failed to decode PKCS8 PEM: ' . $e->getMessage());
         }
 
         return self::extractNestedKeys($asn);

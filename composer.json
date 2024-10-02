@@ -2,15 +2,24 @@
   "name": "akashic/akashic-pay",
   "description": "A library to interact with the AkashicChain network, written in PHP.",
   "type": "library",
+  "scripts": {
+    "lint": "parallel-lint src tests",
+    "phpcs": "phpcs --standard=phpcs.xml --extensions=php",
+    "phpcbf": "phpcbf --standard=phpcs.xml --extensions=php",
+    "phpcs-list-rules": "phpcs --standard=phpcs.xml --generator=HTML > sniffs.html && xdg-open sniffs.html",
+    "psalm": "psalm --config=psalm.xml",
+    "test": "phpunit --testdox tests"
+  },
   "require": {
-    "php": "*",
+    "php": ">=7.4",
     "ext-gmp": "*",
+    "ext-openssl": "*",
     "fgrosse/phpasn1": "^2.5.0",
-    "ext-gmp": "*",
-    "bitwasp/bitcoin": "^1.0",
     "simplito/elliptic-php": "^1.0",
     "monolog/monolog": "^2.9",
-    "guzzlehttp/guzzle": "^7.9"
+    "guzzlehttp/guzzle": "^7.9",
+    "protonlabs/bitcoin": "^1.0",
+    "ext-json": "*"
   },
   "autoload": {
     "psr-4": {
@@ -24,11 +33,21 @@
   },
   "require-dev": {
     "phpunit/phpunit": "^9.6",
-    "squizlabs/php_codesniffer": "*"
+    "squizlabs/php_codesniffer": "*",
+    "phpcompatibility/php-compatibility": "*",
+    "vimeo/psalm": "^5.26",
+    "laminas/laminas-coding-standard": "^2.5",
+    "php-parallel-lint/php-parallel-lint": "^1.4",
+    "php-parallel-lint/php-console-highlighter": "^1.0"
   },
   "config": {
     "platform": {
       "php": "7.4.33"
+    },
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
     }
-  }
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
 }

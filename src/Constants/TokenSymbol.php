@@ -1,14 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Akashic\Constants;
 
 class TokenSymbol
 {
-    const BUSD = "BUSD";
-    const USDT = "USDT";
-    const USDC = "USDC";
+    public const BUSD = 'BUSD';
+    public const USDT = 'USDT';
+    public const USDC = 'USDC';
     /**
      * Used for USDT on TRX-Shasta
      */
-    const TETHER = "Tether";
+    public const TETHER = 'Tether';
 }

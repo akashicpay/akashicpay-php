@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Akashic\Classes;
 
-class ActiveLedgerResponseStreams
+/** @api */
+class ActiveLedgerResponseStream
 {
     /** @var array */
     public array $new = [];
