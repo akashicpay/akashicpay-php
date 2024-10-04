@@ -8,19 +8,34 @@ use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use JsonException;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 use Psr\Http\Message\ResponseInterface;
 
+use function file_get_contents;
 use function json_decode;
+use function json_encode;
 
 use const JSON_THROW_ON_ERROR;
 
 class HttpClient
 {
     private $client;
+    private $apVersion;
+    private $apClient = 'php-sdk';
+    private Logger $logger;
 
     public function __construct()
     {
-        $this->client = new Client();
+        // Logger initialization
+        $this->logger = new Logger("HttpClient");
+        $this->logger->pushHandler(
+            new StreamHandler("php://stdout", Logger::DEBUG)
+        );
+
+        $config          = json_decode(file_get_contents(__DIR__ . '/config.json'), true);
+        $this->client    = new Client();
+        $this->apVersion = $config['version'];
     }
 
     public function post(string $url, $payload)
@@ -30,9 +45,15 @@ class HttpClient
                 $url,
                 [
                     'json'    => $payload,
-                    'headers' => ['Content-Type' => 'application/json'],
-                ]
+                    'headers' => [
+                        'Content-Type' => 'application/json',
+                        'Ap-Version'   => $this->apVersion,
+                        'Ap-Client'    => $this->apClient,
+                    ],
+                ],
             );
+
+            $this->checkApiWarning($response->getHeaders());
 
             return $this->handleResponse($response);
         } catch (RequestException $e) {
@@ -43,11 +64,22 @@ class HttpClient
     public function get(string $url)
     {
         try {
-            $response = $this->client->get($url);
+            $response = $this->client->get(
+                $url,
+                [
+                    'headers' => [
+                        'Ap-Version' => $this->apVersion,
+                        'Ap-Client'  => $this->apClient,
+                    ],
+                ],
+            );
+
+            $this->checkApiWarning($response->getHeaders());
+
+            return $this->handleResponse($response);
         } catch (RequestException $e) {
             $this->handleException($e);
         }
-        return $this->handleResponse($response);
     }
 
     /**
@@ -80,5 +112,12 @@ class HttpClient
         throw new Exception(
             $response->getStatusCode() . ': ' . $errorResponse
         );
+    }
+
+    private function checkApiWarning($headers)
+    {
+        if (isset($headers['Warning'])) {
+            $this->logger->warning(json_encode($headers['Warning']));
+        }
     }
 }
