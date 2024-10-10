@@ -213,41 +213,27 @@ class AkashicPay
         }
 
         $payload = [
-            "toAddress"   => $to,
-            "coinSymbol"  => $network,
-            "amount"      => $amount,
-            "tokenSymbol" => $token,
-            "identity"    => $this->otk["identity"],
+            "toAddress"             => $to,
+            "coinSymbol"            => $network,
+            "amount"                => $amount,
+            "tokenSymbol"           => $token,
+            "identity"              => $this->otk["identity"],
+            "identifier"            => $recipientId,
+            "feeDelegationStrategy" => "Delegate",
         ];
 
-        $response      = $this->post(
-            $this->akashicUrl . AkashicEndpoints::PREPARE_TX,
-            $payload
-        );
-        $withdrawalKey = $response["data"]["withdrawalKey"];
+            $response    = $this->post(
+                $this->akashicUrl . AkashicEndpoints::PREPARE_TX,
+                $payload
+            );
+            $preparedTxn = $response["data"]["preparedTxn"];
 
-        $feesEstimate = Currency::convertToDecimals(
-            $response["data"]["fees"]["feesEstimate"],
-            $network
-        );
+            $signedTxn = $this->akashicChain->signTransaction(
+                $preparedTxn,
+                $this->otk
+            );
 
-        $ethGasPrice = $response["data"]["ethGasPrice"];
-
-        $lT1x = $this->akashicChain->l2ToL1SignTransaction(
-            [
-                "otk"          => $this->otk,
-                "amount"       => $decimalAmount,
-                "toAddress"    => $toAddress,
-                "coinSymbol"   => $network,
-                "tokenSymbol"  => $token,
-                "keyLedgerId"  => $withdrawalKey["ledgerId"],
-                "identifier"   => $recipientId,
-                "feesEstimate" => $feesEstimate,
-                "ethGasPrice"  => $ethGasPrice,
-            ]
-        );
-
-        $acResponse = $this->post($this->targetNode["node"], $lT1x);
+            $acResponse = $this->post($this->targetNode["node"], $signedTxn);
 
         $this->akashicChain->checkForAkashicChainError($acResponse["data"]);
 
