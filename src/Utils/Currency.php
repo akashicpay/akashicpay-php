@@ -8,6 +8,7 @@ use Akashic\Constants\AkashicError;
 use Akashic\L1Network;
 use Exception;
 
+use function fmod;
 use function strval;
 
 class Currency
@@ -58,7 +59,7 @@ class Currency
 
     private static function throwIfNotInteger($amount): void
     {
-        if ($amount->mod(1)->__toString() !== '0') {
+        if (strval(fmod($amount, 1)) !== '0') {
             throw new Exception(AkashicError::TRANSACTION_TOO_SMALL_ERROR);
         }
     }
