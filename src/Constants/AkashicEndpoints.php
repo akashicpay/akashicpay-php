@@ -13,4 +13,5 @@ class AkashicEndpoints
     public const TRANSACTIONS_DETAILS = '/v0/transactions/transfer';
     public const IDENTIFIER_LOOKUP    = '/v0/key/bp-deposit-key';
     public const IS_BP                = '/v0/owner/is-bp';
+    public const SUPPORTED_CURRENCIES = '/v0/config/supported-currencies';
 }

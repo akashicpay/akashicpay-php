@@ -6,9 +6,9 @@ namespace Akashic\Constants;
 
 class TestNetContracts
 {
-    public const CONTRACT_NAMESPACE = 'akashic';
-    public const CREATE             = 'c4f1186c58f49db2fdba401a1b36832902325d11a2e69ac6ef800836274c6894@5.1.4';
-    public const DIFF_CONSENSUS     = '76869d5f632c283324b0cb7c8e16ba14eec2cf5d6d7b3f4521cc9b6a12818623@3.0.3';
-    public const ONBOARD            = 'b089a212ac22f57e2bef7d8a7f25702ebda98173939be2eba1ac0c2523d77383@5.0.4';
-    public const CRYPTO_TRANSFER    = 'd1903e29ea83413ecc759d129f7a21e4f8039ac5650360cf83d993343b5ffaa6@5.8.3';
+    public const CONTRACT_NAMESPACE = 'akashicchain';
+    public const CREATE             = 'ad171259a7c628ba6993c6bd555f07111525128194aa4226662e48a0b0a93116@1.0.0';
+    public const DIFF_CONSENSUS     = '17be1db84dbf81c1ff1b2f5aebd4ba4e95d81338daf98d7c2bc7b54ad8994d1c@1.0.0';
+    public const ONBOARD            = 'c19c6f4d3c443ae7abb14d17d33b29d134df8d11bdabc568bd23f7023ee991fd@1.0.0';
+    public const CRYPTO_TRANSFER    = 'a32a8bc21ceaeeaa671573126a246c15ec4dc3a5c825e3cffc9441636019acb1@1.1.1';
 }
