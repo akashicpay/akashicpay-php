@@ -12,6 +12,7 @@ use Akashic\Constants\AkashicBaseUrls;
 use Akashic\Constants\AkashicEndpoints;
 use Akashic\Constants\AkashicErrorCode;
 use Akashic\Constants\AkashicException;
+use Akashic\Constants\AkashicPayBaseUrls;
 use Akashic\Constants\Environment;
 use Akashic\Constants\NetworkSymbol;
 use Akashic\Constants\TokenSymbol;
@@ -21,10 +22,14 @@ use Akashic\Utils\Prefix;
 use Exception;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
+use function array_keys;
 use function array_map;
 use function array_merge;
+use function array_unique;
 use function http_build_query;
+use function in_array;
 use function preg_match;
+use function sprintf;
 use function str_contains;
 use function urlencode;
 
@@ -36,6 +41,7 @@ class AkashicPay
     private array $otk;
     private array $targetNode;
     private string $akashicUrl;
+    private string $akashicPayUrl;
     private Logger $logger;
     private string $env;
     private HttpClient $httpClient;
@@ -51,6 +57,11 @@ class AkashicPay
             $this->env === Environment::PRODUCTION
                 ? AkashicBaseUrls::BASE_URL
                 : AkashicBaseUrls::BASE_URL_DEV;
+
+        $this->akashicPayUrl =
+            $this->env === Environment::PRODUCTION
+                ? AkashicPayBaseUrls::BASE_URL
+                : AkashicPayBaseUrls::BASE_URL_DEV;
 
         // Logger initialization
         $this->logger = new Logger("AkashicPay");
@@ -351,6 +362,38 @@ class AkashicPay
     }
 
     /**
+     * Get deposit page url
+     *
+     * @param  string $identifier userID or similar identifier of the user
+     *                            making the deposit
+     * @return string
+     */
+    public function getDepositUrl($identifier)
+    {
+        // Perform asynchronous tasks sequentially
+        $keys                = $this->getKeysByOwnerAndIdentifier(['identifier' => $identifier]);
+        $supportedCurrencies = $this->getSupportedCurrencies();
+
+        // Process supported currencies
+        $supportedCurrencySymbols = array_unique(array_keys($supportedCurrencies));
+        $existingKeys             = array_unique(array_map(fn($key) => $key['coinSymbol'], $keys));
+
+        foreach ($supportedCurrencySymbols as $coinSymbol) {
+            if (! in_array($coinSymbol, $existingKeys)) {
+                $this->getDepositAddress($coinSymbol, $identifier);
+            }
+        }
+
+        // Construct the deposit URL
+        return sprintf(
+            '%s/sdk/deposit?identity=%s&identifier=%s',
+            $this->akashicPayUrl,
+            urlencode($this->otk["identity"]),
+            urlencode($identifier)
+        );
+    }
+
+    /**
      * Check which L2-address an alias or L1-address belongs to. Or call with an
      * L2-address to verify it exists
      *
@@ -511,6 +554,28 @@ class AkashicPay
         return $this->get(
             $this->akashicUrl
             . AkashicEndpoints::IDENTIFIER_LOOKUP
+            . "?"
+            . $query
+        )["data"];
+    }
+
+    /**
+     * Get all keys by BP and identifier
+     *
+     * @return ?array address
+     */
+    public function getKeysByOwnerAndIdentifier($getKeysByOwnerAndIdentifierParams): ?array
+    {
+        $queryParameters = array_merge(
+            $getKeysByOwnerAndIdentifierParams,
+            ["identity" => $this->otk["identity"]]
+        );
+        $query           = http_build_query(
+            array_map("self::boolsToString", $queryParameters)
+        );
+        return $this->get(
+            $this->akashicUrl
+            . AkashicEndpoints::ALL_KEYS_OF_IDENTIFIER
             . "?"
             . $query
         )["data"];
