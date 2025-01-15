@@ -15,4 +15,5 @@ class AkashicEndpoints
     public const ALL_KEYS_OF_IDENTIFIER = '/v0/key/all-bp-deposit-keys';
     public const IS_BP                  = '/v0/owner/is-bp';
     public const SUPPORTED_CURRENCIES   = '/v0/config/supported-currencies';
+    public const CREATE_DEPOSIT_ORDER   = '/v0/deposit-request';
 }

@@ -7,12 +7,14 @@ namespace Akashic\Classes;
 /** @api */
 class IBaseTransaction
 {
-    public ?bool $selfsign = null;
+    /** @var bool|null */
+    public $selfsign = null;
 
     /** @var mixed */
     public $sigs;
 
-    public IBaseTransactionTxBody $tx;
+    /** @var IBaseTransactionTxBody */
+    public $tx;
 
     /**
      * @param mixed                  $sigs

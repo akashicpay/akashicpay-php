@@ -8,7 +8,8 @@ use Exception;
 
 class AkashicException extends Exception
 {
-    private ?string $details;
+    /** @var string|null */
+    private $details;
 
     /**
      * @param string $message The error code.

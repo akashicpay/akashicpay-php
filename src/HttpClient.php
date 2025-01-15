@@ -8,7 +8,6 @@ use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use JsonException;
-use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Psr\Http\Message\ResponseInterface;
 
@@ -16,22 +15,19 @@ use function file_get_contents;
 use function json_decode;
 use function json_encode;
 
-use const JSON_THROW_ON_ERROR;
-
 class HttpClient
 {
     private $client;
     private $apVersion;
     private $apClient = 'php-sdk';
-    private Logger $logger;
+    /** @var Logger */
+    private $logger;
 
-    public function __construct()
-    {
+    public function __construct(
+        Logger $logger
+    ) {
         // Logger initialization
-        $this->logger = new Logger("HttpClient");
-        $this->logger->pushHandler(
-            new StreamHandler("php://stdout", Logger::DEBUG)
-        );
+        $this->logger = $logger;
 
         $config          = json_decode(file_get_contents(__DIR__ . '/config.json'), true);
         $this->client    = new Client();
@@ -49,8 +45,8 @@ class HttpClient
                         'Content-Type' => 'application/json',
                         'Ap-Version'   => $this->apVersion,
                         'Ap-Client'    => $this->apClient,
-                    ],
-                ],
+                    ]
+                ]
             );
 
             $this->checkApiWarning($response->getHeaders());
@@ -71,7 +67,7 @@ class HttpClient
                         'Ap-Version' => $this->apVersion,
                         'Ap-Client'  => $this->apClient,
                     ],
-                ],
+                ]
             );
 
             $this->checkApiWarning($response->getHeaders());
@@ -91,24 +87,27 @@ class HttpClient
         $statusCode = $response->getStatusCode();
 
         if ($statusCode >= 400) {
-            $errorResponse = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
+            $errorResponse = json_decode($response->getBody()->getContents(), true, 512);
             throw new Exception($errorResponse['error'] . ': ' . $errorResponse['message']);
         }
 
         return [
-            'data'   => json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR),
-            'status' => $statusCode,
+            'data'   => json_decode($response->getBody()->getContents(), true, 512),
+            'status' => $statusCode
         ];
     }
 
     private function handleException(RequestException $e)
     {
+        $this->logger->error($e->getMessage());
+
         $response = $e->getResponse();
         if (! $response) {
             throw new Exception($e->getMessage());
         }
 
         $errorResponse = $response->getBody()->getContents();
+        $this->logger->error($errorResponse);
         throw new Exception(
             $response->getStatusCode() . ': ' . $errorResponse
         );

@@ -7,13 +7,17 @@ namespace Akashic\Classes;
 /** @api */
 class ActiveLedgerResponse
 {
-    public string $umid;
+    /** @var string */
+    public $umid;
 
-    public ActiveLedgerResponseSummary $summary;
+    /** @var ActiveLedgerResponseSummary */
+    public $summary;
 
-    public ActiveLedgerResponseStream $streams;
+    /** @var ActiveLedgerResponseStream */
+    public $streams;
 
-    public ?array $responses = null;
+    /** @var array|null */
+    public $responses = null;
 
     /** @var mixed */
     public $debug;

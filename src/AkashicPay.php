@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace Akashic;
@@ -18,6 +17,7 @@ use Akashic\Constants\NetworkSymbol;
 use Akashic\Constants\TokenSymbol;
 use Akashic\OTK\Otk;
 use Akashic\Utils\Currency;
+use Akashic\Utils\DatadogHandler;
 use Akashic\Utils\Prefix;
 use Exception;
 use Monolog\Handler\StreamHandler;
@@ -31,6 +31,8 @@ use function in_array;
 use function preg_match;
 use function sprintf;
 use function str_contains;
+use function str_starts_with;
+use function strtotime;
 use function urlencode;
 
 /** @api */
@@ -38,20 +40,27 @@ class AkashicPay
 {
     private const AC_PRIVATE_KEY_REGEX = '/^0x[a-f\d]{64}$/';
     private const L2_REGEX             = '/^AS[A-Fa-f\d]{64}$/';
-    private array $otk;
-    private array $targetNode;
-    private string $akashicUrl;
-    private string $akashicPayUrl;
-    private Logger $logger;
-    private string $env;
-    private HttpClient $httpClient;
-    private AkashicChain $akashicChain;
+    private const DATADOG_API_KEY      = '10f3796eb5494075b36b7d89ae456a65';
+    /** @var array */
+    private $otk;
+    /** @var array */
+    private $targetNode;
+    /** @var string */
+    private $akashicUrl;
+    /** @var string */
+    private $akashicPayUrl;
+    /** @var Logger */
+    private $logger;
+    /** @var string */
+    private $env;
+    /** @var HttpClient */
+    private $httpClient;
+    /** @var AkashicChain */
+    private $akashicChain;
 
     public function __construct($args)
     {
         $this->env = $args["environment"] ?? Environment::PRODUCTION;
-
-        $this->akashicChain = new AkashicChain($this->env);
 
         $this->akashicUrl =
             $this->env === Environment::PRODUCTION
@@ -65,12 +74,24 @@ class AkashicPay
 
         // Logger initialization
         $this->logger = new Logger("AkashicPay");
-        $this->logger->pushHandler(
-            new StreamHandler("php://stdout", Logger::DEBUG)
-        );
+
+        // standard output
+        $stream = new StreamHandler("php://stdout", Logger::DEBUG);
+        $this->logger->pushHandler($stream);
+
+        // send log to datadog by http
+        $attributes  = [
+            'hostname' => $_SERVER['SERVER_NAME'] ?? 'localhost',
+            'service'  => 'php-sdk',
+            'tags'     => 'env:' . $this->env,
+        ];
+        $datadogLogs = new DatadogHandler(self::DATADOG_API_KEY, $attributes, Logger::WARNING);
+        $this->logger->pushHandler($datadogLogs);
+
+        $this->akashicChain = new AkashicChain($this->env, $this->logger);
 
         // Initialize HttpClient
-        $this->httpClient = new HttpClient();
+        $this->httpClient = new HttpClient($this->logger);
 
         $this->targetNode = $args["targetNode"] ?? $this->chooseBestACNode();
 
@@ -251,6 +272,7 @@ class AkashicPay
         try {
             $preparedTxn = $response["data"]["preparedTxn"];
         } catch (Exception $e) {
+            $this->logger->error($e->getMessage());
             if (str_contains($e->getMessage(), 'exceeds total savings')) {
                 return [
                     "error" => AkashicErrorCode::SAVINGS_EXCEEDED,
@@ -295,12 +317,13 @@ class AkashicPay
     /**
      * Get an L1-address on the specified network for a user to deposit into
      *
-     * @param  string $network    L1-network
-     * @param  string $identifier userID or similar identifier of the user
-     *                            making the deposit
+     * @param  string $network     L1-network
+     * @param  string $identifier  userID or similar identifier of the user
+     *                             making the deposit
+     * @param  string $referenceId optional referenceId to identify the order
      * @return array
      */
-    public function getDepositAddress($network, $identifier)
+    public function getDepositAddress($network, $identifier, $referenceId = null)
     {
         $response = $this->getByOwnerAndIdentifier(
             [
@@ -311,6 +334,20 @@ class AkashicPay
 
         $address = $response["address"] ?? null;
         if ($address) {
+            if ($referenceId) {
+                $payloadToSign = [
+                    "identity"    => $this->otk["identity"],
+                    "expires"     => strtotime("+1 minutes") * 1000,
+                    "referenceId" => $referenceId,
+                    "identifier"  => $identifier,
+                    "toAddress"   => $address,
+                    "coinSymbol"  => $network,
+                ];
+                $this->createDepositOrder(array_merge($payloadToSign, [
+                    "signature" => $this->sign($payloadToSign),
+                ]));
+            }
+
             return [
                 "address"    => $response["address"],
                 "identifier" => $identifier,
@@ -355,6 +392,20 @@ class AkashicPay
             throw new AkashicException(AkashicErrorCode::UNHEALTHY_KEY);
         }
 
+        if ($referenceId) {
+            $payloadToSign = [
+                "identity"    => $this->otk["identity"],
+                "expires"     => strtotime("+1 minutes") * 1000,
+                "referenceId" => $referenceId,
+                "identifier"  => $identifier,
+                "toAddress"   => $newKey["address"],
+                "coinSymbol"  => $network,
+            ];
+            $this->createDepositOrder(array_merge($payloadToSign, [
+                "signature" => $this->sign($payloadToSign),
+            ]));
+        }
+
         return [
             "address"    => $newKey["address"],
             "identifier" => $identifier,
@@ -366,9 +417,10 @@ class AkashicPay
      *
      * @param  string $identifier userID or similar identifier of the user
      *                            making the deposit
+     * @param  string $referenceId optional referenceId to identify the order
      * @return string
      */
-    public function getDepositUrl($identifier)
+    public function getDepositUrl($identifier, $referenceId = null)
     {
         // Perform asynchronous tasks sequentially
         $keys                = $this->getKeysByOwnerAndIdentifier(['identifier' => $identifier]);
@@ -376,12 +428,24 @@ class AkashicPay
 
         // Process supported currencies
         $supportedCurrencySymbols = array_unique(array_keys($supportedCurrencies));
-        $existingKeys             = array_unique(array_map(fn($key) => $key['coinSymbol'], $keys));
+        $existingKeys             = array_unique(array_map("self::getCoinSymbol", $keys));
 
         foreach ($supportedCurrencySymbols as $coinSymbol) {
             if (! in_array($coinSymbol, $existingKeys)) {
                 $this->getDepositAddress($coinSymbol, $identifier);
             }
+        }
+
+        if ($referenceId) {
+            $payloadToSign = [
+                "identity"    => $this->otk["identity"],
+                "expires"     => strtotime("+1 minutes") * 1000,
+                "referenceId" => $referenceId,
+                "identifier"  => $identifier,
+            ];
+            $this->createDepositOrder(array_merge($payloadToSign, [
+                "signature" => $this->sign($payloadToSign),
+            ]));
         }
 
         // Construct the deposit URL
@@ -534,6 +598,20 @@ class AkashicPay
         return $this->get(
             $this->akashicUrl
             . AkashicEndpoints::SUPPORTED_CURRENCIES
+        )["data"];
+    }
+
+    /**
+     * Create deposit order
+     *
+     * @return array
+     */
+    public function createDepositOrder($payload)
+    {
+        return $this->post(
+            $this->akashicUrl
+            . AkashicEndpoints::CREATE_DEPOSIT_ORDER,
+            $payload
         )["data"];
     }
 
@@ -706,5 +784,30 @@ class AkashicPay
             return "false";
         }
         return $value;
+    }
+
+    private function sign($data)
+    {
+        try {
+            // Convert private key into the correct format
+            $pemPrivate = "-----BEGIN EC PRIVATE KEY-----\n" . $this->otk["key"]["prv"]["pkcs8pem"] . "\n-----END EC PRIVATE KEY-----";
+
+            if (str_starts_with($this->otk["key"]["prv"]["pkcs8pem"], '0x')) {
+                $keyPair = new KeyPair('secp256k1', $this->otk["key"]["prv"]["pkcs8pem"]);
+            } else {
+                $keyPair = new KeyPair('secp256k1', $pemPrivate);
+            }
+            return $keyPair->sign($data);
+        } catch (Exception $e) {
+            $this->logger->error($e->getMessage());
+            throw new Exception(
+                "Invalid private key: " . $e->getMessage()
+            );
+        }
+    }
+
+    private function getCoinSymbol($key)
+    {
+        return $key['coinSymbol'];
     }
 }

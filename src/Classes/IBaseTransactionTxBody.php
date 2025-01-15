@@ -7,11 +7,14 @@ namespace Akashic\Classes;
 /** @api */
 class IBaseTransactionTxBody
 {
-    public ?string $entry = null;
+    /** @var string|null */
+    public $entry = null;
 
-    public string $contract;
+    /** @var string */
+    public $contract;
 
-    public string $namespace;
+    /** @var string */
+    public $namespace;
 
     /** @var mixed */
     public $i;
