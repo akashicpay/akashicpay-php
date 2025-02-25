@@ -379,7 +379,9 @@ class AkashicChain
     private function addExpireToTxBody(array &$txBody): array
     {
         // Set expiry to 1 minute from now
-        $txBody['$tx']['$expire'] = gmdate("Y-m-d\TH:i:s\Z", time() + 60);
+        if (!isset($txBody['$tx']['$expire'])) {
+            $txBody['$tx']['$expire'] = gmdate("Y-m-d\TH:i:s\Z", time() + 60);
+        }
 
         return $txBody;
     }

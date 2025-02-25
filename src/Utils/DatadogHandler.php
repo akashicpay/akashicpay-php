@@ -54,6 +54,13 @@ class DatadogHandler extends AbstractProcessingHandler
     private $attributes;
 
     /**
+     * SDK Version
+     *
+     * @var array
+     */
+    private $apVersion;
+
+    /**
      * @param string $apiKey Datadog Api Key access
      * @param array $attributes Some options fore Datadog Logs
      * @param int $level The minimum logging level at which this handler will be triggered
@@ -74,6 +81,8 @@ class DatadogHandler extends AbstractProcessingHandler
 
         $this->apiKey     = $this->getApiKey($apiKey);
         $this->attributes = $attributes;
+        $config          = json_decode(file_get_contents(__DIR__ . '/../config.json'), true);
+        $this->apVersion = $config['version'];
     }
 
     /**
@@ -95,10 +104,10 @@ class DatadogHandler extends AbstractProcessingHandler
         $hostname = $this->getHostname();
         $service  = $this->getService($record);
         $tags     = $this->getTags();
+        $identity = $this->getIdentity();
 
-        $url  = self::DATADOG_LOG_HOST . '/v1/input/';
-        $url .= $this->apiKey;
-        $url .= '?ddsource=' . $source . '&service=' . $service . '&hostname=' . $hostname . '&ddtags=' . $tags;
+        $url  = self::DATADOG_LOG_HOST . '/api/v2/logs';
+        $url .= '?dd-api-key=' . $this->apiKey . '&ddsource=' . $source . '&service=' . $service . '&hostname=' . $hostname . '&ddtags=' . $tags . '&identity='. $identity . '&version=' . $this->apVersion;
 
         $ch = curl_init();
 
@@ -160,6 +169,14 @@ class DatadogHandler extends AbstractProcessingHandler
     protected function getTags(): string
     {
         return ! empty($this->attributes['tags']) ? $this->attributes['tags'] : '';
+    }
+
+    /**
+     * Get BP identity from $attributes params.
+     */
+    protected function getIdentity(): string
+    {
+        return ! empty($this->attributes['identity']) ? $this->attributes['identity'] : '';
     }
 
     /**

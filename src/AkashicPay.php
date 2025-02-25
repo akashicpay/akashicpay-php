@@ -83,6 +83,9 @@ class AkashicPay
             'service'  => 'php-sdk',
             'tags'     => 'env:' . $this->env,
         ];
+        if (isset($args["l2Address"])) {
+            $attributes['identity'] = $args["l2Address"];
+        }
         $datadogLogs = new DatadogHandler(self::DATADOG_API_KEY, $attributes, Logger::WARNING);
         $this->logger->pushHandler($datadogLogs);
 
