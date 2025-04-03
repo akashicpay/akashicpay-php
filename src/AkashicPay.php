@@ -154,7 +154,7 @@ class AkashicPay
                 "initiatedToNonL2" => $initiatedToNonL2,
             ]);
 
-            $acResponse = $this->post($this->targetNode, $l2Tx);
+            $acResponse = $this->post($this->targetNode["node"], $l2Tx);
 
             $this->akashicChain->checkForAkashicChainError($acResponse["data"]);
 
@@ -194,7 +194,7 @@ class AkashicPay
                 "identifier" => $recipientId,
             ]);
 
-            $acResponse = $this->post($this->targetNode, $lT1x);
+            $acResponse = $this->post($this->targetNode["node"], $lT1x);
 
             $this->akashicChain->checkForAkashicChainError($acResponse["data"]);
 
@@ -237,7 +237,7 @@ class AkashicPay
             $network,
             $this->otk["identity"]
         );
-        $response = $this->post($this->targetNode, $tx);
+        $response = $this->post($this->targetNode["node"], $tx);
 
         $newKey = $response["data"]['$responses'][0] ?? null;
         if (!$newKey) {
@@ -255,7 +255,7 @@ class AkashicPay
             $newKey,
             $identifier
         );
-        $diffResponse = $this->post($this->targetNode, $txBody)["data"];
+        $diffResponse = $this->post($this->targetNode["node"], $txBody)["data"];
 
         if (
             isset($diffResponse['$responses'][0]) &&
@@ -397,7 +397,7 @@ class AkashicPay
      * @Returns The URL of an AC node on the network matching your environment
      * (production or development)
      */
-    private function chooseBestACNode(): string
+    private function chooseBestACNode()
     {
         // TODO: implement race condition
         // $nodes = $this->env === Environment::PRODUCTION ? ACNode::NODES : ACDevNode::NODES;
@@ -440,7 +440,7 @@ class AkashicPay
         $otk = Otk::generateOTK();
         $onboardTx = $this->akashicChain->onboardOtkTransaction($otk);
 
-        $response = $this->post($this->targetNode, $onboardTx);
+        $response = $this->post($this->targetNode["node"], $onboardTx);
         $identity = $response["data"]['$streams']["new"][0]["id"] ?? null;
 
         if (is_null($identity)) {
