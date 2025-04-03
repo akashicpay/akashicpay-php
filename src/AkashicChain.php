@@ -203,6 +203,7 @@ class AkashicChain
                         "amount" => $amount,
                         "toAddress" => $toAddress,
                         "contractAddress" => $contractAddress,
+                        "delegated" => true,
                     ],
                 ],
                 '$o' => $o,
