@@ -218,6 +218,7 @@ class AkashicPay
             "amount"                => $amount,
             "tokenSymbol"           => $token,
             "identity"              => $this->otk["identity"],
+            "identifier"            => $recipientId,
             "feeDelegationStrategy" => "Delegate",
         ];
 
