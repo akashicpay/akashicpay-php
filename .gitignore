@@ -3,6 +3,7 @@
 
 # Ignore PHPUnit result cache
 .phpunit.result.cache
+junit.xml
 
 # Ignore local environment configuration
 .env

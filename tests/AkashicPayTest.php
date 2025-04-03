@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 class AkashicPayTest extends TestCase
 {
-    private function getPrivateProperty($object, string $propertyName): mixed
+    private function getPrivateProperty($object, string $propertyName)
     {
         $reflection = new \ReflectionClass($object);
         $property = $reflection->getProperty($propertyName);

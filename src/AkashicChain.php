@@ -149,7 +149,7 @@ class AkashicChain
             } else {
                 throw new \Exception('Invalid transaction body provided');
             }
-        } catch (e) {
+        } catch (\Exception $e) {
             throw new \Exception('Error signing transaction: ' . $e->getMessage());
         }
     }
