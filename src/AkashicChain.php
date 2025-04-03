@@ -8,7 +8,6 @@ use Akashic\Constants\NetworkSymbol;
 use Akashic\Constants\EthereumSymbol;
 use Akashic\Constants\TronSymbol;
 use Akashic\KeyPair;
-use Exception;
 
 class AkashicChain
 {
@@ -23,7 +22,7 @@ class AkashicChain
         if ($response->summary->commit) {
             return;
         }
-        throw new Exception('AkashicChain Failure: ' . ($response->summary->errors[0] ?? 'Unknown error'));
+        throw new \Exception('AkashicChain Failure: ' . ($response->summary->errors[0] ?? 'Unknown error'));
     }
 
     /**
@@ -73,14 +72,14 @@ class AkashicChain
                 '$contract' => AkashicChainContracts::DIFF_CONSENSUS,
                 '$i' => [
                     'owner' => [
-                        '$stream' => $otk->identity,
-                        'address' => $key->address,
-                        'hashes' => $key->hashes,
+                        '$stream' => $otk['identity'],
+                        'address' => $key['address'],
+                        'hashes' => $key['hashes'],
                     ],
                 ],
                 '$o' => [
                     'key' => [
-                        '$stream' => $key->id,
+                        '$stream' => $key['id'],
                     ],
                 ],
             ],
@@ -140,7 +139,7 @@ class AkashicChain
             if (is_string($txBody)) {
                 // Sign the string
                 return $key->sign($txBody);
-            } else if (is_array($txBody) && isset($txBody['$tx']) && isset($txBody['$sigs'])) {
+            } elseif (is_array($txBody) && isset($txBody['$tx']) && isset($txBody['$sigs'])) {
                 // Sign the transaction in the array
                 $identifier = $otk['name'] ?? 'default';
 
@@ -148,10 +147,10 @@ class AkashicChain
                 
                 return $txBody;
             } else {
-                throw new Exception('Invalid transaction body provided');
+                throw new \Exception('Invalid transaction body provided');
             }
         } catch (e) {
-            throw new Exception('Error signing transaction: ' . $e->getMessage());
+            throw new \Exception('Error signing transaction: ' . $e->getMessage());
         }
     }
 }

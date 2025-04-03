@@ -7,13 +7,7 @@ use FG\ASN1\Universal\Sequence;
 use FG\ASN1\Universal\OctetString;
 use FG\ASN1\Exception\ParserException;
 use Elliptic\EC;
-use Exception;
-
-class KeyType
-{
-    const EllipticCurve = 'secp256k1';
-    const RSA = 'rsa';
-}
+use Akashic\Constants\KeyType;
 
 class Otk
 {
@@ -54,12 +48,11 @@ class Otk
                     'prv' => ['pkcs8pem' => $otkPriv],
                     'pub' => ['pkcs8pem' => $publicKey],
                 ],
-                'type' => KeyType::EllipticCurve,
+                'type' => KeyType::ELLIPTIC_CURVE,
                 'name' => 'otk',
             ];
-        } catch (Exception $e) {
-            throw $e;
-            throw new Exception('Failed to restore OTK. Try again');
+        } catch (\Exception $e) {
+            throw new \Exception('Failed to restore OTK. Try again');
         }
     }
 
