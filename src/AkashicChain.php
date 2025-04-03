@@ -233,10 +233,6 @@ class AkashicChain
         $feesEstimate = $params["feesEstimate"];
         $ethGasPrice = $params["ethGasPrice"];
 
-        $o = [
-            $keyLedgerId => ["amount" => $amount],
-        ];
-
         $contractAddress =
             array_filter(
                 L1Network::NETWORK_DICTIONARY[$coinSymbol]["tokens"],
@@ -262,7 +258,7 @@ class AkashicChain
                         "gas" => $ethGasPrice,
                     ],
                 ],
-                '$o' => $o,
+                '$r' => ["wallet" => $keyLedgerId],
                 "_dbIndex" => $this->dbIndex,
                 "metadata" => [
                     "identifier" => $identifier,
