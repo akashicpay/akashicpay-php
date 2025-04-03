@@ -32,6 +32,8 @@ use function in_array;
 use function preg_match;
 use function sprintf;
 use function str_contains;
+use function str_starts_with;
+use function strtotime;
 use function urlencode;
 
 /** @api */
@@ -308,12 +310,13 @@ class AkashicPay
     /**
      * Get an L1-address on the specified network for a user to deposit into
      *
-     * @param  string $network    L1-network
-     * @param  string $identifier userID or similar identifier of the user
-     *                            making the deposit
+     * @param  string $network     L1-network
+     * @param  string $identifier  userID or similar identifier of the user
+     *                             making the deposit
+     * @param  string $referenceId optional referenceId to identify the order
      * @return array
      */
-    public function getDepositAddress($network, $identifier)
+    public function getDepositAddress($network, $identifier, $referenceId = null)
     {
         $response = $this->getByOwnerAndIdentifier(
             [
@@ -324,6 +327,20 @@ class AkashicPay
 
         $address = $response["address"] ?? null;
         if ($address) {
+            if ($referenceId) {
+                $payloadToSign = [
+                    "identity"    => $this->otk["identity"],
+                    "expires"     => strtotime("+1 minutes") * 1000,
+                    "referenceId" => $referenceId,
+                    "identifier"  => $identifier,
+                    "toAddress"   => $address,
+                    "coinSymbol"  => $network,
+                ];
+                $this->createDepositOrder(array_merge($payloadToSign, [
+                    "signature" => $this->sign($payloadToSign),
+                ]));
+            }
+
             return [
                 "address"    => $response["address"],
                 "identifier" => $identifier,
@@ -368,6 +385,20 @@ class AkashicPay
             throw new AkashicException(AkashicErrorCode::UNHEALTHY_KEY);
         }
 
+        if ($referenceId) {
+            $payloadToSign = [
+                "identity"    => $this->otk["identity"],
+                "expires"     => strtotime("+1 minutes") * 1000,
+                "referenceId" => $referenceId,
+                "identifier"  => $identifier,
+                "toAddress"   => $newKey["address"],
+                "coinSymbol"  => $network,
+            ];
+            $this->createDepositOrder(array_merge($payloadToSign, [
+                "signature" => $this->sign($payloadToSign),
+            ]));
+        }
+
         return [
             "address"    => $newKey["address"],
             "identifier" => $identifier,
@@ -379,9 +410,10 @@ class AkashicPay
      *
      * @param  string $identifier userID or similar identifier of the user
      *                            making the deposit
+     * @param  string $referenceId optional referenceId to identify the order
      * @return string
      */
-    public function getDepositUrl($identifier)
+    public function getDepositUrl($identifier, $referenceId = null)
     {
         // Perform asynchronous tasks sequentially
         $keys                = $this->getKeysByOwnerAndIdentifier(['identifier' => $identifier]);
@@ -395,6 +427,18 @@ class AkashicPay
             if (! in_array($coinSymbol, $existingKeys)) {
                 $this->getDepositAddress($coinSymbol, $identifier);
             }
+        }
+
+        if ($referenceId) {
+            $payloadToSign = [
+                "identity"    => $this->otk["identity"],
+                "expires"     => strtotime("+1 minutes") * 1000,
+                "referenceId" => $referenceId,
+                "identifier"  => $identifier,
+            ];
+            $this->createDepositOrder(array_merge($payloadToSign, [
+                "signature" => $this->sign($payloadToSign),
+            ]));
         }
 
         // Construct the deposit URL
@@ -547,6 +591,20 @@ class AkashicPay
         return $this->get(
             $this->akashicUrl
             . AkashicEndpoints::SUPPORTED_CURRENCIES
+        )["data"];
+    }
+
+    /**
+     * Create deposit order
+     *
+     * @return array
+     */
+    public function createDepositOrder($payload)
+    {
+        return $this->post(
+            $this->akashicUrl
+            . AkashicEndpoints::CREATE_DEPOSIT_ORDER,
+            $payload
         )["data"];
     }
 
@@ -719,5 +777,25 @@ class AkashicPay
             return "false";
         }
         return $value;
+    }
+
+    private function sign($data)
+    {
+        try {
+            // Convert private key into the correct format
+            $pemPrivate = "-----BEGIN EC PRIVATE KEY-----\n" . $this->otk["key"]["prv"]["pkcs8pem"] . "\n-----END EC PRIVATE KEY-----";
+
+            if (str_starts_with($this->otk["key"]["prv"]["pkcs8pem"], '0x')) {
+                $keyPair = new KeyPair('secp256k1', $this->otk["key"]["prv"]["pkcs8pem"]);
+            } else {
+                $keyPair = new KeyPair('secp256k1', $pemPrivate);
+            }
+            return $keyPair->sign($data);
+        } catch (Exception $e) {
+            $this->logger->error($e->getMessage());
+            throw new Exception(
+                "Invalid private key: " . $e->getMessage()
+            );
+        }
     }
 }
