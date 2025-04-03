@@ -1,8 +1,6 @@
 <?php
 
 namespace Akashic\Classes;
-namespace Akashic\ActiveLedgerResponseStreams;
-namespace Akashic\ActiveLedgerResponseSummary;
 
 class ActiveLedgerResponse
 {
@@ -12,9 +10,13 @@ class ActiveLedgerResponse
 
     public ActiveLedgerResponseStreams $streams;
 
-    /** @var array|null */
+    /**
+     * @var array|null
+     */
     public ?array $responses = null;
 
-    /** @var mixed */
+    /**
+     * @var mixed
+     */
     public $debug = null;
 }

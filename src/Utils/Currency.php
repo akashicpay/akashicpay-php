@@ -10,9 +10,9 @@ class Currency
     /**
      * Method for safe conversion from coin/token decimals.
      *
-     * @param string $amount
-     * @param NetworkSymbol $coinSymbol
-     * @param TokenSymbol|null $tokenSymbol
+     * @param  string           $amount
+     * @param  NetworkSymbol    $coinSymbol
+     * @param  TokenSymbol|null $tokenSymbol
      * @return string
      */
     public static function convertToDecimals(
@@ -33,8 +33,8 @@ class Currency
     /**
      * Get the conversion factor based on the coin or token symbol.
      *
-     * @param string $coinSymbol
-     * @param string|null $tokenSymbol
+     * @param  string      $coinSymbol
+     * @param  string|null $tokenSymbol
      * @return int
      */
     private static function getConversionFactor(

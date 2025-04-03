@@ -4,17 +4,15 @@ namespace Akashic;
 
 require "vendor/autoload.php";
 
+use Exception;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Akashic\OTK\Otk;
-use Akashic\HttpClient;
 use Akashic\Constants\Environment;
 use Akashic\Constants\AkashicError;
 use Akashic\Constants\ACDevNode;
 use Akashic\Constants\ACNode;
-use Akashic\AkashicChain;
 use Akashic\Constants\AkashicBaseUrls;
-use Akashic\L1Network;
 use Akashic\Constants\TokenSymbol;
 use Akashic\Constants\NetworkSymbol;
 use Akashic\Constants\AkashicEndpoints;
@@ -67,7 +65,7 @@ class AkashicPay
                 $isBp = $this->get($checkIfBpUrl)["data"]["isBp"];
 
                 if (!$isBp) {
-                    throw new \Exception(AkashicError::IS_NOT_BP);
+                    throw new Exception(AkashicError::IS_NOT_BP);
                 }
             }
 
@@ -77,15 +75,15 @@ class AkashicPay
                     $args["l2Address"]
                 );
             } elseif (
-                isset($args["recoveryPhrase"]) &&
-                $args["recoveryPhrase"]
+                isset($args["recoveryPhrase"])
+                && $args["recoveryPhrase"]
             ) {
                 $this->setOtkFromRecoveryPhrase(
                     $args["recoveryPhrase"],
                     $args["l2Address"]
                 );
             } else {
-                throw new \Exception(
+                throw new Exception(
                     AkashicError::INCORRECT_PRIVATE_KEY_FORMAT
                 );
             }
@@ -96,14 +94,16 @@ class AkashicPay
 
     /**
      * Get the OTK (One-Time-Key) object for this instance.
+     *
      * @return array if the environment is development. This enables you to
      * easily create an OTK and re-use it in future tests or dev work.
-     * @throws \Exception if the environment is production.
+     * @throws Exception if the environment is production.
+     * @api
      */
     public function getKeyBackup()
     {
         if ($this->env === "production") {
-            throw new \Exception(AkashicError::ACCESS_DENIED);
+            throw new Exception(AkashicError::ACCESS_DENIED);
         }
 
         return [
@@ -115,13 +115,15 @@ class AkashicPay
 
     /**
      * Send a crypto-transaction
-     * @param string $recipientId userID or similar identifier of the user
-     * requesting the payout
-     * @param string $to L1 or L2 address of receiver
-     * @param string $amount
-     * @param string $network L1-Network the funds belong to, e.g. `ETH`
-     * @param string|null $token Optional. Include if sending token, e.g. `USDT`
+     *
+     * @param  string      $recipientId userID or similar identifier of the user
+     *                                  requesting the payout
+     * @param  string      $to          L1 or L2 address of receiver
+     * @param  string      $amount
+     * @param  string      $network     L1-Network the funds belong to, e.g. `ETH`
+     * @param  string|null $token       Optional. Include if sending token, e.g. `USDT`
      * @return array L2 Transaction hash of the transaction
+     * @api
      */
     public function payout($recipientId, $to, $amount, $network, $token = null)
     {
@@ -131,8 +133,8 @@ class AkashicPay
 
         // map TokenSymbol.TETHER to TokenSymbol.USDT
         if (
-            $token === TokenSymbol::USDT &&
-            $network === NetworkSymbol::TRON_SHASTA
+            $token === TokenSymbol::USDT
+            && $network === NetworkSymbol::TRON_SHASTA
         ) {
             $token = TOkenSymbol::TETHER;
         }
@@ -157,13 +159,13 @@ class AkashicPay
         } elseif (preg_match(L2Regex::L2_REGEX, $to)) {
             // Sending L2 by L2 address
             if (!$l2Address) {
-                throw new \Exception(AkashicError::L2_ADDRESS_NOT_FOUND);
+                throw new Exception(AkashicError::L2_ADDRESS_NOT_FOUND);
             }
             $isL2 = true;
         } else {
             // Sending by alias
             if (!$l2Address) {
-                throw new \Exception(AkashicError::L2_ADDRESS_NOT_FOUND);
+                throw new Exception(AkashicError::L2_ADDRESS_NOT_FOUND);
             }
             $toAddress = $result["l2Address"];
             $initiatedToNonL2 = $to;
@@ -171,7 +173,8 @@ class AkashicPay
         }
 
         if ($isL2) {
-            $l2Tx = $this->akashicChain->l2Transaction([
+            $l2Tx = $this->akashicChain->l2Transaction(
+                [
                 "otk" => $this->otk,
                 "amount" => $decimalAmount,
                 "toAddress" => $toAddress,
@@ -179,7 +182,8 @@ class AkashicPay
                 "tokenSymbol" => $token,
                 "initiatedToNonL2" => $initiatedToNonL2,
                 "identifier" => $recipientId,
-            ]);
+                ]
+            );
 
             $acResponse = $this->post($this->targetNode["node"], $l2Tx);
 
@@ -187,13 +191,13 @@ class AkashicPay
 
             $this->logger->info(
                 "Paid out " .
-                    $amount .
-                    " " .
-                    $token .
-                    " to user " .
-                    $recipientId .
-                    " at " .
-                    $to
+                $amount .
+                " " .
+                $token .
+                " to user " .
+                $recipientId .
+                " at " .
+                $to
             );
 
             return [
@@ -221,7 +225,8 @@ class AkashicPay
 
             $ethGasPrice = $response["data"]["ethGasPrice"];
 
-            $lT1x = $this->akashicChain->l2ToL1SignTransaction([
+            $lT1x = $this->akashicChain->l2ToL1SignTransaction(
+                [
                 "otk" => $this->otk,
                 "amount" => $decimalAmount,
                 "toAddress" => $toAddress,
@@ -231,7 +236,8 @@ class AkashicPay
                 "identifier" => $recipientId,
                 "feesEstimate" => $feesEstimate,
                 "ethGasPrice" => $ethGasPrice,
-            ]);
+                ]
+            );
 
             $acResponse = $this->post($this->targetNode["node"], $lT1x);
 
@@ -239,13 +245,13 @@ class AkashicPay
 
             $this->logger->info(
                 "Paid out " .
-                    $amount .
-                    " " .
-                    $token .
-                    " to user " .
-                    $recipientId .
-                    " at " .
-                    $to
+                $amount .
+                " " .
+                $token .
+                " to user " .
+                $recipientId .
+                " at " .
+                $to
             );
 
             return [
@@ -256,17 +262,21 @@ class AkashicPay
 
     /**
      * Get an L1-address on the specified network for a user to deposit into
-     * @param string $network L1-network
-     * @param string $identifier userID or similar identifier of the user
-     * making the deposit
+     *
+     * @param  string $network    L1-network
+     * @param  string $identifier userID or similar identifier of the user
+     *                            making the deposit
      * @return array
+     * @api
      */
     public function getDepositAddress($network, $identifier)
     {
-        $response = $this->getByOwnerAndIdentifier([
+        $response = $this->getByOwnerAndIdentifier(
+            [
             "identifier" => $identifier,
             "coinSymbol" => $network,
-        ]);
+            ]
+        );
 
         $address = $response["address"] ?? null;
         if ($address) {
@@ -283,13 +293,13 @@ class AkashicPay
         if (!$newKey) {
             $this->logger->warning(
                 "Key creation on " .
-                    $network .
-                    " failed for identifier " .
-                    $identifier .
-                    ". Responses: " .
-                    $response["data"]['$responses']
+                $network .
+                " failed for identifier " .
+                $identifier .
+                ". Responses: " .
+                $response["data"]['$responses']
             );
-            throw new \Exception(AkashicError::KEY_CREATION_FAILURE);
+            throw new Exception(AkashicError::KEY_CREATION_FAILURE);
         }
 
         $txBody = $this->akashicChain->differentialConsensusTransaction(
@@ -300,18 +310,18 @@ class AkashicPay
         $diffResponse = $this->post($this->targetNode["node"], $txBody)["data"];
 
         if (
-            isset($diffResponse['$responses'][0]) &&
-            $diffResponse['$responses'][0] !== "confirmed"
+            isset($diffResponse['$responses'][0])
+            && $diffResponse['$responses'][0] !== "confirmed"
         ) {
             $this->logger->warning(
                 "Key creation on " .
-                    $network .
-                    " failed at differential consensus for identifier " .
-                    $identifier .
-                    ". Unhealthy key: " .
-                    $newKey
+                $network .
+                " failed at differential consensus for identifier " .
+                $identifier .
+                ". Unhealthy key: " .
+                $newKey
             );
-            throw new \Exception(AkashicError::UNHEALTHY_KEY);
+            throw new Exception(AkashicError::UNHEALTHY_KEY);
         }
 
         return [
@@ -323,8 +333,9 @@ class AkashicPay
     /**
      * Check which L2-address an alias or L1-address belongs to. Or call with an
      * L2-address to verify it exists
-     * @param string $aliasOrL1OrL2Address
-     * @param string|null $network
+     *
+     * @param  string      $aliasOrL1OrL2Address
+     * @param  string|null $network
      * @return array
      */
     public function lookForL2Address($aliasOrL1OrL2Address, $network = null)
@@ -344,80 +355,98 @@ class AkashicPay
      * Get all or a subset of transactions. Optionally paginated with `page` and `limit`.
      * Optionally parameters: `layer`, `status`, `startDate`, `endDate`, `hideSmallTransactions`.
      * `hideSmallTransactions` excludes values below 1 USD
-     * @param array $getTransactionParams
+     *
+     * @param  array $getTransactionParams
      * @return array
      */
     public function getTransfers(array $getTransactionParams)
     {
-        $queryParameters = array_merge($getTransactionParams, [
+        $queryParameters = array_merge(
+            $getTransactionParams,
+            [
             "identity" => $this->otk["identity"],
             "withSigningErrors" => true,
-        ]);
+            ]
+        );
         $query = http_build_query(
             array_map([AkashicPay::class, "boolsToString"], $queryParameters)
         );
         $transactions = $this->get(
             $this->akashicUrl .
-                AkashicEndpoints::OWNER_TRANSACTION .
-                "?" .
-                $query
+            AkashicEndpoints::OWNER_TRANSACTION .
+            "?" .
+            $query
         )["data"]["transactions"];
-        return array_map(function ($t) {
-            return array_merge($t, [
-                "tokenSymbol" =>
+        return array_map(
+            function ($t) {
+                return array_merge(
+                    $t,
+                    [
+                    "tokenSymbol" =>
                     $t["tokenSymbol"] === TokenSymbol::TETHER
                         ? TokenSymbol::USDT
                         : $t["tokenSymbol"],
-            ]);
-        }, $transactions);
+                    ]
+                );
+            },
+            $transactions
+        );
     }
 
     /**
      * Get total balances, divided by Network and Token.
+     *
      * @return array
      */
     public function getBalance()
     {
         $response = $this->get(
             $this->akashicUrl .
-                AkashicEndpoints::OWNER_BALANCE .
-                "?address=" .
-                $this->otk["identity"]
+            AkashicEndpoints::OWNER_BALANCE .
+            "?address=" .
+            $this->otk["identity"]
         )["data"];
-        return array_map(function ($bal) {
-            return [
+        return array_map(
+            function ($bal) {
+                return [
                 "networkSymbol" => $bal["coinSymbol"],
                 "tokenSymbol" =>
                     $bal["tokenSymbol"] === TokenSymbol::TETHER
                         ? TokenSymbol::USDT
                         : $bal["tokenSymbol"],
                 "balance" => $bal["balance"],
-            ];
-        }, $response["totalBalances"]);
+                ];
+            },
+            $response["totalBalances"]
+        );
     }
 
     /**
      * Get details of an individual transaction. Returns null if no
      * transaction found for the queried hash
-     * @param string $l2TxHash l2Hash of transaction
+     *
+     * @param  string $l2TxHash l2Hash of transaction
      * @return array|null
      */
     public function getTransactionDetails($l2TxHash)
     {
         $response = $this->get(
             $this->akashicUrl .
-                AkashicEndpoints::TRANSACTIONS_DETAILS .
-                "?l2Hash=" .
-                urlencode($l2TxHash)
+            AkashicEndpoints::TRANSACTIONS_DETAILS .
+            "?l2Hash=" .
+            urlencode($l2TxHash)
         );
         $transaction = $response["data"]["transaction"] ?? null;
         if ($transaction) {
-            return array_merge($transaction, [
+            return array_merge(
+                $transaction,
+                [
                 "tokenSymbol" =>
                     $transaction["tokenSymbol"] === TokenSymbol::TETHER
                         ? TokenSymbol::USDT
                         : $transaction["tokenSymbol"],
-            ]) ?? null;
+                ]
+            ) ?? null;
         } else {
             return null;
         }
@@ -425,21 +454,25 @@ class AkashicPay
 
     /**
      * Get key by BP and identifier
+     *
      * @return address
      */
     public function getByOwnerAndIdentifier($getByOwnerAndIdentifierParams)
     {
-        $queryParameters = array_merge($getByOwnerAndIdentifierParams, [
+        $queryParameters = array_merge(
+            $getByOwnerAndIdentifierParams,
+            [
             "identity" => $this->otk["identity"],
-        ]);
+            ]
+        );
         $query = http_build_query(
             array_map([AkashicPay::class, "boolsToString"], $queryParameters)
         );
         $transactions = $this->get(
             $this->akashicUrl .
-                AkashicEndpoints::IDENTIFIER_LOOKUP .
-                "?" .
-                $query
+            AkashicEndpoints::IDENTIFIER_LOOKUP .
+            "?" .
+            $query
         )["data"];
     }
 
@@ -497,13 +530,13 @@ class AkashicPay
         $identity = $response["data"]['$streams']["new"][0]["id"] ?? null;
 
         if (is_null($identity)) {
-            throw new \Exception(AkashicError::TEST_NET_OTK_ONBOARDING_FAILED);
+            throw new Exception(AkashicError::TEST_NET_OTK_ONBOARDING_FAILED);
         }
 
         $this->otk = array_merge($otk, ["identity" => "AS" . $identity]);
         $this->logger->debug(
             "New OTK generated and onboarded with identity: " .
-                $this->otk["identity"]
+            $this->otk["identity"]
         );
     }
 
@@ -518,12 +551,15 @@ class AkashicPay
         string $l2Address
     ): void {
         if (!preg_match(self::AC_PRIVATE_KEY_REGEX, $privateKey)) {
-            throw new \Exception(AkashicError::INCORRECT_PRIVATE_KEY_FORMAT);
+            throw new Exception(AkashicError::INCORRECT_PRIVATE_KEY_FORMAT);
         }
 
-        $this->otk = array_merge(Otk::restoreOtkFromKeypair($privateKey), [
+        $this->otk = array_merge(
+            Otk::restoreOtkFromKeypair($privateKey),
+            [
             "identity" => $l2Address,
-        ]);
+            ]
+        );
         $this->logger->debug("OTK set from private key");
     }
 
@@ -538,9 +574,12 @@ class AkashicPay
         string $recoveryPhrase,
         string $l2Address
     ): void {
-        $this->otk = array_merge(Otk::restoreOtkFromPhrase($recoveryPhrase), [
+        $this->otk = array_merge(
+            Otk::restoreOtkFromPhrase($recoveryPhrase),
+            [
             "identity" => $l2Address,
-        ]);
+            ]
+        );
         $this->logger->debug("OTK set from recovery phrase");
     }
 

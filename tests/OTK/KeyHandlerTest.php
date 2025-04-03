@@ -1,5 +1,7 @@
 <?php
 
+namespace Akashic\Tests\OTK;
+
 use Akashic\OTK\KeyHandler;
 use PHPUnit\Framework\TestCase;
 

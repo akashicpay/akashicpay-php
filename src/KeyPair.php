@@ -133,7 +133,7 @@ class KeyPair
     /**
      * Makes sure the data is a string
      *
-     * @param mixed $data
+     * @param  mixed $data
      * @return string
      * @throws \Exception
      */
@@ -166,8 +166,8 @@ class KeyPair
         switch ($this->type) {
             case 'rsa':
                 $config = [
-                    "private_key_bits" => $bits,
-                    "private_key_type" => OPENSSL_KEYTYPE_RSA,
+                "private_key_bits" => $bits,
+                "private_key_type" => OPENSSL_KEYTYPE_RSA,
                 ];
                 $res = openssl_pkey_new($config);
                 openssl_pkey_export($res, $privateKey);
@@ -175,8 +175,8 @@ class KeyPair
                 $publicKey = $keyDetails['key'];
 
                 $keyPair = [
-                    'pub' => ['pkcs8pem' => $publicKey],
-                    'prv' => ['pkcs8pem' => $privateKey]
+                'pub' => ['pkcs8pem' => $publicKey],
+                'prv' => ['pkcs8pem' => $privateKey]
                 ];
                 break;
 
@@ -187,8 +187,8 @@ class KeyPair
                 $publicKey = $key->getPublic('hex');
 
                 $keyPair = [
-                    'pub' => ['pkcs8pem' => $publicKey],
-                    'prv' => ['pkcs8pem' => $privateKey]
+                'pub' => ['pkcs8pem' => $publicKey],
+                'prv' => ['pkcs8pem' => $privateKey]
                 ];
                 break;
 

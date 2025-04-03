@@ -18,9 +18,11 @@ class AkashicPayTest extends TestCase
 
     public function testBuildWithNewOTK(): void
     {
-        $akPay = new AkashicPay([
+        $akPay = new AkashicPay(
+            [
             "environment" => Environment::DEVELOPMENT,
-        ]);
+            ]
+        );
 
         $otk = $this->getPrivateProperty($akPay, "otk");
 
@@ -41,11 +43,13 @@ class AkashicPayTest extends TestCase
             "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"; // Replace with actual key pair
         $l2Address = "your-l2-address-here"; // Replace with actual L2 address
 
-        $akPay = new AkashicPay([
+        $akPay = new AkashicPay(
+            [
             "environment" => Environment::DEVELOPMENT,
             "privateKey" => $keyPair,
             "l2Address" => $l2Address,
-        ]);
+            ]
+        );
 
         $otk = $this->getPrivateProperty($akPay, "otk");
 
@@ -65,11 +69,13 @@ class AkashicPayTest extends TestCase
         $recoveryPhrase = "your-recovery-phrase-here"; // Replace with actual recovery phrase
         $l2Address = "your-l2-address-here"; // Replace with actual L2 address
 
-        $akPay = new AkashicPay([
+        $akPay = new AkashicPay(
+            [
             "environment" => Environment::DEVELOPMENT,
             "recoveryPhrase" => $recoveryPhrase,
             "l2Address" => $l2Address,
-        ]);
+            ]
+        );
 
         $otk = $this->getPrivateProperty($akPay, "otk");
 

@@ -12,7 +12,7 @@ class Prefix
     /**
      * Ensures a UMID/L2 address has exactly one "AS" prefix. It is idempotent.
      *
-     * @param string $umid The UMID/L2 address to check and potentially prefix.
+     * @param  string $umid The UMID/L2 address to check and potentially prefix.
      * @return string The UMID/L2 address with the "AS" prefix.
      * @throws \Exception if the UMID does not match the regex with or without the prefix.
      */
@@ -34,7 +34,7 @@ class Prefix
     /**
      * Ensures a UMID/L2 address doesn't have an "AS" prefix. It is idempotent.
      *
-     * @param string $umid The UMID/L2 address to check and potentially remove the prefix from.
+     * @param  string $umid The UMID/L2 address to check and potentially remove the prefix from.
      * @return string The UMID/L2 address without the "AS" prefix.
      * @throws \Exception if the UMID does not match the regex with or without the prefix.
      */

@@ -8,24 +8,24 @@ use Akashic\Constants\TokenSymbol;
 class L1Network
 {
     // 1 ETH = 1,000,000,000,000,000,000 WEI
-    const ETH_DECIMAL = 18;
+    public const ETH_DECIMAL = 18;
 
     // 1 TRX = 1,000,000 SUN
-    const TRX_DECIMAL = 6;
+    public const TRX_DECIMAL = 6;
 
-    const ETH_REGEX = [
+    public const ETH_REGEX = [
         "address" => '/^0x[A-Fa-f\d]{40}$/',
         "hash" => '/^0x([A-Fa-f\d]{64})$/',
         "signedTxn" => "/0x[a-f\d]*/",
     ];
 
-    const TRX_REGEX = [
+    public const TRX_REGEX = [
         "address" => '/^T[A-Za-z1-9]{33}$/',
         "hash" => '/^[\da-f]{64}$/',
         "signedTxn" => '/^[\da-f]{64}$/',
     ];
 
-    const NETWORK_DICTIONARY = [
+    public const NETWORK_DICTIONARY = [
         NetworkSymbol::ETHEREUM_MAINNET => [
             "regex" => self::ETH_REGEX,
             "nativeCoin" => [

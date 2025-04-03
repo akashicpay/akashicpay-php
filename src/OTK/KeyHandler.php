@@ -12,8 +12,8 @@ class KeyHandler
     /**
      * Generate new Key Pair with BIP39 wordlist
      *
-     * @param string $keyName
-     * @param bool $compressed
+     * @param  string $keyName
+     * @param  bool   $compressed
      * @return array
      * @throws \Exception
      */
@@ -54,9 +54,9 @@ class KeyHandler
     /**
      * Restore Key Pair from BIP39 wordlist
      *
-     * @param string $keyName
-     * @param string $phrase
-     * @param bool $compressed
+     * @param  string $keyName
+     * @param  string $phrase
+     * @param  bool   $compressed
      * @return array
      * @throws \Exception
      */

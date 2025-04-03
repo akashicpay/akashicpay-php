@@ -10,6 +10,8 @@ class ActiveLedgerResponseSummary
 
     public int $commit;
 
-    /** @var array|null */
+    /**
+     * @var array|null
+     */
     public ?array $errors = null;
 }

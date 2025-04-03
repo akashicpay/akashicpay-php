@@ -4,12 +4,11 @@ namespace Akashic\OTK;
 
 use FG\ASN1\ASNObject;
 use FG\ASN1\Universal\Sequence;
-use FG\ASN1\Universal\Integer;
 use FG\ASN1\Universal\OctetString;
 use FG\ASN1\Universal\BitString;
 use FG\ASN1\Universal\ObjectIdentifier;
-use FG\ASN1\Composite\ASNObject as CompositeASNObject;
 use FG\ASN1\Exception\ParserException;
+use RuntimeException;
 
 class ECKeyHandler
 {
@@ -23,7 +22,7 @@ class ECKeyHandler
             }
         }
 
-        throw new \RuntimeException('PPK not found inside ASN');
+        throw new RuntimeException('PPK not found inside ASN');
     }
 
     public static function decodeECPrivateKey($pkcs8pem, $label = 'EC PRIVATE KEY')
@@ -37,7 +36,7 @@ class ECKeyHandler
         try {
             $asn = ASNObject::fromBinary($binaryData);
         } catch (ParserException $e) {
-            throw new \RuntimeException('Failed to decode PKCS8 PEM: ' . $e->getMessage());
+            throw new RuntimeException('Failed to decode PKCS8 PEM: ' . $e->getMessage());
         }
 
         return self::extractNestedKeys($asn);
@@ -56,6 +55,8 @@ class ECKeyHandler
         $sequence->addChild($publicKey);
 
         $encoded = $sequence->getBinary();
-        return "-----BEGIN $label-----\r\n" . chunk_split(base64_encode($encoded), 64, "\r\n") . "-----END $label-----\r\n";
+        return "-----BEGIN $label-----\r\n" .
+            chunk_split(base64_encode($encoded), 64, "\r\n") .
+            "-----END $label-----\r\n";
     }
 }

@@ -17,12 +17,15 @@ class HttpClient
     public function post(string $url, $payload)
     {
         try {
-            $response = $this->client->post($url, [
+            $response = $this->client->post(
+                $url,
+                [
                 'json' => $payload,
                 'headers' => [
                     'Content-Type' => 'application/json',
                 ],
-            ]);
+                ]
+            );
 
             return $this->handleResponse($response);
         } catch (RequestException $e) {
