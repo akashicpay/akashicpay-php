@@ -8,6 +8,8 @@ use Akashic\Constants\NetworkSymbol;
 use Akashic\Constants\EthereumSymbol;
 use Akashic\Constants\TronSymbol;
 use Akashic\KeyPair;
+use Akashic\Classes\ActiveLedgerResponse;
+use Akashic\Classes\IBaseTransaction;
 
 class AkashicChain
 {
