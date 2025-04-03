@@ -164,8 +164,11 @@ class AkashicChain
                 ],
                 "_dbIndex" => $this->dbIndex,
                 "metadata" => $initiatedToNonL2
-                    ? ["initiatedToNonL2" => $initiatedToNonL2]
-                    : [],
+                    ? [
+                        "initiatedToNonL2" => $initiatedToNonL2,
+                        "identifier" => $identifier,
+                    ]
+                    : ["identifier" => $identifier],
             ],
             '$sigs' => [],
         ];

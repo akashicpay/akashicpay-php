@@ -152,6 +152,7 @@ class AkashicPay
                 "coinSymbol" => $network,
                 "tokenSymbol" => $token,
                 "initiatedToNonL2" => $initiatedToNonL2,
+                "identifier" => $recipientId,
             ]);
 
             $acResponse = $this->post($this->targetNode["node"], $l2Tx);
