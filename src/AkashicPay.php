@@ -67,9 +67,7 @@ class AkashicPay
                 $isBp = $this->get($checkIfBpUrl)["data"]["isBp"];
 
                 if (!$isBp) {
-                    throw new \Exception(
-                        "Please sign up on AkashicPay.com first"
-                    );
+                    throw new \Exception(AkashicError::IS_NOT_BP);
                 }
             }
 
@@ -105,7 +103,7 @@ class AkashicPay
     public function getKeyBackup()
     {
         if ($this->env === "production") {
-            throw new \Exception("Access Denied");
+            throw new \Exception(AkashicError::ACCESS_DENIED);
         }
 
         return [
@@ -159,13 +157,13 @@ class AkashicPay
         } elseif (preg_match(L2Regex::L2_REGEX, $to)) {
             // Sending L2 by L2 address
             if (!$l2Address) {
-                throw new \Exception(AkashicError::L2AddressNotFound);
+                throw new \Exception(AkashicError::L2_ADDRESS_NOT_FOUND);
             }
             $isL2 = true;
         } else {
             // Sending by alias
             if (!$l2Address) {
-                throw new \Exception(AkashicError::L2AddressNotFound);
+                throw new \Exception(AkashicError::L2_ADDRESS_NOT_FOUND);
             }
             $toAddress = $result["l2Address"];
             $initiatedToNonL2 = $to;
@@ -291,7 +289,7 @@ class AkashicPay
                     ". Responses: " .
                     $response["data"]['$responses']
             );
-            throw new \Exception("Key creation failure");
+            throw new \Exception(AkashicError::KEY_CREATION_FAILURE);
         }
 
         $txBody = $this->akashicChain->differentialConsensusTransaction(
@@ -313,7 +311,7 @@ class AkashicPay
                     ". Unhealthy key: " .
                     $newKey
             );
-            throw new \Exception("Unhealthy key");
+            throw new \Exception(AkashicError::UNHEALTHY_KEY);
         }
 
         return [

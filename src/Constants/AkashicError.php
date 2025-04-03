@@ -12,4 +12,7 @@ class AkashicError
     public const UNHEALTHY_KEY = "New wallet was not created safely, please re-create";
     public const ACCESS_DENIED = "Unauthorized attempt to access production Akashic Link secrets";
     public const L2_ADDRESS_NOT_FOUND = "L2 Address not found";
+    public const IS_NOT_BP = "Please sign up on AkashicPay.com first";
+    public const TRANSACTION_TOO_SMALL_ERROR = "Transaction is too small";
+    public const UNSUPPORTED_COIN_ERROR = "Coin not supported";
 }

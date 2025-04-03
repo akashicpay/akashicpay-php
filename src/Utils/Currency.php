@@ -3,6 +3,7 @@
 namespace Akashic\Utils;
 
 use Akashic\L1Network;
+use Akashic\Constants\AkashicError;
 
 class Currency
 {
@@ -24,6 +25,7 @@ class Currency
             $tokenSymbol
         );
         $convertedAmount = pow(10, $conversionFactor) * (float) $amount;
+        self::throwIfNotInteger($convertedAmount);
 
         return strval($convertedAmount);
     }
@@ -49,6 +51,15 @@ class Currency
             if ($token["symbol"] === $tokenSymbol) {
                 return $token["decimal"];
             }
+        }
+
+        throw new \Exception(AkashicError::UNSUPPORTED_COIN_ERROR);
+    }
+
+    private static function throwIfNotInteger($amount)
+    {
+        if ($amount->mod(1)->__toString() !== "0") {
+            throw new \Exception(AkashicError::TRANSACTION_TOO_SMALL_ERROR);
         }
     }
 }
