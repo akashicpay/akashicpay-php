@@ -7,7 +7,8 @@
     "phpcs": "phpcs --standard=phpcs.xml --extensions=php",
     "phpcbf": "phpcbf --standard=phpcs.xml --extensions=php",
     "phpcs-list-rules": "phpcs --standard=phpcs.xml --generator=HTML > sniffs.html && xdg-open sniffs.html",
-    "psalm": "psalm --config=psalm.xml"
+    "psalm": "psalm --config=psalm.xml",
+    "test": "phpunit --testdox tests"
   },
   "require": {
     "php": ">=7.4",
