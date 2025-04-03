@@ -145,8 +145,7 @@ class AkashicPay
     {
         $tx = AkashicChain::keyCreateTransaction(
             $network,
-            $this->otk["identity"],
-            $identifier
+            $this->otk["identity"]
         );
         $response = $this->post($this->targetNode, $tx);
 
@@ -163,7 +162,8 @@ class AkashicPay
 
         $txBody = AkashicChain::differentialConsensusTransaction(
             $this->otk,
-            $newKey
+            $newKey,
+            $identifier
         );
         $diffResponse = $this->post($this->targetNode, $txBody)["data"];
 

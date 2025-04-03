@@ -41,8 +41,7 @@ class AkashicChain
      */
     public static function keyCreateTransaction(
         NetworkSymbol $coinSymbol,
-        string $otkIdentity,
-        string $identifier
+        string $otkIdentity
     ) {
         return [
             '$tx' => [
@@ -56,7 +55,6 @@ class AkashicChain
                         "business" => true,
                     ],
                 ],
-                "metadata" => ["identifier" => $identifier],
             ],
             '$sigs' => [],
         ];
@@ -69,8 +67,11 @@ class AkashicChain
      * @param $key
      * @return IBaseTransaction
      */
-    public static function differentialConsensusTransaction($otk, $key)
-    {
+    public static function differentialConsensusTransaction(
+        $otk,
+        $key,
+        $identifier
+    ) {
         return [
             '$tx' => [
                 '$namespace' => AkashicChainContracts::NAMESPACE,
@@ -87,6 +88,7 @@ class AkashicChain
                         '$stream' => $key["id"],
                     ],
                 ],
+                "metadata" => ["identifier" => $identifier],
             ],
             '$sigs' => [],
         ];
