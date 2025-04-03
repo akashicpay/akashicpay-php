@@ -169,10 +169,11 @@ class AkashicPay
                 "coinSymbol" => $network,
                 "amount" => $amount,
                 "tokenSymbol" => $token,
+                "identity" => $otk["identity"],
             ];
 
             $response = $this->post(
-                $this->akashicUrl . AkashicEndpoints::PrepareTx,
+                $this->akashicUrl . AkashicEndpoints::PREPARE_TX,
                 $payload
             );
             $withdrawalKeys = $response["data"]["withdrawalKeys"];
@@ -268,7 +269,7 @@ class AkashicPay
     {
         $url =
             $this->akashicUrl .
-            "/l2-lookup?to=" .
+            AkashicEndpoint::L2_LOOKUP .
             urlencode($aliasOrL1OrL2Address);
         if ($network) {
             $url .= "&coinSymbol=" . urlencode($network);
@@ -291,7 +292,10 @@ class AkashicPay
         ]);
         $query = http_build_query($queryParameters);
         $transactions = $this->get(
-            $this->akashicUrl . "/owner-transaction?" . $query
+            $this->akashicUrl .
+                AkashicEndpoint::OWNER_TRANSACTION .
+                "?" .
+                $query
         )["data"]["transactions"];
         return array_map(function ($t) {
             return array_merge($t, [
@@ -311,7 +315,8 @@ class AkashicPay
     {
         $response = $this->get(
             $this->akashicUrl .
-                "/owner-balance?address=" .
+                AkashicEndpoint::OWNER_BALANCE .
+                "?address=" .
                 $this->otk["identity"]
         )["data"];
         return array_map(function ($bal) {
@@ -336,7 +341,8 @@ class AkashicPay
     {
         $response = $this->get(
             $this->akashicUrl .
-                "/transactions-details?l2Hash=" .
+                AkashicEndpoint::TRANSACTIONS_DETAILS .
+                "?l2Hash=" .
                 urlencode($l2TxHash)
         );
         $transaction = $response["data"]["transaction"];
