@@ -3,7 +3,7 @@
   "description": "A library to interact with the AkashicChain network, written in PHP.",
   "type": "library",
   "require": {
-    "php": "*",
+    "php": ">=7.4",
     "ext-gmp": "*",
     "fgrosse/phpasn1": "^2.5.0",
     "bitwasp/bitcoin": "^1.0",
