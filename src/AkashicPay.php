@@ -10,7 +10,8 @@ use Akashic\Constants\ACDevNode;
 use Akashic\Constants\ACNode;
 use Akashic\Constants\AkashicBaseUrls;
 use Akashic\Constants\AkashicEndpoints;
-use Akashic\Constants\AkashicError;
+use Akashic\Constants\AkashicErrorCode;
+use Akashic\Constants\AkashicException;
 use Akashic\Constants\Environment;
 use Akashic\Constants\NetworkSymbol;
 use Akashic\Constants\TokenSymbol;
@@ -24,6 +25,7 @@ use function array_map;
 use function array_merge;
 use function http_build_query;
 use function preg_match;
+use function str_contains;
 use function urlencode;
 
 /** @api */
@@ -74,7 +76,7 @@ class AkashicPay
                 $isBp         = $this->get($checkIfBpUrl)["data"]["isBp"];
 
                 if (! $isBp) {
-                    throw new Exception(AkashicError::IS_NOT_BP);
+                    throw new AkashicException(AkashicErrorCode::IS_NOT_BP);
                 }
             }
 
@@ -92,8 +94,8 @@ class AkashicPay
                     $args["l2Address"]
                 );
             } else {
-                throw new Exception(
-                    AkashicError::INCORRECT_PRIVATE_KEY_FORMAT
+                throw new AkashicException(
+                    AkashicErrorCode::INCORRECT_PRIVATE_KEY_FORMAT
                 );
             }
         }
@@ -106,12 +108,12 @@ class AkashicPay
      *
      * @return array if the environment is development. This enables you to
      * easily create an OTK and re-use it in future tests or dev work.
-     * @throws Exception if the environment is production.
+     * @throws AkashicException if the environment is production.
      */
     public function getKeyBackup()
     {
         if ($this->env === "production") {
-            throw new Exception(AkashicError::ACCESS_DENIED);
+            throw new AkashicException(AkashicErrorCode::ACCESS_DENIED);
         }
 
         return [
@@ -130,7 +132,7 @@ class AkashicPay
      * @param  string      $amount
      * @param  string      $network     L1-Network the funds belong to, e.g. `ETH`
      * @param  string|null $token       Optional. Include if sending token, e.g. `USDT`
-     * @return array L2 Transaction hash of the transaction
+     * @return array|string $l2Hash|$error L2 Transaction hash of the transaction or error
      */
     public function payout($recipientId, $to, $amount, $network, $token = null)
     {
@@ -166,13 +168,17 @@ class AkashicPay
         } elseif (preg_match(self::L2_REGEX, $to)) {
             // Sending L2 by L2 address
             if (! $l2Address) {
-                throw new Exception(AkashicError::L2_ADDRESS_NOT_FOUND);
+                return [
+                    "error" => AkashicErrorCode::L2_ADDRESS_NOT_FOUND,
+                ];
             }
             $isL2 = true;
         } else {
             // Sending by alias
             if (! $l2Address) {
-                throw new Exception(AkashicError::L2_ADDRESS_NOT_FOUND);
+                return [
+                    "error" => AkashicErrorCode::L2_ADDRESS_NOT_FOUND,
+                ];
             }
             $toAddress        = $result["l2Address"];
             $initiatedToNonL2 = $to;
@@ -194,7 +200,12 @@ class AkashicPay
 
             $acResponse = $this->post($this->targetNode["node"], $l2Tx);
 
-            $this->akashicChain->checkForAkashicChainError($acResponse["data"]);
+            $chainError = $this->akashicChain->checkForAkashicChainError($acResponse["data"]);
+            if ($chainError) {
+                return [
+                    "error" => $chainError,
+                ];
+            }
 
             $this->logger->info(
                 "Paid out "
@@ -222,11 +233,23 @@ class AkashicPay
             "feeDelegationStrategy" => "Delegate",
         ];
 
-            $response    = $this->post(
+            $response = $this->post(
                 $this->akashicUrl . AkashicEndpoints::PREPARE_TX,
                 $payload
             );
+        try {
             $preparedTxn = $response["data"]["preparedTxn"];
+        } catch (Exception $e) {
+            if (str_contains($e->getMessage(), 'exceeds total savings')) {
+                return [
+                    "error" => AkashicErrorCode::SAVINGS_EXCEEDED,
+                ];
+            } else {
+                return [
+                    "error" => AkashicErrorCode::UNKNOWN_ERROR,
+                ];
+            }
+        }
 
             $signedTxn = $this->akashicChain->signTransaction(
                 $preparedTxn,
@@ -235,7 +258,12 @@ class AkashicPay
 
             $acResponse = $this->post($this->targetNode["node"], $signedTxn);
 
-        $this->akashicChain->checkForAkashicChainError($acResponse["data"]);
+        $chainError = $this->akashicChain->checkForAkashicChainError($acResponse["data"]);
+        if ($chainError) {
+            return [
+                "error" => $chainError,
+            ];
+        }
 
         $this->logger->info(
             "Paid out "
@@ -291,7 +319,7 @@ class AkashicPay
                 . ". Responses: "
                 . $response["data"]['$responses']
             );
-            throw new Exception(AkashicError::KEY_CREATION_FAILURE);
+            throw new AkashicException(AkashicErrorCode::KEY_CREATION_FAILURE);
         }
 
         $txBody       = $this->akashicChain->differentialConsensusTransaction(
@@ -313,7 +341,7 @@ class AkashicPay
                 . ". Unhealthy key: "
                 . $newKey
             );
-            throw new Exception(AkashicError::UNHEALTHY_KEY);
+            throw new AkashicException(AkashicErrorCode::UNHEALTHY_KEY);
         }
 
         return [
@@ -542,7 +570,7 @@ class AkashicPay
         $identity = $response["data"]['$streams']["new"][0]["id"] ?? null;
 
         if ($identity === null) {
-            throw new Exception(AkashicError::TEST_NET_OTK_ONBOARDING_FAILED);
+            throw new AkashicException(AkashicErrorCode::TEST_NET_OTK_ONBOARDING_FAILED);
         }
 
         $this->otk = array_merge($otk, ["identity" => "AS" . $identity]);
@@ -563,7 +591,7 @@ class AkashicPay
         string $l2Address
     ): void {
         if (! preg_match(self::AC_PRIVATE_KEY_REGEX, $privateKey)) {
-            throw new Exception(AkashicError::INCORRECT_PRIVATE_KEY_FORMAT);
+            throw new AkashicException(AkashicErrorCode::INCORRECT_PRIVATE_KEY_FORMAT);
         }
 
         $this->otk = array_merge(

@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Akashic;
 
 use Akashic\Classes\IBaseTransaction;
-use Akashic\Constants\AkashicError;
+use Akashic\Constants\AkashicErrorCode;
+use Akashic\Constants\AkashicException;
 use Akashic\Constants\Environment;
 use Akashic\Constants\EthereumSymbol;
 use Akashic\Constants\MainNetContracts;
@@ -13,6 +14,7 @@ use Akashic\Constants\NetworkSymbol;
 use Akashic\Constants\TestNetContracts;
 use Akashic\Constants\TronSymbol;
 use Exception;
+use ReflectionClass;
 
 use function array_filter;
 use function gmdate;
@@ -43,17 +45,26 @@ class AkashicChain
      * @param  array $response
      * @throws Exception
      */
-    public function checkForAkashicChainError(array $response): void
+    public function checkForAkashicChainError(array $response): ?string
     {
         $commit = $response['$summary']["commit"] ?? null;
         if ($commit) {
-            return;
+            return null;
         }
         $errorMessage = $this->convertChainErrorToAkashicError(
             $response['$summary']["errors"][0] ?? "Unknown error"
         );
 
-        throw new Exception("AkashicChain Failure: " . $errorMessage);
+        // Check if the error message matches a valid AkashicErrorCode
+        if (in_array($errorMessage, (new ReflectionClass(AkashicErrorCode::class))->getConstants(), true)) {
+            return $errorMessage;
+        }
+
+        // Throw an unknown error with additional details
+        throw new AkashicException(
+            AkashicErrorCode::UNKNOWN_ERROR,
+            "AkashicChain Failure: {$errorMessage}"
+        );
     }
 
     /**
@@ -62,11 +73,11 @@ class AkashicChain
     private function convertChainErrorToAkashicError(string $error): string
     {
         if ($this->isChainErrorSavingsExceeded($error)) {
-            return AkashicError::SAVINGS_EXCEEDED;
+            return AkashicErrorCode::SAVINGS_EXCEEDED;
         }
 
         if (strpos($error, "Stream(s) not found") !== false) {
-            return AkashicError::L2_ADDRESS_NOT_FOUND;
+            return AkashicErrorCode::L2_ADDRESS_NOT_FOUND;
         }
 
         return $error;

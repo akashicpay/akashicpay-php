@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Akashic\Utils;
 
-use Akashic\Constants\AkashicError;
+use Akashic\Constants\OtherErrorCode;
 use Akashic\L1Network;
 use Exception;
 
@@ -54,13 +54,13 @@ class Currency
             }
         }
 
-        throw new Exception(AkashicError::UNSUPPORTED_COIN_ERROR);
+        throw new Exception(OtherErrorCode::UNSUPPORTED_COIN_ERROR);
     }
 
     private static function throwIfNotInteger($amount): void
     {
         if (strval(fmod($amount, 1)) !== '0') {
-            throw new Exception(AkashicError::TRANSACTION_TOO_SMALL_ERROR);
+            throw new Exception(OtherErrorCode::TRANSACTION_TOO_SMALL_ERROR);
         }
     }
 }
