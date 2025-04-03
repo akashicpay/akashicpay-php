@@ -115,7 +115,7 @@ class AkashicChain
         ];
 
         // Sign Transaction
-        return self::signTransaction($txBody, $otk);
+        return $this->signTransaction($txBody, $otk);
     }
 
     /**
@@ -150,7 +150,7 @@ class AkashicChain
         ];
 
         // Sign Transaction
-        return self::signTransaction($txBody, $otk);
+        return $this->signTransaction($txBody, $otk);
     }
 
     /**
@@ -178,7 +178,7 @@ class AkashicChain
         ];
 
         // Sign Transaction
-        return self::signTransaction($txBody, $otk);
+        return $this->signTransaction($txBody, $otk);
     }
 
     public function l2Transaction(array $params)
@@ -312,9 +312,11 @@ class AkashicChain
         }
     }
 
-    public function signTransaction($txBody, $otk): array
+    private function signTransaction($txBody, $otk): array
     {
         try {
+            $txBody = $this->addExpireToTxBody($txBody);
+
             $key = new KeyPair($otk["type"], $otk["key"]["prv"]["pkcs8pem"]);
             // Check if $txBody is a string
             if (is_string($txBody)) {
@@ -337,5 +339,20 @@ class AkashicChain
                 "Error signing transaction: " . $e->getMessage()
             );
         }
+    }
+
+
+    /**
+     * Adds expiry time to the transaction body.
+     *
+     * @param array $txBody
+     * @return array
+     */
+    private function addExpireToTxBody(array &$txBody): array
+    {
+        // Set expiry to 1 minute from now
+        $txBody['$tx']['$expire'] = gmdate("Y-m-d\TH:i:s\Z", time() + 60);
+
+        return $txBody;
     }
 }
