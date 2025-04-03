@@ -14,8 +14,8 @@ composer install
 
 ```bash
 # just lint
-./vendor/bin/phpcs --standard=PSR2 src/
+./vendor/bin/phpcs --standard=PSR12 src/
 
 # lint with auto fix
-./vendor/bin/phpcbf --standard=PSR2 src/
+./vendor/bin/phpcbf --standard=PSR12 src/
 ```

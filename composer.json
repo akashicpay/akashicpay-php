@@ -4,6 +4,7 @@
   "type": "library",
   "require": {
     "php": "*",
+    "ext-gmp": "*",
     "fgrosse/phpasn1": "^2.5.0",
     "ext-gmp": "*",
     "bitwasp/bitcoin": "^1.0",

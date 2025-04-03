@@ -1,9 +1,7 @@
 <?php
 
 namespace Akashic\Classes;
-
 namespace Akashic\ActiveLedgerResponseStreams;
-
 namespace Akashic\ActiveLedgerResponseSummary;
 
 class ActiveLedgerResponse

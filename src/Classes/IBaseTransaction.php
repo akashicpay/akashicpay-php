@@ -1,7 +1,6 @@
 <?php
 
 namespace Akashic\Classes;
-
 namespace Akashic\IBaseTransactionTxBody;
 
 class IBaseTransaction
