@@ -25,10 +25,13 @@ class AkashicPay
     private $logger;
     private $env;
     private $httpClient;
+    private $akashicChain;
 
     public function __construct($args)
     {
         $this->env = $args["environment"] ?? Environment::PRODUCTION;
+
+        $this->akashicChain = new AkashicChain($this->env);
 
         $this->akashicUrl =
             $this->env === Environment::PRODUCTION
@@ -128,7 +131,7 @@ class AkashicPay
         }
 
         if ($isL2) {
-            $l2Tx = AkashicChain::l2Transaction([
+            $l2Tx = $this->akashicChain->l2Transaction([
                 "otk" => $this->otk,
                 "amount" => $amount,
                 "toAddress" => $toAddress,
@@ -139,7 +142,7 @@ class AkashicPay
 
             $acResponse = $this->post($this->targetNode, $l2Tx);
 
-            AkashicChain::checkForAkashicChainError($acResponse["data"]);
+            $this->akashicChain->checkForAkashicChainError($acResponse["data"]);
 
             $this->logger->info(
                 "Paid out %d %s to user %s at %s",
@@ -166,7 +169,7 @@ class AkashicPay
             );
             $withdrawalKeys = $response["data"]["withdrawalKeys"];
 
-            $lT1x = AkashicChain::l2ToL1SignTransaction([
+            $lT1x = $this->akashicChain->l2ToL1SignTransaction([
                 "otk" => $this->otk,
                 "amount" => $amount,
                 "toAddress" => $toAddress,
@@ -177,7 +180,7 @@ class AkashicPay
 
             $acResponse = $this->post($this->targetNode, $lT1x);
 
-            AkashicChain::checkForAkashicChainError($acResponse["data"]);
+            $this->akashicChain->checkForAkashicChainError($acResponse["data"]);
 
             $this->logger->info(
                 "Paid out %d %s to user %s at %s",
@@ -202,7 +205,7 @@ class AkashicPay
      */
     public function getDepositAddress($network, $identifier)
     {
-        $tx = AkashicChain::keyCreateTransaction(
+        $tx = $this->akashicChain->keyCreateTransaction(
             $network,
             $this->otk["identity"]
         );
@@ -219,7 +222,7 @@ class AkashicPay
             throw new \Exception("Key creation failure");
         }
 
-        $txBody = AkashicChain::differentialConsensusTransaction(
+        $txBody = $this->akashicChain->differentialConsensusTransaction(
             $this->otk,
             $newKey,
             $identifier
@@ -367,7 +370,7 @@ class AkashicPay
             "Generating new OTK for development environment. Access it via `this->otk()`"
         );
         $otk = Otk::generateOTK();
-        $onboardTx = AkashicChain::onboardOtkTransaction($otk);
+        $onboardTx = $this->akashicChain->onboardOtkTransaction($otk);
 
         $response = $this->post($this->targetNode, $onboardTx);
         $identity = $response["data"]['$streams']["new"][0]["id"] ?? null;
@@ -433,6 +436,6 @@ class AkashicPay
 
     private function signTransaction($tx)
     {
-        return AkashicChain::signTransaction($tx, $this->otk);
+        return $this->akashicChain->signTransaction($tx, $this->otk);
     }
 }

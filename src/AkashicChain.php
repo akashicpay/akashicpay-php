@@ -11,11 +11,21 @@ use Akashic\KeyPair;
 use Akashic\Classes\ActiveLedgerResponse;
 use Akashic\Classes\IBaseTransaction;
 use Akashic\L1Network;
+use Akashic\Constants\Environment;
 
 class AkashicChain
 {
     public const L2_REGEX = '/^AS[A-Fa-f\d]{64}$/';
     public const NITR0GEN_NATIVE_COIN = "#native";
+    private $contracts;
+
+    public function __construct($env)
+    {
+        $this->contracts =
+            $env === Environment::PRODUCTION
+                ? new AkashicChainContracts()
+                : new TestNetContracts();
+    }
 
     /**
      * Check for errors in the AkashicChain response
@@ -23,7 +33,7 @@ class AkashicChain
      * @param ActiveLedgerResponse $response
      * @throws \Exception
      */
-    public static function checkForAkashicChainError(
+    public function checkForAkashicChainError(
         ActiveLedgerResponse $response
     ): void {
         if ($response->summary->commit) {
@@ -43,14 +53,14 @@ class AkashicChain
      * @param string $identifier
      * @return IBaseTransaction
      */
-    public static function keyCreateTransaction(
+    public function keyCreateTransaction(
         NetworkSymbol $coinSymbol,
         string $otkIdentity
     ) {
         return [
             '$tx' => [
-                '$namespace' => AkashicChainContracts::NAMESPACE,
-                '$contract' => AkashicChainContracts::CREATE,
+                '$namespace' => $this->contracts::CONTRACT_NAMESPACE,
+                '$contract' => $this->contracts::CREATE,
                 '$i' => [
                     "owner" => [
                         '$stream' => $otkIdentity,
@@ -71,15 +81,12 @@ class AkashicChain
      * @param $key
      * @return IBaseTransaction
      */
-    public static function differentialConsensusTransaction(
-        $otk,
-        $key,
-        $identifier
-    ) {
+    public function differentialConsensusTransaction($otk, $key, $identifier)
+    {
         return [
             '$tx' => [
-                '$namespace' => AkashicChainContracts::NAMESPACE,
-                '$contract' => AkashicChainContracts::DIFF_CONSENSUS,
+                '$namespace' => $this->contracts::CONTRACT_NAMESPACE,
+                '$contract' => $this->contracts::DIFF_CONSENSUS,
                 '$i' => [
                     "owner" => [
                         '$stream' => $otk["identity"],
@@ -104,12 +111,12 @@ class AkashicChain
      * @param $otk
      * @return IBaseTransaction
      */
-    public static function onboardOtkTransaction($otk)
+    public function onboardOtkTransaction($otk)
     {
         $txBody = [
             '$tx' => [
-                '$namespace' => TestNetContracts::NAMESPACE,
-                '$contract' => TestNetContracts::ONBOARD,
+                '$namespace' => $this->contracts::CONTRACT_NAMESPACE,
+                '$contract' => $this->contracts::ONBOARD,
                 '$i' => [
                     "otk" => [
                         "publicKey" => $otk["key"]["pub"]["pkcs8pem"],
@@ -125,7 +132,7 @@ class AkashicChain
         return self::signTransaction($txBody, $otk);
     }
 
-    public static function l2Transaction(array $params): IBaseTransaction
+    public function l2Transaction(array $params): IBaseTransaction
     {
         $otk = $params["otk"];
         $coinSymbol = $params["coinSymbol"];
@@ -136,8 +143,8 @@ class AkashicChain
 
         $txBody = [
             '$tx' => [
-                '$namespace' => TestNetContracts::Namespace,
-                '$contract' => TestNetContracts::CryptoTransfer,
+                '$namespace' => $this->contracts::CONTRACT_NAMESPACE,
+                '$contract' => $this->contracts::CRYPTO_TRANSFER,
                 '$entry' => "transfer",
                 '$i' => [
                     "owner" => [
@@ -161,9 +168,8 @@ class AkashicChain
         return self::signTransaction($txBody, $otk);
     }
 
-    public static function l2ToL1SignTransaction(
-        array $params
-    ): IBaseTransaction {
+    public function l2ToL1SignTransaction(array $params): IBaseTransaction
+    {
         $otk = $params["otk"];
         $keyLedgerId = $params["keyLedgerId"];
         $coinSymbol = $params["coinSymbol"];
@@ -185,8 +191,8 @@ class AkashicChain
 
         $txBody = [
             '$tx' => [
-                '$namespace' => TestNetContracts::Namespace,
-                '$contract' => TestNetContracts::CryptoTransfer,
+                '$namespace' => $this->contracts::CONTRACT_NAMESPACE,
+                '$contract' => $this->contracts::CRYPTO_TRANSFER,
                 '$entry' => "sign",
                 '$i' => [
                     "owner" => [
@@ -213,7 +219,7 @@ class AkashicChain
      * @param NetworkSymbol $coinSymbol
      * @return string
      */
-    private static function getACSymbol(NetworkSymbol $coinSymbol): string
+    private function getACSymbol(NetworkSymbol $coinSymbol): string
     {
         if (in_array($coinSymbol, TronSymbol::VALUES, true)) {
             return "trx";
@@ -245,7 +251,7 @@ class AkashicChain
         }
     }
 
-    public static function signTransaction($txBody, $otk): array
+    public function signTransaction($txBody, $otk): array
     {
         try {
             $key = new KeyPair($otk["type"], $otk["key"]["prv"]["pkcs8pem"]);
