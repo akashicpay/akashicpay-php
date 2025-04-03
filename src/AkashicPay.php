@@ -15,6 +15,8 @@ use Akashic\Constants\ACNode;
 use Akashic\AkashicChain;
 use Akashic\Constants\AkashicBaseUrls;
 use Akashic\L1Network;
+use Akashic\Constants\TokenSymbol;
+use Akashic\Constants\NetworkSymbol;
 
 class AkashicPay
 {
@@ -99,6 +101,12 @@ class AkashicPay
         $toAddress = $to;
         $initiatedToNonL2 = null;
         $isL2 = false;
+        if (
+            $token === TokenSymbol::USDT &&
+            $network === NetworkSymbol::TRON_SHASTA
+        ) {
+            $token = TOkenSymbol::TETHER;
+        }
 
         $result = $this->lookForL2Address($to, $network);
 
@@ -282,9 +290,17 @@ class AkashicPay
             "withSigningErrors" => true,
         ]);
         $query = http_build_query($queryParameters);
-        return $this->get(
+        $transactions = $this->get(
             $this->akashicUrl . "/owner-transaction?" . $query
         )["data"]["transactions"];
+        return array_map(function ($t) {
+            return array_merge($t, [
+                "tokenSymbol" =>
+                    $t["tokenSymbol"] === TokenSymbol::TETHER
+                        ? TokenSymbol::USDT
+                        : $t["tokenSymbol"],
+            ]);
+        }, $transactions);
     }
 
     /**
@@ -301,7 +317,10 @@ class AkashicPay
         return array_map(function ($bal) {
             return [
                 "networkSymbol" => $bal["coinSymbol"],
-                "tokenSymbol" => $bal["tokenSymbol"],
+                "tokenSymbol" =>
+                    $bal["tokenSymbol"] === TokenSymbol::TETHER
+                        ? TokenSymbol::USDT
+                        : $bal["tokenSymbol"],
                 "balance" => $bal["balance"],
             ];
         }, $response["totalBalances"]);
@@ -320,7 +339,13 @@ class AkashicPay
                 "/transactions-details?l2Hash=" .
                 urlencode($l2TxHash)
         );
-        return $response["data"]["transaction"] ?? null;
+        $transaction = $response["data"]["transaction"];
+        return array_merge($transaction, [
+            "tokenSymbol" =>
+                $transaction["tokenSymbol"] === TokenSymbol::TETHER
+                    ? TokenSymbol::USDT
+                    : $transaction["tokenSymbol"],
+        ]) ?? null;
     }
 
     /**
