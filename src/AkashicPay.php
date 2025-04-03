@@ -445,6 +445,28 @@ class AkashicPay
     }
 
     /**
+     * Get the currently supported currencies in AkashicPay
+     *
+     * @return array mapping network symbols, e.g. `"TRX"`, to a list of the
+     * supported token currencies on that network e.g. `["USDT", "USDC"]`.
+     * Native coins (TRX, ETH, etc.) are not returned but always supported if the
+     * network is supported
+     * <code>
+     * $akashicPayProduction->getSupportedCurrencies();
+     * // Returns: ['ETH' => ['USDT'], 'TRX' => ['USDT']]
+     * $akashicPayDevelopment->getSupportedCurrencies();
+     * // Returns: ['SEP' => ['USDT'], 'TRX-SHASTA' => ['USDT']]
+     * </code>
+     */
+    public function getSupportedCurrencies(): array
+    {
+        return $this->get(
+            $this->akashicUrl
+            . AkashicEndpoints::SUPPORTED_CURRENCIES
+        )["data"];
+    }
+
+    /**
      * Get key by BP and identifier
      *
      * @return ?array address
