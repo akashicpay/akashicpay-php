@@ -18,6 +18,7 @@ use Akashic\Constants\NetworkSymbol;
 use Akashic\Constants\TokenSymbol;
 use Akashic\OTK\Otk;
 use Akashic\Utils\Currency;
+use Akashic\Utils\DatadogHandler;
 use Akashic\Utils\Prefix;
 use Exception;
 use Monolog\Handler\StreamHandler;
@@ -38,6 +39,7 @@ class AkashicPay
 {
     private const AC_PRIVATE_KEY_REGEX = '/^0x[a-f\d]{64}$/';
     private const L2_REGEX             = '/^AS[A-Fa-f\d]{64}$/';
+    private const DATADOG_API_KEY      = '10f3796eb5494075b36b7d89ae456a65';
     private array $otk;
     private array $targetNode;
     private string $akashicUrl;
@@ -51,8 +53,6 @@ class AkashicPay
     {
         $this->env = $args["environment"] ?? Environment::PRODUCTION;
 
-        $this->akashicChain = new AkashicChain($this->env);
-
         $this->akashicUrl =
             $this->env === Environment::PRODUCTION
                 ? AkashicBaseUrls::BASE_URL
@@ -65,12 +65,24 @@ class AkashicPay
 
         // Logger initialization
         $this->logger = new Logger("AkashicPay");
-        $this->logger->pushHandler(
-            new StreamHandler("php://stdout", Logger::DEBUG)
-        );
+
+        // standard output
+        $stream = new StreamHandler("php://stdout", Logger::DEBUG);
+        $this->logger->pushHandler($stream);
+
+        // send log to datadog by http
+        $attributes  = [
+            'hostname' => $_SERVER['SERVER_NAME'] ?? 'localhost',
+            'service'  => 'php-sdk',
+            'tags'     => 'env:' . $this->env,
+        ];
+        $datadogLogs = new DatadogHandler(self::DATADOG_API_KEY, $attributes, Logger::WARNING);
+        $this->logger->pushHandler($datadogLogs);
+
+        $this->akashicChain = new AkashicChain($this->env, $this->logger);
 
         // Initialize HttpClient
-        $this->httpClient = new HttpClient();
+        $this->httpClient = new HttpClient($this->logger);
 
         $this->targetNode = $args["targetNode"] ?? $this->chooseBestACNode();
 
@@ -251,6 +263,7 @@ class AkashicPay
         try {
             $preparedTxn = $response["data"]["preparedTxn"];
         } catch (Exception $e) {
+            $this->logger->error($e->getMessage());
             if (str_contains($e->getMessage(), 'exceeds total savings')) {
                 return [
                     "error" => AkashicErrorCode::SAVINGS_EXCEEDED,

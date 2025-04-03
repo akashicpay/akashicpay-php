@@ -14,6 +14,7 @@ use Akashic\Constants\NetworkSymbol;
 use Akashic\Constants\TestNetContracts;
 use Akashic\Constants\TronSymbol;
 use Exception;
+use Monolog\Logger;
 use ReflectionClass;
 
 use function array_filter;
@@ -29,14 +30,18 @@ class AkashicChain
     public const NITR0GEN_NATIVE_COIN = "#native";
     private $contracts;
     private int $dbIndex;
+    private Logger $logger;
 
-    public function __construct($env)
-    {
+    public function __construct(
+        string $env,
+        Logger $logger
+    ) {
         $this->contracts =
             $env === Environment::PRODUCTION
                 ? new MainNetContracts()
                 : new TestNetContracts();
         $this->dbIndex   = $env === Environment::PRODUCTION ? 0 : 15;
+        $this->logger    = $logger;
     }
 
     /**
@@ -356,6 +361,7 @@ class AkashicChain
 
             throw new Exception("Invalid transaction body provided");
         } catch (Exception $e) {
+            $this->logger->error($e->getMessage());
             throw new Exception(
                 "Error signing transaction: " . $e->getMessage()
             );

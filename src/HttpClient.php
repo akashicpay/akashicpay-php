@@ -8,7 +8,6 @@ use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use JsonException;
-use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Psr\Http\Message\ResponseInterface;
 
@@ -25,13 +24,11 @@ class HttpClient
     private $apClient = 'php-sdk';
     private Logger $logger;
 
-    public function __construct()
-    {
+    public function __construct(
+        Logger $logger
+    ) {
         // Logger initialization
-        $this->logger = new Logger("HttpClient");
-        $this->logger->pushHandler(
-            new StreamHandler("php://stdout", Logger::DEBUG)
-        );
+        $this->logger = $logger;
 
         $config          = json_decode(file_get_contents(__DIR__ . '/config.json'), true);
         $this->client    = new Client();
@@ -103,12 +100,15 @@ class HttpClient
 
     private function handleException(RequestException $e)
     {
+        $this->logger->error($e->getMessage());
+
         $response = $e->getResponse();
         if (! $response) {
             throw new Exception($e->getMessage());
         }
 
         $errorResponse = $response->getBody()->getContents();
+        $this->logger->error($errorResponse);
         throw new Exception(
             $response->getStatusCode() . ': ' . $errorResponse
         );
