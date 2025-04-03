@@ -167,13 +167,13 @@
                 <a href="namespaces/akashic.html">Akashic</a>
               </li>
               <li class="phpdocumentor-breadcrumb">
-                <a href="namespaces/akashic-utils.html">Utils</a>
+                <a href="namespaces/akashic-classes.html">Classes</a>
               </li>
             </ul>
 
             <article class="phpdocumentor-element -class">
               <h2 class="phpdocumentor-content__title">
-                Currency
+                ActiveLedgerResponse
 
                 <div class="phpdocumentor-element__package">
                   in package
@@ -190,405 +190,308 @@
               <aside class="phpdocumentor-element-found-in">
                 <abbr
                   class="phpdocumentor-element-found-in__file"
-                  title="src/Utils/Currency.php"
-                  ><a href="files/src-utils-currency.html"
-                    ><abbr title="src/Utils/Currency.php">Currency.php</abbr></a
+                  title="src/Classes/ActiveLedgerResponse.php"
+                  ><a href="files/src-classes-activeledgerresponse.html"
+                    ><abbr title="src/Classes/ActiveLedgerResponse.php"
+                      >ActiveLedgerResponse.php</abbr
+                    ></a
                   ></abbr
                 >
                 :
-                <span class="phpdocumentor-element-found-in__line">13</span>
+                <span class="phpdocumentor-element-found-in__line">8</span>
               </aside>
 
               <h3 id="toc">
                 Table of Contents
                 <a
-                  href="classes/Akashic-Utils-Currency.html#toc"
+                  href="classes/Akashic-Classes-ActiveLedgerResponse.html#toc"
                   class="headerlink"
                   ><i class="fas fa-link"></i
                 ></a>
               </h3>
 
-              <h4 id="toc-methods">
-                Methods
+              <h4 id="toc-properties">
+                Properties
                 <a
-                  href="classes/Akashic-Utils-Currency.html#toc-methods"
+                  href="classes/Akashic-Classes-ActiveLedgerResponse.html#toc-properties"
                   class="headerlink"
                   ><i class="fas fa-link"></i
                 ></a>
               </h4>
               <dl class="phpdocumentor-table-of-contents">
                 <dt
-                  class="phpdocumentor-table-of-contents__entry -method -public"
+                  class="phpdocumentor-table-of-contents__entry -property -public"
                 >
                   <a
                     class=""
-                    href="classes/Akashic-Utils-Currency.html#method_convertToDecimals"
-                    >convertToDecimals()</a
+                    href="classes/Akashic-Classes-ActiveLedgerResponse.html#property_debug"
+                    >$debug</a
+                  >
+                  <span> &nbsp;: mixed </span>
+                </dt>
+
+                <dt
+                  class="phpdocumentor-table-of-contents__entry -property -public"
+                >
+                  <a
+                    class=""
+                    href="classes/Akashic-Classes-ActiveLedgerResponse.html#property_responses"
+                    >$responses</a
+                  >
+                  <span> &nbsp;: array&lt;string|int, mixed&gt;|null </span>
+                </dt>
+
+                <dt
+                  class="phpdocumentor-table-of-contents__entry -property -public"
+                >
+                  <a
+                    class=""
+                    href="classes/Akashic-Classes-ActiveLedgerResponse.html#property_streams"
+                    >$streams</a
+                  >
+                  <span>
+                    &nbsp;:
+                    <a
+                      href="classes/Akashic-Classes-ActiveLedgerResponseStream.html"
+                      ><abbr title="\Akashic\Classes\ActiveLedgerResponseStream"
+                        >ActiveLedgerResponseStream</abbr
+                      ></a
+                    >
+                  </span>
+                </dt>
+
+                <dt
+                  class="phpdocumentor-table-of-contents__entry -property -public"
+                >
+                  <a
+                    class=""
+                    href="classes/Akashic-Classes-ActiveLedgerResponse.html#property_summary"
+                    >$summary</a
+                  >
+                  <span>
+                    &nbsp;:
+                    <a
+                      href="classes/Akashic-Classes-ActiveLedgerResponseSummary.html"
+                      ><abbr
+                        title="\Akashic\Classes\ActiveLedgerResponseSummary"
+                        >ActiveLedgerResponseSummary</abbr
+                      ></a
+                    >
+                  </span>
+                </dt>
+
+                <dt
+                  class="phpdocumentor-table-of-contents__entry -property -public"
+                >
+                  <a
+                    class=""
+                    href="classes/Akashic-Classes-ActiveLedgerResponse.html#property_umid"
+                    >$umid</a
                   >
                   <span> &nbsp;: string </span>
                 </dt>
-                <dd>Method for safe conversion from coin/token decimals.</dd>
-
-                <dt
-                  class="phpdocumentor-table-of-contents__entry -method -private"
-                >
-                  <a
-                    class=""
-                    href="classes/Akashic-Utils-Currency.html#method_getConversionFactor"
-                    >getConversionFactor()</a
-                  >
-                  <span> &nbsp;: int </span>
-                </dt>
-                <dd>
-                  Get the conversion factor based on the coin or token symbol.
-                </dd>
-
-                <dt
-                  class="phpdocumentor-table-of-contents__entry -method -private"
-                >
-                  <a
-                    class=""
-                    href="classes/Akashic-Utils-Currency.html#method_throwIfNotInteger"
-                    >throwIfNotInteger()</a
-                  >
-                  <span> &nbsp;: void </span>
-                </dt>
               </dl>
 
-              <section class="phpdocumentor-methods">
-                <h3 class="phpdocumentor-elements__header" id="methods">
-                  Methods
+              <section class="phpdocumentor-properties">
+                <h3 class="phpdocumentor-elements__header" id="properties">
+                  Properties
                   <a
-                    href="classes/Akashic-Utils-Currency.html#methods"
+                    href="classes/Akashic-Classes-ActiveLedgerResponse.html#properties"
                     class="headerlink"
                     ><i class="fas fa-link"></i
                   ></a>
                 </h3>
-                <article class="phpdocumentor-element -method -public -static">
-                  <h4
-                    class="phpdocumentor-element__name"
-                    id="method_convertToDecimals"
-                  >
-                    convertToDecimals()
+                <article class="phpdocumentor-element -property -public">
+                  <h4 class="phpdocumentor-element__name" id="property_debug">
+                    $debug
                     <a
-                      href="classes/Akashic-Utils-Currency.html#method_convertToDecimals"
+                      href="classes/Akashic-Classes-ActiveLedgerResponse.html#property_debug"
                       class="headerlink"
                       ><i class="fas fa-link"></i
                     ></a>
+
+                    <span class="phpdocumentor-element__modifiers"> </span>
                   </h4>
                   <aside class="phpdocumentor-element-found-in">
                     <abbr
                       class="phpdocumentor-element-found-in__file"
-                      title="src/Utils/Currency.php"
-                      ><a href="files/src-utils-currency.html"
-                        ><abbr title="src/Utils/Currency.php"
-                          >Currency.php</abbr
+                      title="src/Classes/ActiveLedgerResponse.php"
+                      ><a href="files/src-classes-activeledgerresponse.html"
+                        ><abbr title="src/Classes/ActiveLedgerResponse.php"
+                          >ActiveLedgerResponse.php</abbr
                         ></a
                       ></abbr
                     >
                     :
-                    <span class="phpdocumentor-element-found-in__line">22</span>
+                    <span class="phpdocumentor-element-found-in__line">19</span>
                   </aside>
-
-                  <p class="phpdocumentor-summary">
-                    Method for safe conversion from coin/token decimals.
-                  </p>
 
                   <code class="phpdocumentor-code phpdocumentor-signature">
                     <span class="phpdocumentor-signature__visibility"
                       >public</span
                     >
-                    <span class="phpdocumentor-signature__static">static</span>
-                    <span class="phpdocumentor-signature__name"
-                      >convertToDecimals</span
-                    ><span>(</span
-                    ><span class="phpdocumentor-signature__argument"
-                      ><span
-                        class="phpdocumentor-signature__argument__return-type"
-                        >string&nbsp;</span
-                      ><span class="phpdocumentor-signature__argument__name"
-                        >$amount</span
-                      ></span
-                    ><span class="phpdocumentor-signature__argument"
-                      ><span>, </span
-                      ><span
-                        class="phpdocumentor-signature__argument__return-type"
-                        >string&nbsp;</span
-                      ><span class="phpdocumentor-signature__argument__name"
-                        >$coinSymbol</span
-                      ></span
-                    ><span class="phpdocumentor-signature__argument"
-                      ><span>[</span><span>, </span
-                      ><span
-                        class="phpdocumentor-signature__argument__return-type"
-                        >string|null&nbsp;</span
-                      ><span class="phpdocumentor-signature__argument__name"
-                        >$tokenSymbol</span
-                      ><span> = </span
-                      ><span
-                        class="phpdocumentor-signature__argument__default-value"
-                        >null</span
-                      ><span> ]</span></span
-                    ><span>)</span><span> : </span
-                    ><span class="phpdocumentor-signature__response_type"
-                      >string</span
-                    ></code
-                  >
-
-                  <div class="phpdocumentor-label-line"></div>
-
-                  <h5 class="phpdocumentor-argument-list__heading">
-                    Parameters
-                  </h5>
-                  <dl class="phpdocumentor-argument-list">
-                    <dt class="phpdocumentor-argument-list__entry">
-                      <span class="phpdocumentor-signature__argument__name"
-                        >$amount</span
-                      >
-                      :
-                      <span
-                        class="phpdocumentor-signature__argument__return-type"
-                        >string</span
-                      >
-                    </dt>
-                    <dd class="phpdocumentor-argument-list__definition"></dd>
-                    <dt class="phpdocumentor-argument-list__entry">
-                      <span class="phpdocumentor-signature__argument__name"
-                        >$coinSymbol</span
-                      >
-                      :
-                      <span
-                        class="phpdocumentor-signature__argument__return-type"
-                        >string</span
-                      >
-                    </dt>
-                    <dd class="phpdocumentor-argument-list__definition">
-                      <section class="phpdocumentor-description">
-                        <p>(which should be a NetworkSymbol)</p>
-                      </section>
-                    </dd>
-                    <dt class="phpdocumentor-argument-list__entry">
-                      <span class="phpdocumentor-signature__argument__name"
-                        >$tokenSymbol</span
-                      >
-                      :
-                      <span
-                        class="phpdocumentor-signature__argument__return-type"
-                        >string|null</span
-                      >
-                      =
-                      <span
-                        class="phpdocumentor-signature__argument__default-value"
-                        >null</span
-                      >
-                    </dt>
-                    <dd class="phpdocumentor-argument-list__definition">
-                      <section class="phpdocumentor-description">
-                        <p>(which should be a TokenSymbol)</p>
-                      </section>
-                    </dd>
-                  </dl>
-
-                  <h5 class="phpdocumentor-tag-list__heading" id="tags">
-                    Tags
-                    <a
-                      href="classes/Akashic-Utils-Currency.html#method_convertToDecimals#tags"
-                      class="headerlink"
-                      ><i class="fas fa-link"></i
-                    ></a>
-                  </h5>
-                  <dl class="phpdocumentor-tag-list">
-                    <dt class="phpdocumentor-tag-list__entry">
-                      <span class="phpdocumentor-tag__name">throws</span>
-                    </dt>
-                    <dd class="phpdocumentor-tag-list__definition">
-                      <span class="phpdocumentor-tag-link"
-                        ><abbr title="\Exception">Exception</abbr></span
-                      >
-                    </dd>
-                  </dl>
-
-                  <section>
-                    <h5 class="phpdocumentor-return-value__heading">
-                      Return values
-                    </h5>
-                    <span class="phpdocumentor-signature__response_type"
-                      >string</span
-                    >
-                  </section>
+                    <span class="phpdocumentor-signature__type">mixed</span>
+                    <span class="phpdocumentor-signature__name">$debug</span>
+                  </code>
                 </article>
-                <article class="phpdocumentor-element -method -private -static">
+                <article class="phpdocumentor-element -property -public">
                   <h4
                     class="phpdocumentor-element__name"
-                    id="method_getConversionFactor"
+                    id="property_responses"
                   >
-                    getConversionFactor()
+                    $responses
                     <a
-                      href="classes/Akashic-Utils-Currency.html#method_getConversionFactor"
+                      href="classes/Akashic-Classes-ActiveLedgerResponse.html#property_responses"
                       class="headerlink"
                       ><i class="fas fa-link"></i
                     ></a>
+
+                    <span class="phpdocumentor-element__modifiers"> </span>
                   </h4>
                   <aside class="phpdocumentor-element-found-in">
                     <abbr
                       class="phpdocumentor-element-found-in__file"
-                      title="src/Utils/Currency.php"
-                      ><a href="files/src-utils-currency.html"
-                        ><abbr title="src/Utils/Currency.php"
-                          >Currency.php</abbr
+                      title="src/Classes/ActiveLedgerResponse.php"
+                      ><a href="files/src-classes-activeledgerresponse.html"
+                        ><abbr title="src/Classes/ActiveLedgerResponse.php"
+                          >ActiveLedgerResponse.php</abbr
                         ></a
                       ></abbr
                     >
                     :
-                    <span class="phpdocumentor-element-found-in__line">40</span>
+                    <span class="phpdocumentor-element-found-in__line">16</span>
                   </aside>
-
-                  <p class="phpdocumentor-summary">
-                    Get the conversion factor based on the coin or token symbol.
-                  </p>
 
                   <code class="phpdocumentor-code phpdocumentor-signature">
                     <span class="phpdocumentor-signature__visibility"
-                      >private</span
+                      >public</span
                     >
-                    <span class="phpdocumentor-signature__static">static</span>
+                    <span class="phpdocumentor-signature__type"
+                      >array&lt;string|int, mixed&gt;|null</span
+                    >
                     <span class="phpdocumentor-signature__name"
-                      >getConversionFactor</span
-                    ><span>(</span
-                    ><span class="phpdocumentor-signature__argument"
-                      ><span
-                        class="phpdocumentor-signature__argument__return-type"
-                        >string&nbsp;</span
-                      ><span class="phpdocumentor-signature__argument__name"
-                        >$coinSymbol</span
-                      ></span
-                    ><span class="phpdocumentor-signature__argument"
-                      ><span>[</span><span>, </span
-                      ><span
-                        class="phpdocumentor-signature__argument__return-type"
-                        >string|null&nbsp;</span
-                      ><span class="phpdocumentor-signature__argument__name"
-                        >$tokenSymbol</span
-                      ><span> = </span
-                      ><span
-                        class="phpdocumentor-signature__argument__default-value"
-                        >null</span
-                      ><span> ]</span></span
-                    ><span>)</span><span> : </span
-                    ><span class="phpdocumentor-signature__response_type"
-                      >int</span
+                      >$responses</span
+                    >
+                    =
+                    <span class="phpdocumentor-signature__default-value"
+                      >null</span
                     ></code
                   >
-
-                  <div class="phpdocumentor-label-line"></div>
-
-                  <h5 class="phpdocumentor-argument-list__heading">
-                    Parameters
-                  </h5>
-                  <dl class="phpdocumentor-argument-list">
-                    <dt class="phpdocumentor-argument-list__entry">
-                      <span class="phpdocumentor-signature__argument__name"
-                        >$coinSymbol</span
-                      >
-                      :
-                      <span
-                        class="phpdocumentor-signature__argument__return-type"
-                        >string</span
-                      >
-                    </dt>
-                    <dd class="phpdocumentor-argument-list__definition"></dd>
-                    <dt class="phpdocumentor-argument-list__entry">
-                      <span class="phpdocumentor-signature__argument__name"
-                        >$tokenSymbol</span
-                      >
-                      :
-                      <span
-                        class="phpdocumentor-signature__argument__return-type"
-                        >string|null</span
-                      >
-                      =
-                      <span
-                        class="phpdocumentor-signature__argument__default-value"
-                        >null</span
-                      >
-                    </dt>
-                    <dd class="phpdocumentor-argument-list__definition"></dd>
-                  </dl>
-
-                  <section>
-                    <h5 class="phpdocumentor-return-value__heading">
-                      Return values
-                    </h5>
-                    <span class="phpdocumentor-signature__response_type"
-                      >int</span
-                    >
-                  </section>
                 </article>
-                <article class="phpdocumentor-element -method -private -static">
-                  <h4
-                    class="phpdocumentor-element__name"
-                    id="method_throwIfNotInteger"
-                  >
-                    throwIfNotInteger()
+                <article class="phpdocumentor-element -property -public">
+                  <h4 class="phpdocumentor-element__name" id="property_streams">
+                    $streams
                     <a
-                      href="classes/Akashic-Utils-Currency.html#method_throwIfNotInteger"
+                      href="classes/Akashic-Classes-ActiveLedgerResponse.html#property_streams"
                       class="headerlink"
                       ><i class="fas fa-link"></i
                     ></a>
+
+                    <span class="phpdocumentor-element__modifiers"> </span>
                   </h4>
                   <aside class="phpdocumentor-element-found-in">
                     <abbr
                       class="phpdocumentor-element-found-in__file"
-                      title="src/Utils/Currency.php"
-                      ><a href="files/src-utils-currency.html"
-                        ><abbr title="src/Utils/Currency.php"
-                          >Currency.php</abbr
+                      title="src/Classes/ActiveLedgerResponse.php"
+                      ><a href="files/src-classes-activeledgerresponse.html"
+                        ><abbr title="src/Classes/ActiveLedgerResponse.php"
+                          >ActiveLedgerResponse.php</abbr
                         ></a
                       ></abbr
                     >
                     :
-                    <span class="phpdocumentor-element-found-in__line">59</span>
+                    <span class="phpdocumentor-element-found-in__line">14</span>
                   </aside>
 
                   <code class="phpdocumentor-code phpdocumentor-signature">
                     <span class="phpdocumentor-signature__visibility"
-                      >private</span
+                      >public</span
                     >
-                    <span class="phpdocumentor-signature__static">static</span>
-                    <span class="phpdocumentor-signature__name"
-                      >throwIfNotInteger</span
-                    ><span>(</span
-                    ><span class="phpdocumentor-signature__argument"
-                      ><span
-                        class="phpdocumentor-signature__argument__return-type"
-                        >mixed&nbsp;</span
-                      ><span class="phpdocumentor-signature__argument__name"
-                        >$amount</span
+                    <span class="phpdocumentor-signature__type"
+                      ><a
+                        href="classes/Akashic-Classes-ActiveLedgerResponseStream.html"
+                        ><abbr
+                          title="\Akashic\Classes\ActiveLedgerResponseStream"
+                          >ActiveLedgerResponseStream</abbr
+                        ></a
                       ></span
-                    ><span>)</span><span> : </span
-                    ><span class="phpdocumentor-signature__response_type"
-                      >void</span
-                    ></code
-                  >
+                    >
+                    <span class="phpdocumentor-signature__name">$streams</span>
+                  </code>
+                </article>
+                <article class="phpdocumentor-element -property -public">
+                  <h4 class="phpdocumentor-element__name" id="property_summary">
+                    $summary
+                    <a
+                      href="classes/Akashic-Classes-ActiveLedgerResponse.html#property_summary"
+                      class="headerlink"
+                      ><i class="fas fa-link"></i
+                    ></a>
 
-                  <div class="phpdocumentor-label-line"></div>
+                    <span class="phpdocumentor-element__modifiers"> </span>
+                  </h4>
+                  <aside class="phpdocumentor-element-found-in">
+                    <abbr
+                      class="phpdocumentor-element-found-in__file"
+                      title="src/Classes/ActiveLedgerResponse.php"
+                      ><a href="files/src-classes-activeledgerresponse.html"
+                        ><abbr title="src/Classes/ActiveLedgerResponse.php"
+                          >ActiveLedgerResponse.php</abbr
+                        ></a
+                      ></abbr
+                    >
+                    :
+                    <span class="phpdocumentor-element-found-in__line">12</span>
+                  </aside>
 
-                  <h5 class="phpdocumentor-argument-list__heading">
-                    Parameters
-                  </h5>
-                  <dl class="phpdocumentor-argument-list">
-                    <dt class="phpdocumentor-argument-list__entry">
-                      <span class="phpdocumentor-signature__argument__name"
-                        >$amount</span
-                      >
-                      :
-                      <span
-                        class="phpdocumentor-signature__argument__return-type"
-                        >mixed</span
-                      >
-                    </dt>
-                    <dd class="phpdocumentor-argument-list__definition"></dd>
-                  </dl>
+                  <code class="phpdocumentor-code phpdocumentor-signature">
+                    <span class="phpdocumentor-signature__visibility"
+                      >public</span
+                    >
+                    <span class="phpdocumentor-signature__type"
+                      ><a
+                        href="classes/Akashic-Classes-ActiveLedgerResponseSummary.html"
+                        ><abbr
+                          title="\Akashic\Classes\ActiveLedgerResponseSummary"
+                          >ActiveLedgerResponseSummary</abbr
+                        ></a
+                      ></span
+                    >
+                    <span class="phpdocumentor-signature__name">$summary</span>
+                  </code>
+                </article>
+                <article class="phpdocumentor-element -property -public">
+                  <h4 class="phpdocumentor-element__name" id="property_umid">
+                    $umid
+                    <a
+                      href="classes/Akashic-Classes-ActiveLedgerResponse.html#property_umid"
+                      class="headerlink"
+                      ><i class="fas fa-link"></i
+                    ></a>
+
+                    <span class="phpdocumentor-element__modifiers"> </span>
+                  </h4>
+                  <aside class="phpdocumentor-element-found-in">
+                    <abbr
+                      class="phpdocumentor-element-found-in__file"
+                      title="src/Classes/ActiveLedgerResponse.php"
+                      ><a href="files/src-classes-activeledgerresponse.html"
+                        ><abbr title="src/Classes/ActiveLedgerResponse.php"
+                          >ActiveLedgerResponse.php</abbr
+                        ></a
+                      ></abbr
+                    >
+                    :
+                    <span class="phpdocumentor-element-found-in__line">10</span>
+                  </aside>
+
+                  <code class="phpdocumentor-code phpdocumentor-signature">
+                    <span class="phpdocumentor-signature__visibility"
+                      >public</span
+                    >
+                    <span class="phpdocumentor-signature__type">string</span>
+                    <span class="phpdocumentor-signature__name">$umid</span>
+                  </code>
                 </article>
               </section>
 
@@ -598,7 +501,7 @@
                   <div class="phpdocumentor-modal-content">
                     <pre
                       style="max-height: 500px; overflow-y: scroll"
-                      data-src="files/src/Utils/Currency.php.txt"
+                      data-src="files/src/Classes/ActiveLedgerResponse.php.txt"
                       class="language-php line-numbers linkable-line-numbers"
                     ></pre>
                   </div>
@@ -725,34 +628,47 @@
                 <li>
                   <ul class="phpdocumentor-list -clean">
                     <li>
-                      <a href="classes/Akashic-Utils-Currency.html#toc-methods"
-                        >Methods</a
+                      <a
+                        href="classes/Akashic-Classes-ActiveLedgerResponse.html#toc-properties"
+                        >Properties</a
                       >
                     </li>
                   </ul>
                 </li>
 
                 <li class="phpdocumentor-on-this-page-section__title">
-                  Methods
+                  Properties
                 </li>
                 <li>
                   <ul class="phpdocumentor-list -clean">
                     <li class="">
                       <a
-                        href="classes/Akashic-Utils-Currency.html#method_convertToDecimals"
-                        >convertToDecimals()</a
+                        href="classes/Akashic-Classes-ActiveLedgerResponse.html#property_debug"
+                        >$debug</a
                       >
                     </li>
                     <li class="">
                       <a
-                        href="classes/Akashic-Utils-Currency.html#method_getConversionFactor"
-                        >getConversionFactor()</a
+                        href="classes/Akashic-Classes-ActiveLedgerResponse.html#property_responses"
+                        >$responses</a
                       >
                     </li>
                     <li class="">
                       <a
-                        href="classes/Akashic-Utils-Currency.html#method_throwIfNotInteger"
-                        >throwIfNotInteger()</a
+                        href="classes/Akashic-Classes-ActiveLedgerResponse.html#property_streams"
+                        >$streams</a
+                      >
+                    </li>
+                    <li class="">
+                      <a
+                        href="classes/Akashic-Classes-ActiveLedgerResponse.html#property_summary"
+                        >$summary</a
+                      >
+                    </li>
+                    <li class="">
+                      <a
+                        href="classes/Akashic-Classes-ActiveLedgerResponse.html#property_umid"
+                        >$umid</a
                       >
                     </li>
                   </ul>
@@ -781,7 +697,7 @@
         </section>
       </div>
       <a
-        href="classes/Akashic-Utils-Currency.html#top"
+        href="classes/Akashic-Classes-ActiveLedgerResponse.html#top"
         class="phpdocumentor-back-to-top"
         ><i class="fas fa-chevron-circle-up"></i
       ></a>

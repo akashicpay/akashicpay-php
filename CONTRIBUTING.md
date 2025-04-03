@@ -39,3 +39,11 @@ I'm not sure which extensions are best in each case, being a never-VSCoder mysel
 
 But [ObliviousHarmony/vscodephp-codesniffer](https://github.com/ObliviousHarmony/vscode-php-codesniffer) seems to be a well-maintained option for linting with PSR12.
 It's possible that the [intelephense](https://marketplace.visualstudio.com/items?itemName=bmewburn.vscode-intelephense-client) extension does everything though. But the documentation is unclear.
+
+## Docs
+
+Install [phpDocumentor](https://docs.phpdoc.org/guide/getting-started/installing.html#installation).
+
+```bash
+composer docs
+```
