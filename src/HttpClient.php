@@ -10,6 +10,7 @@ use GuzzleHttp\Exception\RequestException;
 use JsonException;
 use Psr\Http\Message\ResponseInterface;
 
+use function file_get_contents;
 use function json_decode;
 
 use const JSON_THROW_ON_ERROR;
@@ -17,10 +18,14 @@ use const JSON_THROW_ON_ERROR;
 class HttpClient
 {
     private $client;
+    private $apVersion;
+    private $apClient = 'php-sdk';
 
     public function __construct()
     {
-        $this->client = new Client();
+        $config          = json_decode(file_get_contents(__DIR__ . '/config.json'), true);
+        $this->client    = new Client();
+        $this->apVersion = $config['version'];
     }
 
     public function post(string $url, $payload)
@@ -30,8 +35,12 @@ class HttpClient
                 $url,
                 [
                     'json'    => $payload,
-                    'headers' => ['Content-Type' => 'application/json'],
-                ]
+                    'headers' => [
+                        'Content-Type' => 'application/json',
+                        'Ap-Version'   => $this->apVersion,
+                        'Ap-Client'    => $this->apClient,
+                    ],
+                ],
             );
 
             return $this->handleResponse($response);
@@ -43,7 +52,15 @@ class HttpClient
     public function get(string $url)
     {
         try {
-            $response = $this->client->get($url);
+            $response = $this->client->get(
+                $url,
+                [
+                    'headers' => [
+                        'Ap-Version' => $this->apVersion,
+                        'Ap-Client'  => $this->apClient,
+                    ],
+                ],
+            );
         } catch (RequestException $e) {
             $this->handleException($e);
         }
