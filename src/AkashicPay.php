@@ -186,8 +186,7 @@ class AkashicPay
 
             $feesEstimate = Currency::convertToDecimals(
                 $response["data"]["fees"]["feesEstimate"],
-                $network,
-                $token
+                $network
             );
 
             $lT1x = $this->akashicChain->l2ToL1SignTransaction([
