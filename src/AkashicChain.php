@@ -207,7 +207,7 @@ class AkashicChain
                         "network" => $coinSymbol,
                         "token" => $tokenSymbol,
                         "amount" => $amount,
-                        "toAddress" => $toAddress,
+                        "to" => $toAddress,
                         "contractAddress" => $contractAddress,
                         "delegated" => true,
                     ],
