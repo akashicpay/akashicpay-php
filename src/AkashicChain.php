@@ -18,6 +18,7 @@ class AkashicChain
     public const L2_REGEX = '/^AS[A-Fa-f\d]{64}$/';
     public const NITR0GEN_NATIVE_COIN = "#native";
     private $contracts;
+    private $dbIndex;
 
     public function __construct($env)
     {
@@ -25,6 +26,7 @@ class AkashicChain
             $env === Environment::PRODUCTION
                 ? new AkashicChainContracts()
                 : new TestNetContracts();
+        $this->dbIndex = $env === Environment::PRODUCTION ? 0 : 15;
     }
 
     /**
@@ -69,6 +71,7 @@ class AkashicChain
                         "business" => true,
                     ],
                 ],
+                "_dbIndex" => $this->dbIndex,
             ],
             '$sigs' => [],
         ];
@@ -99,6 +102,7 @@ class AkashicChain
                         '$stream' => $key["id"],
                     ],
                 ],
+                "_dbIndex" => $this->dbIndex,
                 "metadata" => ["identifier" => $identifier],
             ],
             '$sigs' => [],
@@ -123,6 +127,7 @@ class AkashicChain
                         "type" => $otk["type"],
                     ],
                 ],
+                "_dbIndex" => $this->dbIndex,
             ],
             '$sigs' => [],
             '$selfsign' => true,
@@ -157,6 +162,7 @@ class AkashicChain
                 '$o' => [
                     "to" => ['$stream' => $toAddress],
                 ],
+                "_dbIndex" => $this->dbIndex,
                 "metadata" => $initiatedToNonL2
                     ? ["initiatedToNonL2" => $initiatedToNonL2]
                     : [],
@@ -207,6 +213,7 @@ class AkashicChain
                     ],
                 ],
                 '$o' => $o,
+                "_dbIndex" => $this->dbIndex,
                 "metadata" => $identifier ? ["identifier" => $identifier] : [],
             ],
             '$sigs' => [],
