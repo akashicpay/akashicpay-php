@@ -184,6 +184,12 @@ class AkashicPay
             );
             $withdrawalKeys = $response["data"]["withdrawalKeys"];
 
+            $feesEstimate = Currency::convertToDecimals(
+                $response["data"]["fees"]["feesEstimate"],
+                $network,
+                $token
+            );
+
             $lT1x = $this->akashicChain->l2ToL1SignTransaction([
                 "otk" => $this->otk,
                 "amount" => $decimalAmount,
@@ -192,7 +198,7 @@ class AkashicPay
                 "tokenSymbol" => $token,
                 "keyLedgerId" => $withdrawalKeys[0]["ledgerId"],
                 "identifier" => $recipientId,
-                "feesEstimate" => $response["data"]["fees"]["feesEstimate"],
+                "feesEstimate" => $feesEstimate,
             ]);
 
             $acResponse = $this->post($this->targetNode["node"], $lT1x);
