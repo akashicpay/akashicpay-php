@@ -410,13 +410,17 @@ class AkashicPay
                 "?l2Hash=" .
                 urlencode($l2TxHash)
         );
-        $transaction = $response["data"]["transaction"];
-        return array_merge($transaction, [
-            "tokenSymbol" =>
-                $transaction["tokenSymbol"] === TokenSymbol::TETHER
-                    ? TokenSymbol::USDT
-                    : $transaction["tokenSymbol"],
-        ]) ?? null;
+        $transaction = $response["data"]["transaction"] ?? null;
+        if ($transaction) {
+            return array_merge($transaction, [
+                "tokenSymbol" =>
+                    $transaction["tokenSymbol"] === TokenSymbol::TETHER
+                        ? TokenSymbol::USDT
+                        : $transaction["tokenSymbol"],
+            ]) ?? null;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -471,7 +475,7 @@ class AkashicPay
         // $this->logger->info('Set target node as %s by testing for fastest', $fastestNode);
         // return $fastestNode;
         return $this->env === Environment::PRODUCTION
-            ? ACNode::SINGAPORE_DAI
+            ? ACNode::SINGAPORE_1
             : ACDevNode::SINGAPORE_1;
     }
 
