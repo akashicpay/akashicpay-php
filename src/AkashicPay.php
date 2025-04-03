@@ -14,6 +14,7 @@ use Akashic\Constants\ACDevNode;
 use Akashic\Constants\ACNode;
 use Akashic\AkashicChain;
 use Akashic\Constants\AkashicBaseUrls;
+use Akashic\L1Network;
 
 class AkashicPay
 {
@@ -92,46 +93,104 @@ class AkashicPay
      */
     public function payout($recipientId, $to, $amount, $network, $token = null)
     {
-        $payload = [
-            "toAddress" => $to,
-            "coinSymbol" => $network,
-            "amount" => $amount,
-            "tokenSymbol" => $token,
-        ];
+        $toAddress = $to;
+        $initiatedToNonL2 = null;
+        $isL2 = false;
 
-        var_dump($this->akashicUrl);
-        $response = $this->post(
-            $this->akashicUrl . "/verify-transaction",
-            $payload
-        );
-        $verifiedTxns = $response["data"];
+        $result = $this->lookForL2Address($to, $network);
 
-        if (count($verifiedTxns) > 1) {
-            throw new \Exception("Transaction cannot be completed in one step");
+        if (
+            preg_match(
+                L1Network::NETWORK_DICTIONARY[$network]["regex"]["address"],
+                $to
+            )
+        ) {
+            // Sending by L1 address
+            if ($result["l2Address"]) {
+                $toAddress = $result["l2Address"];
+                $initiatedToNonL2 = $to;
+                $isL2 = true;
+            }
+        } elseif (preg_match(L2Regex::L2_REGEX, $to)) {
+            // Sending L2 by L2 address
+            if (!$result["l2Address"]) {
+                throw new \Exception(AkashicError::L2AddressNotFound);
+            }
+            $isL2 = true;
+        } else {
+            // Sending by alias
+            if (!$result["l2Address"]) {
+                throw new \Exception(AkashicError::L2AddressNotFound);
+            }
+            $toAddress = $result["l2Address"];
+            $initiatedToNonL2 = $to;
+            $isL2 = true;
         }
-        if (empty($verifiedTxns[0]["txToSign"])) {
-            throw new \Exception("Unknown error");
+
+        if ($isL2) {
+            $l2Tx = AkashicChain::l2Transaction([
+                "otk" => $this->otk,
+                "amount" => $amount,
+                "toAddress" => $toAddress,
+                "coinSymbol" => $network,
+                "tokenSymbol" => $token,
+                "initiatedToNonL2" => $initiatedToNonL2,
+            ]);
+
+            $acResponse = $this->post($this->targetNode, $l2Tx);
+
+            AkashicChain::checkForAkashicChainError($acResponse["data"]);
+
+            $this->logger->info(
+                "Paid out %d %s to user %s at %s",
+                $amount,
+                $token,
+                $recipientId,
+                $to
+            );
+
+            return [
+                "l2Hash" => $acResponse["data"]['$umid'],
+            ];
+        } else {
+            $payload = [
+                "toAddress" => $to,
+                "coinSymbol" => $network,
+                "amount" => $amount,
+                "tokenSymbol" => $token,
+            ];
+
+            $response = $this->post(
+                $this->akashicUrl . AkashicEndpoints::PrepareTx,
+                $payload
+            );
+            $withdrawalKeys = $response["data"]["withdrawalKeys"];
+
+            $lT1x = AkashicChain::l2ToL1SignTransaction([
+                "otk" => $this->otk,
+                "amount" => $amount,
+                "toAddress" => $toAddress,
+                "coinSymbol" => $network,
+                "tokenSymbol" => $token,
+                "keyLedgerId" => $withdrawalKeys[0]["ledgerId"],
+            ]);
+
+            $acResponse = $this->post($this->targetNode, $lT1x);
+
+            AkashicChain::checkForAkashicChainError($acResponse["data"]);
+
+            $this->logger->info(
+                "Paid out %d %s to user %s at %s",
+                $amount,
+                $token,
+                $recipientId,
+                $to
+            );
+
+            return [
+                "l2Hash" => $acResponse["data"]['$umid'],
+            ];
         }
-
-        $txToSign = $verifiedTxns[0]["txToSign"];
-        $txToSign['$tx']['$i']["metadata"] = ["identifier" => $recipientId];
-
-        $signedTx = $this->signTransaction($txToSign);
-        $acResponse = $this->post($this->targetNode, $signedTx);
-
-        AkashicChain::checkForAkashicChainError($acResponse["data"]);
-
-        $this->logger->info(
-            "Paid out %d %s to user %s at %s",
-            $amount,
-            $token,
-            $recipientId,
-            $to
-        );
-
-        return [
-            "l2Hash" => $acResponse["data"]['$umid'],
-        ];
     }
 
     /**

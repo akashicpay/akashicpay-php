@@ -10,9 +10,13 @@ use Akashic\Constants\TronSymbol;
 use Akashic\KeyPair;
 use Akashic\Classes\ActiveLedgerResponse;
 use Akashic\Classes\IBaseTransaction;
+use Akashic\L1Network;
 
 class AkashicChain
 {
+    public const L2_REGEX = '/^AS[A-Fa-f\d]{64}$/';
+    public const NITR0GEN_NATIVE_COIN = "#native";
+
     /**
      * Check for errors in the AkashicChain response
      *
@@ -115,6 +119,88 @@ class AkashicChain
             ],
             '$sigs' => [],
             '$selfsign' => true,
+        ];
+
+        // Sign Transaction
+        return self::signTransaction($txBody, $otk);
+    }
+
+    public static function l2Transaction(array $params): IBaseTransaction
+    {
+        $otk = $params["otk"];
+        $coinSymbol = $params["coinSymbol"];
+        $amount = $params["amount"];
+        $toAddress = $params["toAddress"];
+        $tokenSymbol = $params["tokenSymbol"] ?? self::NITR0GEN_NATIVE_COIN;
+        $initiatedToNonL2 = $params["initiatedToNonL2"] ?? null;
+
+        $txBody = [
+            '$tx' => [
+                '$namespace' => TestNetContracts::Namespace,
+                '$contract' => TestNetContracts::CryptoTransfer,
+                '$entry' => "transfer",
+                '$i' => [
+                    "owner" => [
+                        '$stream' => $otk->identity,
+                        "network" => $coinSymbol,
+                        "token" => $tokenSymbol,
+                        "amount" => $amount,
+                    ],
+                ],
+                '$o' => [
+                    "to" => ['$stream' => $toAddress],
+                ],
+                "metadata" => $initiatedToNonL2
+                    ? ["initiatedToNonL2" => $initiatedToNonL2]
+                    : [],
+            ],
+            '$sigs' => [],
+        ];
+
+        // Sign Transaction
+        return self::signTransaction($txBody, $otk);
+    }
+
+    public static function l2ToL1SignTransaction(
+        array $params
+    ): IBaseTransaction {
+        $otk = $params["otk"];
+        $keyLedgerId = $params["keyLedgerId"];
+        $coinSymbol = $params["coinSymbol"];
+        $amount = $params["amount"];
+        $toAddress = $params["toAddress"];
+        $tokenSymbol = $params["tokenSymbol"] ?? self::NITR0GEN_NATIVE_COIN;
+
+        $o = [
+            $keyLedgerId => ["amount" => $amount],
+        ];
+
+        $contractAddress =
+            array_filter(
+                L1Network::NETWORK_DICTIONARY[$coinSymbol]["tokens"],
+                function ($t) use ($tokenSymbol) {
+                    return $t["symbol"] === $tokenSymbol;
+                }
+            )[0]["contract"] ?? null;
+
+        $txBody = [
+            '$tx' => [
+                '$namespace' => TestNetContracts::Namespace,
+                '$contract' => TestNetContracts::CryptoTransfer,
+                '$entry' => "sign",
+                '$i' => [
+                    "owner" => [
+                        '$stream' => $otk->identity,
+                        "network" => $coinSymbol,
+                        "token" => $tokenSymbol,
+                        "amount" => $amount,
+                        "toAddress" => $toAddress,
+                        "contractAddress" => $contractAddress,
+                    ],
+                ],
+                '$o' => $o,
+            ],
+            '$sigs' => [],
         ];
 
         // Sign Transaction
