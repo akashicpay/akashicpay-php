@@ -31,7 +31,7 @@
       [
         "@semantic-release/exec",
         {
-          "publishCmd": "cd ../../../ci/scripts && PHP_SDK_VERSION=${nextRelease.version} bash ci/scripts/deploy-php-sdk.sh"
+          "publishCmd": "cd ../../.. && PHP_SDK_VERSION=${nextRelease.version} bash ci/scripts/deploy-php-sdk.sh"
         }
       ]
     ]
