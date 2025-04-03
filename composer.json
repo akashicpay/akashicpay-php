@@ -1,0 +1,32 @@
+{
+  "name": "akashic/akashic-pay",
+  "description": "A library to interact with the AkashicChain network, written in PHP.",
+  "type": "library",
+  "require": {
+    "php": "*",
+    "fgrosse/phpasn1": "^2.5.0",
+    "ext-gmp": "*",
+    "bitwasp/bitcoin": "^1.0",
+    "simplito/elliptic-php": "^1.0",
+    "monolog/monolog": "^2.9",
+    "guzzlehttp/guzzle": "^7.9"
+  },
+  "autoload": {
+    "psr-4": {
+      "Akashic\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Akashic\\Tests\\": "tests/"
+    }
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.6"
+  },
+  "config": {
+    "platform": {
+      "php": "7.4.33"
+    }
+  }
+}
