@@ -22,8 +22,7 @@ class AkashicPayTest extends TestCase
             'environment' => Environment::DEVELOPMENT,
         ]);
 
-        // Wait for async operations if needed, e.g. $akPay->init() if it's async
-        // This example assumes synchronous behavior in the constructor for simplicity
+        $akPay->init([]);
 
         $otk = $this->getPrivateProperty($akPay, 'otk');
 
@@ -38,12 +37,12 @@ class AkashicPayTest extends TestCase
 
         $akPay = new AkashicPay([
             'environment' => Environment::DEVELOPMENT,
+        ]);
+
+        $akPay->init([
             'privateKey' => $keyPair,
             'l2Address' => $l2Address,
         ]);
-
-        // Wait for async operations if needed, e.g. $akPay->init() if it's async
-        // This example assumes synchronous behavior in the constructor for simplicity
 
         $otk = $this->getPrivateProperty($akPay, 'otk');
 
@@ -58,12 +57,12 @@ class AkashicPayTest extends TestCase
 
         $akPay = new AkashicPay([
             'environment' => Environment::DEVELOPMENT,
+        ]);
+
+        $akPay->init([
             'recoveryPhrase' => $recoveryPhrase,
             'l2Address' => $l2Address,
         ]);
-
-        // Wait for async operations if needed, e.g. $akPay->init() if it's async
-        // This example assumes synchronous behavior in the constructor for simplicity
 
         $otk = $this->getPrivateProperty($akPay, 'otk');
 

@@ -34,10 +34,10 @@ class KeyHandler
             $keyHolder = [
                 'key' => [
                     'pub' => [
-                        'pkcs8pem' => $publicKey
+                        'pkcs8pem' => "0x" . $publicKey
                     ],
                     'prv' => [
-                        'pkcs8pem' => $privateKey
+                        'pkcs8pem' => "0x" . $privateKey
                     ]
                 ],
                 'name' => $keyName,
@@ -76,10 +76,10 @@ class KeyHandler
             $keyHolder = [
                 'key' => [
                     'pub' => [
-                        'pkcs8pem' => $publicKey
+                        'pkcs8pem' => "0x" . $publicKey
                     ],
                     'prv' => [
-                        'pkcs8pem' => $privateKey
+                        'pkcs8pem' => "0x" . $privateKey
                     ]
                 ],
                 'name' => $keyName,

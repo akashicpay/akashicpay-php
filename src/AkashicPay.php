@@ -12,6 +12,7 @@ use Akashic\Constants\Environment;
 use Akashic\Constants\AkashicError;
 use Akashic\Constants\ACDevNode;
 use Akashic\Constants\ACNode;
+use Akashic\AkashicChain;
 
 class AkashicPay
 {
@@ -35,13 +36,15 @@ class AkashicPay
         $this->httpClient = new HttpClient();
 
         $this->targetNode = $args['targetNode'] ?? null;
-
-        $this->init($args);
     }
 
     public function init($args)
     {
         $this->logger->info('Initialising AkashicPay instance');
+        if (!$this->targetNode) {
+            $this->targetNode = $this->chooseBestACNode();
+        }
+
         if (!isset($args['l2Address'])) {
             $this->setNewOTK();
         } elseif (isset($args['privateKey']) && $args['privateKey']) {
@@ -50,10 +53,6 @@ class AkashicPay
             $this->setOtkFromRecoveryPhrase($args['recoveryPhrase'], $args['l2Address']);
         } else {
             throw new \Exception(AkashicError::INCORRECT_PRIVATE_KEY_FORMAT);
-        }
-
-        if (!$this->targetNode) {
-            $this->targetNode = $this->chooseBestACNode();
         }
 
         $this->logger->info('AkashicPay instance initialised');
@@ -83,24 +82,24 @@ class AkashicPay
 
         // $this->logger->info('Set target node as %s by testing for fastest', $fastestNode);
         // return $fastestNode;
-        return Environment::PRODUCTION ? ACNode::SINGAPORE_DAI : ACDevNode::SINGAPORE_1;
+        return $this->env === Environment::PRODUCTION ? ACNode::SINGAPORE_DAI : ACDevNode::SINGAPORE_1;
     }
 
     private function setNewOTK(): void
     {
         $this->logger->info('Generating new OTK for development environment. Access it via `this->otk()`');
         $otk = Otk::generateOTK();
-        // $onboardTx = OnboardOtkTransaction::create($otk);
+        $onboardTx = AkashicChain::onboardOtkTransaction($otk);
 
-        // $response = $this->post($this->targetNode, $onboardTx);
-        // $identity = $response['data']['$streams']['new'][0]['id'] ?? null;
+        $response = $this->post($this->targetNode . ':5260', $onboardTx);
+        $identity = $response['data']['$streams']['new'][0]['id'] ?? null;
 
-        // if (is_null($identity)) {
-        //     throw new \Exception(AkashicError::TEST_NET_OTK_ONBOARDING_FAILED);
-        // }
+        if (is_null($identity)) {
+            throw new \Exception(AkashicError::TEST_NET_OTK_ONBOARDING_FAILED);
+        }
 
-        // $this->otk = array_merge($otk, ['identity' => 'AS' . $identity]);
-        // $this->logger->info('New OTK generated and onboarded with identity: %s', $this->otk['identity']);
+        $this->otk = array_merge($otk, ['identity' => 'AS' . $identity]);
+        $this->logger->debug('New OTK generated and onboarded with identity: ' . $this->otk['identity']);
     }
 
     private function setOtkFromKeyPair(string $privateKey, string $l2Address): void
@@ -117,6 +116,12 @@ class AkashicPay
     {
         $this->otk = array_merge(Otk::restoreOtkFromPhrase($recoveryPhrase), ['identity' => $l2Address]);
         $this->logger->debug('OTK set from recovery phrase');
+    }
+
+    private function post(string $url, $payload)
+    {
+        $this->logger->info('POSTing to AC url');
+        return $this->httpClient->post($url, $payload);
     }
 }
 
