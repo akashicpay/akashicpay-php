@@ -355,7 +355,9 @@ class AkashicPay
             "identity" => $this->otk["identity"],
             "withSigningErrors" => true,
         ]);
-        $query = http_build_query($queryParameters);
+        $query = http_build_query(
+            array_map([AkashicPay::class, "boolsToString"], $queryParameters)
+        );
         $transactions = $this->get(
             $this->akashicUrl .
                 AkashicEndpoints::OWNER_TRANSACTION .
@@ -428,7 +430,9 @@ class AkashicPay
         $queryParameters = array_merge($getByOwnerAndIdentifierParams, [
             "identity" => $this->otk["identity"],
         ]);
-        $query = http_build_query($queryParameters);
+        $query = http_build_query(
+            array_map([AkashicPay::class, "boolsToString"], $queryParameters)
+        );
         $transactions = $this->get(
             $this->akashicUrl .
                 AkashicEndpoints::IDENTIFIER_LOOKUP .
@@ -552,5 +556,16 @@ class AkashicPay
     private function signTransaction($tx)
     {
         return $this->akashicChain->signTransaction($tx, $this->otk);
+    }
+
+    function boolsToString($value)
+    {
+        if ($value === true) {
+            return "true";
+        } // strict comparison with === is necessary
+        if ($value === false) {
+            return "false";
+        }
+        return $value;
     }
 }
