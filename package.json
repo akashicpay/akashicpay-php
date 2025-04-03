@@ -20,7 +20,8 @@
           "preset": "angular",
           "releaseRules": [
             {
-              "type": "chore", "release": "patch"
+              "type": "chore",
+              "release": "patch"
             }
           ]
         }
