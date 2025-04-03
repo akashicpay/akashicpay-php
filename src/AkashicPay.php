@@ -221,6 +221,8 @@ class AkashicPay
                 $network
             );
 
+            $ethGasPrice = $response["data"]["ethGasPrice"];
+
             $lT1x = $this->akashicChain->l2ToL1SignTransaction([
                 "otk" => $this->otk,
                 "amount" => $decimalAmount,
@@ -230,6 +232,7 @@ class AkashicPay
                 "keyLedgerId" => $withdrawalKeys[0]["ledgerId"],
                 "identifier" => $recipientId,
                 "feesEstimate" => $feesEstimate,
+                "ethGasPrice" => $ethGasPrice,
             ]);
 
             $acResponse = $this->post($this->targetNode["node"], $lT1x);
