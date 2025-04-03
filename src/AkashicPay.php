@@ -55,15 +55,40 @@ class AkashicPay
 
         if (!isset($args["l2Address"])) {
             $this->setNewOTK();
-        } elseif (isset($args["privateKey"]) && $args["privateKey"]) {
-            $this->setOtkFromKeyPair($args["privateKey"], $args["l2Address"]);
-        } elseif (isset($args["recoveryPhrase"]) && $args["recoveryPhrase"]) {
-            $this->setOtkFromRecoveryPhrase(
-                $args["recoveryPhrase"],
-                $args["l2Address"]
-            );
         } else {
-            throw new \Exception(AkashicError::INCORRECT_PRIVATE_KEY_FORMAT);
+            // Chck if BP if on prod
+            if ($this->env === Environment::PRODUCTION) {
+                $checkIfBpUrl =
+                    $this->akashicUrl .
+                    AkashicEndpoint::IS_BP .
+                    urlencode($args["l2Address"]);
+                $isBp = $this->get($checkIfBpUrl)["data"]["isBp"];
+
+                if (!$isBp) {
+                    throw new \Exception(
+                        "Please sign up on AkashicPay.com first"
+                    );
+                }
+            }
+
+            if (isset($args["privateKey"]) && $args["privateKey"]) {
+                $this->setOtkFromKeyPair(
+                    $args["privateKey"],
+                    $args["l2Address"]
+                );
+            } elseif (
+                isset($args["recoveryPhrase"]) &&
+                $args["recoveryPhrase"]
+            ) {
+                $this->setOtkFromRecoveryPhrase(
+                    $args["recoveryPhrase"],
+                    $args["l2Address"]
+                );
+            } else {
+                throw new \Exception(
+                    AkashicError::INCORRECT_PRIVATE_KEY_FORMAT
+                );
+            }
         }
 
         $this->logger->info("AkashicPay instance initialised");
