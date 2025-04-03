@@ -112,7 +112,7 @@ class AkashicPay
             $token = TOkenSymbol::TETHER;
         }
         // convert to backend currency
-        $amount = Currency::convertToDecimals($amount, $network, $token);
+        $decimalAmount = Currency::convertToDecimals($amount, $network, $token);
 
         $result = $this->lookForL2Address($to, $network);
 
@@ -147,7 +147,7 @@ class AkashicPay
         if ($isL2) {
             $l2Tx = $this->akashicChain->l2Transaction([
                 "otk" => $this->otk,
-                "amount" => $amount,
+                "amount" => $decimalAmount,
                 "toAddress" => $toAddress,
                 "coinSymbol" => $network,
                 "tokenSymbol" => $token,
@@ -186,7 +186,7 @@ class AkashicPay
 
             $lT1x = $this->akashicChain->l2ToL1SignTransaction([
                 "otk" => $this->otk,
-                "amount" => $amount,
+                "amount" => $decimalAmount,
                 "toAddress" => $toAddress,
                 "coinSymbol" => $network,
                 "tokenSymbol" => $token,
