@@ -121,6 +121,11 @@ Search.appendIndex(
             "summary": "Get\u0020details\u0020of\u0020an\u0020individual\u0020transaction.\u0020Returns\u0020null\u0020if\u0020no\ntransaction\u0020found\u0020for\u0020the\u0020queried\u0020hash",
             "url": "classes/Akashic-AkashicPay.html#method_getTransactionDetails"
         },                {
+            "fqsen": "\\Akashic\\AkashicPay\u003A\u003AgetByOwnerAndIdentifier\u0028\u0029",
+            "name": "getByOwnerAndIdentifier",
+            "summary": "Get\u0020key\u0020by\u0020BP\u0020and\u0020identifier",
+            "url": "classes/Akashic-AkashicPay.html#method_getByOwnerAndIdentifier"
+        },                {
             "fqsen": "\\Akashic\\AkashicPay\u003A\u003AchooseBestACNode\u0028\u0029",
             "name": "chooseBestACNode",
             "summary": "Finds\u0020an\u0020AkashicChain\u0020node\u0020to\u0020target\u0020for\u0020requests.\u0020The\u0020SDK\u0020will\u0020attempt\u0020to\nfind\u0020the\u0020fastest\u0020node\u0020for\u0020you.",
@@ -346,25 +351,45 @@ Search.appendIndex(
             "summary": "",
             "url": "classes/Akashic-Constants-ACDevNode.html#constant_SINGAPORE_2"
         },                {
-            "fqsen": "\\Akashic\\Constants\\ACDevNode\u003A\u003ATOKYO",
-            "name": "TOKYO",
+            "fqsen": "\\Akashic\\Constants\\ACDevNode\u003A\u003AJAPAN_1",
+            "name": "JAPAN_1",
             "summary": "",
-            "url": "classes/Akashic-Constants-ACDevNode.html#constant_TOKYO"
+            "url": "classes/Akashic-Constants-ACDevNode.html#constant_JAPAN_1"
         },                {
             "fqsen": "\\Akashic\\Constants\\ACNode",
             "name": "ACNode",
             "summary": "",
             "url": "classes/Akashic-Constants-ACNode.html"
         },                {
-            "fqsen": "\\Akashic\\Constants\\ACNode\u003A\u003ASINGAPORE_DAI",
-            "name": "SINGAPORE_DAI",
+            "fqsen": "\\Akashic\\Constants\\ACNode\u003A\u003ASINGAPORE_1",
+            "name": "SINGAPORE_1",
             "summary": "",
-            "url": "classes/Akashic-Constants-ACNode.html#constant_SINGAPORE_DAI"
+            "url": "classes/Akashic-Constants-ACNode.html#constant_SINGAPORE_1"
         },                {
-            "fqsen": "\\Akashic\\Constants\\ACNode\u003A\u003ALONDON_ALN",
-            "name": "LONDON_ALN",
+            "fqsen": "\\Akashic\\Constants\\ACNode\u003A\u003ASINGAPORE_2",
+            "name": "SINGAPORE_2",
             "summary": "",
-            "url": "classes/Akashic-Constants-ACNode.html#constant_LONDON_ALN"
+            "url": "classes/Akashic-Constants-ACNode.html#constant_SINGAPORE_2"
+        },                {
+            "fqsen": "\\Akashic\\Constants\\ACNode\u003A\u003AHONGKONG_1",
+            "name": "HONGKONG_1",
+            "summary": "",
+            "url": "classes/Akashic-Constants-ACNode.html#constant_HONGKONG_1"
+        },                {
+            "fqsen": "\\Akashic\\Constants\\ACNode\u003A\u003AHONGKONG_2",
+            "name": "HONGKONG_2",
+            "summary": "",
+            "url": "classes/Akashic-Constants-ACNode.html#constant_HONGKONG_2"
+        },                {
+            "fqsen": "\\Akashic\\Constants\\ACNode\u003A\u003AJAPAN_1",
+            "name": "JAPAN_1",
+            "summary": "",
+            "url": "classes/Akashic-Constants-ACNode.html#constant_JAPAN_1"
+        },                {
+            "fqsen": "\\Akashic\\Constants\\ACNode\u003A\u003AJAPAN_2",
+            "name": "JAPAN_2",
+            "summary": "",
+            "url": "classes/Akashic-Constants-ACNode.html#constant_JAPAN_2"
         },                {
             "fqsen": "\\Akashic\\Constants\\AkashicBaseUrls",
             "name": "AkashicBaseUrls",
@@ -440,6 +465,11 @@ Search.appendIndex(
             "name": "TRANSACTIONS_DETAILS",
             "summary": "",
             "url": "classes/Akashic-Constants-AkashicEndpoints.html#constant_TRANSACTIONS_DETAILS"
+        },                {
+            "fqsen": "\\Akashic\\Constants\\AkashicEndpoints\u003A\u003AIDENTIFIER_LOOKUP",
+            "name": "IDENTIFIER_LOOKUP",
+            "summary": "",
+            "url": "classes/Akashic-Constants-AkashicEndpoints.html#constant_IDENTIFIER_LOOKUP"
         },                {
             "fqsen": "\\Akashic\\Constants\\AkashicError",
             "name": "AkashicError",
@@ -736,6 +766,16 @@ Search.appendIndex(
             "summary": "",
             "url": "classes/Akashic-L1Network.html"
         },                {
+            "fqsen": "\\Akashic\\L1Network\u003A\u003AETH_DECIMAL",
+            "name": "ETH_DECIMAL",
+            "summary": "",
+            "url": "classes/Akashic-L1Network.html#constant_ETH_DECIMAL"
+        },                {
+            "fqsen": "\\Akashic\\L1Network\u003A\u003ATRX_DECIMAL",
+            "name": "TRX_DECIMAL",
+            "summary": "",
+            "url": "classes/Akashic-L1Network.html#constant_TRX_DECIMAL"
+        },                {
             "fqsen": "\\Akashic\\L1Network\u003A\u003AETH_REGEX",
             "name": "ETH_REGEX",
             "summary": "",
@@ -811,6 +851,41 @@ Search.appendIndex(
             "summary": "",
             "url": "classes/Akashic-OTK-Otk.html#method_generateOTK"
         },                {
+            "fqsen": "\\AkashicPay\\Utils\\Currency",
+            "name": "Currency",
+            "summary": "",
+            "url": "classes/AkashicPay-Utils-Currency.html"
+        },                {
+            "fqsen": "\\AkashicPay\\Utils\\Currency\u003A\u003AconvertToDecimals\u0028\u0029",
+            "name": "convertToDecimals",
+            "summary": "Method\u0020for\u0020safe\u0020conversion\u0020from\u0020coin\/token\u0020decimals.",
+            "url": "classes/AkashicPay-Utils-Currency.html#method_convertToDecimals"
+        },                {
+            "fqsen": "\\AkashicPay\\Utils\\Currency\u003A\u003AgetConversionFactor\u0028\u0029",
+            "name": "getConversionFactor",
+            "summary": "Get\u0020the\u0020conversion\u0020factor\u0020based\u0020on\u0020the\u0020coin\u0020or\u0020token\u0020symbol.",
+            "url": "classes/AkashicPay-Utils-Currency.html#method_getConversionFactor"
+        },                {
+            "fqsen": "\\AkashicPay\\Utils\\Prefix",
+            "name": "Prefix",
+            "summary": "",
+            "url": "classes/AkashicPay-Utils-Prefix.html"
+        },                {
+            "fqsen": "\\AkashicPay\\Utils\\Prefix\u003A\u003AprefixWithAS\u0028\u0029",
+            "name": "prefixWithAS",
+            "summary": "Ensures\u0020a\u0020UMID\/L2\u0020address\u0020has\u0020exactly\u0020one\u0020\u0022AS\u0022\u0020prefix.\u0020It\u0020is\u0020idempotent.",
+            "url": "classes/AkashicPay-Utils-Prefix.html#method_prefixWithAS"
+        },                {
+            "fqsen": "\\AkashicPay\\Utils\\Prefix\u003A\u003AremoveASPrefix\u0028\u0029",
+            "name": "removeASPrefix",
+            "summary": "Ensures\u0020a\u0020UMID\/L2\u0020address\u0020doesn\u0027t\u0020have\u0020an\u0020\u0022AS\u0022\u0020prefix.\u0020It\u0020is\u0020idempotent.",
+            "url": "classes/AkashicPay-Utils-Prefix.html#method_removeASPrefix"
+        },                {
+            "fqsen": "\\AkashicPay\\Utils\\Prefix\u003A\u003AL2_REGEX_WITH_OPTIONAL_PREFIX",
+            "name": "L2_REGEX_WITH_OPTIONAL_PREFIX",
+            "summary": "Regular\u0020expression\u0020for\u0020matching\u0020a\u0020UMID\/L2\u0020address\u0020with\u0020or\u0020without\u0020the\u0020\u0022AS\u0022\u0020prefix.",
+            "url": "classes/AkashicPay-Utils-Prefix.html#constant_L2_REGEX_WITH_OPTIONAL_PREFIX"
+        },                {
             "fqsen": "\\",
             "name": "\\",
             "summary": "",
@@ -850,5 +925,15 @@ Search.appendIndex(
             "name": "OTK",
             "summary": "",
             "url": "namespaces/akashic-otk.html"
+        },                {
+            "fqsen": "\\AkashicPay\\Utils",
+            "name": "Utils",
+            "summary": "",
+            "url": "namespaces/akashicpay-utils.html"
+        },                {
+            "fqsen": "\\AkashicPay",
+            "name": "AkashicPay",
+            "summary": "",
+            "url": "namespaces/akashicpay.html"
         }            ]
 );
