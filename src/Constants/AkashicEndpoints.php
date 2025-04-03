@@ -9,4 +9,5 @@ class AkashicEndpoints
     public const OWNER_TRANSACTION = "/v0/public-api/owner/transactions";
     public const OWNER_BALANCE = "/v0/public-api/owner/details";
     public const TRANSACTIONS_DETAILS = "/v0/transactions/transfer";
+    public const IDENTIFIER_LOOKUP = "/v0/key/bp-deposit-key";
 }

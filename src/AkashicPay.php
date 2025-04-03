@@ -220,6 +220,18 @@ class AkashicPay
      */
     public function getDepositAddress($network, $identifier)
     {
+        $response = $this->getByOwnerAndIdentifier([
+            "identifier" => $identifier,
+            "coinSymbol" => $network,
+        ]);
+
+        if ($response["address"]) {
+            return [
+                "address" => $response["address"],
+                "identifier" => $identifier,
+            ];
+        }
+
         $tx = $this->akashicChain->keyCreateTransaction(
             $network,
             $this->otk["identity"]
@@ -357,6 +369,24 @@ class AkashicPay
                     ? TokenSymbol::USDT
                     : $transaction["tokenSymbol"],
         ]) ?? null;
+    }
+
+    /**
+     * Get key by BP and identifier
+     * @return address
+     */
+    public function getByOwnerAndIdentifier($getByOwnerAndIdentifierParams)
+    {
+        $queryParameters = array_merge($getByOwnerAndIdentifierParams, [
+            "identity" => $this->otk["identity"],
+        ]);
+        $query = http_build_query($queryParameters);
+        $transactions = $this->get(
+            $this->akashicUrl .
+                AkashicEndpoint::IDENTIFIER_LOOKUP .
+                "?" .
+                $query
+        )["data"];
     }
 
     /**
