@@ -5,7 +5,13 @@ A library to interact with the AkashicChain network, written in PHP.
 # Installing
 
 ```bash
-composer require Akashic/AkashicPay
+composer require akashic/akashic-pay
+```
+
+OR if you are using PHP 8
+
+```bash
+composer require akashic/akashic-pay --ignore-platform-reqs
 ```
 
 # Usage

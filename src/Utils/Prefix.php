@@ -1,6 +1,6 @@
 <?php
 
-namespace AkashicPay\Utils;
+namespace Akashic\Utils;
 
 class Prefix
 {

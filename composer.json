@@ -6,7 +6,6 @@
     "php": "*",
     "ext-gmp": "*",
     "fgrosse/phpasn1": "^2.5.0",
-    "ext-gmp": "*",
     "bitwasp/bitcoin": "^1.0",
     "simplito/elliptic-php": "^1.0",
     "monolog/monolog": "^2.9",
