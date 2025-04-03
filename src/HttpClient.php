@@ -8,10 +8,13 @@ use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use JsonException;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 use Psr\Http\Message\ResponseInterface;
 
 use function file_get_contents;
 use function json_decode;
+use function json_encode;
 
 use const JSON_THROW_ON_ERROR;
 
@@ -20,9 +23,16 @@ class HttpClient
     private $client;
     private $apVersion;
     private $apClient = 'php-sdk';
+    private Logger $logger;
 
     public function __construct()
     {
+        // Logger initialization
+        $this->logger = new Logger("HttpClient");
+        $this->logger->pushHandler(
+            new StreamHandler("php://stdout", Logger::DEBUG)
+        );
+
         $config          = json_decode(file_get_contents(__DIR__ . '/config.json'), true);
         $this->client    = new Client();
         $this->apVersion = $config['version'];
@@ -43,6 +53,8 @@ class HttpClient
                 ],
             );
 
+            $this->checkApiWarning($response->getHeaders());
+
             return $this->handleResponse($response);
         } catch (RequestException $e) {
             $this->handleException($e);
@@ -61,10 +73,13 @@ class HttpClient
                     ],
                 ],
             );
+
+            $this->checkApiWarning($response->getHeaders());
+
+            return $this->handleResponse($response);
         } catch (RequestException $e) {
             $this->handleException($e);
         }
-        return $this->handleResponse($response);
     }
 
     /**
@@ -97,5 +112,12 @@ class HttpClient
         throw new Exception(
             $response->getStatusCode() . ': ' . $errorResponse
         );
+    }
+
+    private function checkApiWarning($headers)
+    {
+        if (isset($headers['Warning'])) {
+            $this->logger->warning(json_encode($headers['Warning']));
+        }
     }
 }
