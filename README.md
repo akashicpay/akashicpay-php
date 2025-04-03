@@ -42,19 +42,16 @@ $akashicPay = new AkashicPay([
     'environment' => getenv('environment') === 'production' ? Environment::PRODUCTION : Environment::DEVELOPMENT,
     // optional, the SDK will try to find the fastest node if omitted
     'targetNode' => getenv('environment') === 'production' ? ACNode::SINGAPORE_DAI : ACDevNode::SINGAPORE_1,
-]);
-
-$akashicPay->init([
-  // use whatever secret management tool you prefer to load the private key
-  // from your AkashicLink account. It should be of the form:
-  // `"0x2d99270559d7702eadd1c5a483d0a795566dc76c18ad9d426c932de41bfb78b7"`
-  // In development, each developer could have their own, or omit this (and
-  // the l2Address), in which case the SDK will create and use a new pair.
-  // you can instead use your Akashic Link account's 12-word phrase, using the
-  // `init()` argument `recoveryPhrase`
-  'privateKey' => getenv('akashicKey'),
-  // this is the address of your AkashicLink account. Of the form "AS1234..."
-  'l2Address' => getenv('l2Address'),
+    // use whatever secret management tool you prefer to load the private key
+    // from your AkashicLink account. It should be of the form:
+    // `"0x2d99270559d7702eadd1c5a483d0a795566dc76c18ad9d426c932de41bfb78b7"`
+    // In development, each developer could have their own, or omit this (and
+    // the l2Address), in which case the SDK will create and use a new pair.
+    // you can instead use your Akashic Link account's 12-word phrase, using the
+    // argument `recoveryPhrase`
+    'privateKey' => getenv('akashicKey'),
+    // this is the address of your AkashicLink account. Of the form "AS1234..."
+    'l2Address' => getenv('l2Address'),
 ]);
 ```
 
@@ -77,8 +74,6 @@ $akashicPay = new AkashicPay([
     'environment' => Environment::DEVELOPMENT,
 ]);
 
-$akashicPay->init([]);
-
 // for security reasons, this would throw if the environment was production
 // but you can use this in development to record and re-use your otk
 $keyPair = $akashicPay->getKeyBackup();
@@ -96,11 +91,8 @@ use Akashic\Constants\Environment;
 // And in production, an otk must be specified
 $akashicPay = new AkashicPay([
     'environment' => Environment::DEVELOPMENT,
-]);
-
-$akashicPay->init([
-  'privateKey' => getenv('akashicKey'),
-  'l2Address' => getenv('l2Address'),
+    'privateKey' => getenv('akashicKey'),
+    'l2Address' => getenv('l2Address'),
 ]);
 
 ```

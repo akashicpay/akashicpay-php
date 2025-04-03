@@ -43,7 +43,22 @@ class AkashicPay
         // Initialize HttpClient
         $this->httpClient = new HttpClient();
 
-        $this->targetNode = $args["targetNode"] ?? null;
+        $this->targetNode = $args["targetNode"] ?? $this->chooseBestACNode();
+
+        if (!isset($args["l2Address"])) {
+            $this->setNewOTK();
+        } elseif (isset($args["privateKey"]) && $args["privateKey"]) {
+            $this->setOtkFromKeyPair($args["privateKey"], $args["l2Address"]);
+        } elseif (isset($args["recoveryPhrase"]) && $args["recoveryPhrase"]) {
+            $this->setOtkFromRecoveryPhrase(
+                $args["recoveryPhrase"],
+                $args["l2Address"]
+            );
+        } else {
+            throw new \Exception(AkashicError::INCORRECT_PRIVATE_KEY_FORMAT);
+        }
+
+        $this->logger->info("AkashicPay instance initialised");
     }
 
     /**
@@ -243,33 +258,6 @@ class AkashicPay
                 urlencode($l2TxHash)
         );
         return $response["data"]["transaction"] ?? null;
-    }
-
-    /**
-     * Complete the initialisation of the AkashicPay instance by doing the async
-     * operations not possible in the constructor
-     */
-    public function init($args)
-    {
-        $this->logger->info("Initialising AkashicPay instance");
-        if (!$this->targetNode) {
-            $this->targetNode = $this->chooseBestACNode();
-        }
-
-        if (!isset($args["l2Address"])) {
-            $this->setNewOTK();
-        } elseif (isset($args["privateKey"]) && $args["privateKey"]) {
-            $this->setOtkFromKeyPair($args["privateKey"], $args["l2Address"]);
-        } elseif (isset($args["recoveryPhrase"]) && $args["recoveryPhrase"]) {
-            $this->setOtkFromRecoveryPhrase(
-                $args["recoveryPhrase"],
-                $args["l2Address"]
-            );
-        } else {
-            throw new \Exception(AkashicError::INCORRECT_PRIVATE_KEY_FORMAT);
-        }
-
-        $this->logger->info("AkashicPay instance initialised");
     }
 
     /**
