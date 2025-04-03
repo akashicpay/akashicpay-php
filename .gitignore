@@ -29,3 +29,7 @@ Thumbs.db
 /coverage/
 /*.cov
 *.gcov
+
+# Ignore PHP code-sniffer's cache and sniff list from `composer phpcs-list-rules`
+/.phpcs-cache
+/sniffs.html

@@ -1,8 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Akashic\Utils;
 
 use Exception;
+
+use function preg_match;
+use function substr;
 
 class Prefix
 {
@@ -20,13 +25,13 @@ class Prefix
      */
     public static function prefixWithAS(string $umid): string
     {
-        if (!preg_match(self::L2_REGEX_WITH_OPTIONAL_PREFIX, $umid, $matches)) {
+        if (! preg_match(self::L2_REGEX_WITH_OPTIONAL_PREFIX, $umid, $matches)) {
             throw new Exception(
                 "{$umid} does not match regex with or without prefix"
             );
         }
 
-        if (!empty($matches[1])) {
+        if (! empty($matches[1])) {
             return $umid;
         }
 
@@ -43,13 +48,13 @@ class Prefix
      */
     public static function removeASPrefix(string $umid): string
     {
-        if (!preg_match(self::L2_REGEX_WITH_OPTIONAL_PREFIX, $umid, $matches)) {
+        if (! preg_match(self::L2_REGEX_WITH_OPTIONAL_PREFIX, $umid, $matches)) {
             throw new Exception(
                 "{$umid} does not match regex with or without prefix"
             );
         }
 
-        if (!empty($matches[1])) {
+        if (! empty($matches[1])) {
             return substr($umid, 2);
         }
 

@@ -1,52 +1,34 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Akashic\Classes;
 
 /** @api */
 class IBaseTransactionTxBody
 {
-    /**
-     * @var string|null
-     */
     public ?string $entry = null;
 
-    /**
-     * @var string
-     */
     public string $contract;
 
-    /**
-     * @var string
-     */
     public string $namespace;
 
-    /**
-     * @var mixed
-     */
+    /** @var mixed */
     public $i;
 
-    /**
-     * @var mixed|null
-     */
+    /** @var mixed|null */
     public $o;
 
-    /**
-     * @var mixed|null
-     * @api
-     */
+    /** @var mixed|null */
     public $r;
 
     /**
-     * TxBody constructor.
-     *
-     * @param string $contract
-     * @param string $namespace
      * @param mixed  $i
      */
     public function __construct(string $contract, string $namespace, $i)
     {
-        $this->contract = $contract;
+        $this->contract  = $contract;
         $this->namespace = $namespace;
-        $this->i = $i;
+        $this->i         = $i;
     }
 }

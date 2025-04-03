@@ -3,11 +3,10 @@
   "description": "A library to interact with the AkashicChain network, written in PHP.",
   "type": "library",
   "scripts": {
-    "post-install-cmd": "\"vendor/bin/phpcs\" --config-set installed_paths vendor/phpcompatibility/php-compatibility",
-    "post-update-cmd": "\"vendor/bin/phpcs\" --config-set installed_paths vendor/phpcompatibility/php-compatibility",
-    "phpcs": "phpcs --standard=phpcs.xml src tests",
-    "phpcbf": "phpcbf --standard=phpcs.xml src tests",
-    "psalm": "vendor/bin/psalm --config=psalm.xml"
+    "phpcs": "phpcs --standard=phpcs.xml --extensions=php",
+    "phpcbf": "phpcbf --standard=phpcs.xml --extensions=php",
+    "phpcs-list-rules": "phpcs --standard=phpcs.xml --generator=HTML > sniffs.html && xdg-open sniffs.html",
+    "psalm": "psalm --config=psalm.xml"
   },
   "require": {
     "php": ">=7.4",
@@ -34,11 +33,15 @@
     "phpunit/phpunit": "^9.6",
     "squizlabs/php_codesniffer": "*",
     "phpcompatibility/php-compatibility": "*",
-    "vimeo/psalm": "^5.26"
+    "vimeo/psalm": "^5.26",
+    "laminas/laminas-coding-standard": "^2.5"
   },
   "config": {
     "platform": {
       "php": "7.4.33"
+    },
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
     }
   },
   "minimum-stability": "stable",

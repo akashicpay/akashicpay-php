@@ -1,17 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Akashic\Tests;
 
 use Akashic\AkashicPay;
 use Akashic\Constants\Environment;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
 
 class AkashicPayTest extends TestCase
 {
     private function getPrivateProperty($object, string $propertyName)
     {
-        $reflection = new \ReflectionClass($object);
-        $property = $reflection->getProperty($propertyName);
+        $reflection = new ReflectionClass($object);
+        $property   = $reflection->getProperty($propertyName);
         $property->setAccessible(true);
         return $property->getValue($object);
     }
@@ -20,7 +23,7 @@ class AkashicPayTest extends TestCase
     {
         $akPay = new AkashicPay(
             [
-            "environment" => Environment::DEVELOPMENT,
+                "environment" => Environment::DEVELOPMENT,
             ]
         );
 
@@ -39,15 +42,15 @@ class AkashicPayTest extends TestCase
 
     public function testBuildWithKeyPair(): void
     {
-        $keyPair =
+        $keyPair   =
             "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"; // Replace with actual key pair
         $l2Address = "your-l2-address-here"; // Replace with actual L2 address
 
         $akPay = new AkashicPay(
             [
-            "environment" => Environment::DEVELOPMENT,
-            "privateKey" => $keyPair,
-            "l2Address" => $l2Address,
+                "environment" => Environment::DEVELOPMENT,
+                "privateKey"  => $keyPair,
+                "l2Address"   => $l2Address,
             ]
         );
 
@@ -67,13 +70,13 @@ class AkashicPayTest extends TestCase
     public function testBuildWithRecoveryPhrase(): void
     {
         $recoveryPhrase = "your-recovery-phrase-here"; // Replace with actual recovery phrase
-        $l2Address = "your-l2-address-here"; // Replace with actual L2 address
+        $l2Address      = "your-l2-address-here"; // Replace with actual L2 address
 
         $akPay = new AkashicPay(
             [
-            "environment" => Environment::DEVELOPMENT,
-            "recoveryPhrase" => $recoveryPhrase,
-            "l2Address" => $l2Address,
+                "environment"    => Environment::DEVELOPMENT,
+                "recoveryPhrase" => $recoveryPhrase,
+                "l2Address"      => $l2Address,
             ]
         );
 

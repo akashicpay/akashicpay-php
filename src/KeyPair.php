@@ -1,16 +1,40 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Akashic;
 
 use Elliptic\EC;
 use Exception;
+
+use function base64_decode;
+use function base64_encode;
+use function bin2hex;
+use function hash;
+use function hex2bin;
+use function is_array;
+use function is_object;
+use function is_string;
+use function json_encode;
+use function openssl_pkey_export;
+use function openssl_pkey_get_details;
+use function openssl_pkey_new;
+use function openssl_sign;
+use function openssl_verify;
+use function preg_match;
+use function strlen;
+use function strpos;
+use function substr;
+
+use const OPENSSL_ALGO_SHA256;
+use const OPENSSL_KEYTYPE_RSA;
 
 class KeyPair
 {
     private $type;
     private $handler;
 
-    public function __construct(string $type = 'rsa', string $pem = null)
+    public function __construct(string $type = 'rsa', ?string $pem = null)
     {
         $this->type = $type;
 
@@ -60,7 +84,7 @@ class KeyPair
     {
         $this->handler = [
             'pub' => ['pkcs8pem' => $pub],
-            'prv' => ['pkcs8pem' => $prv]
+            'prv' => ['pkcs8pem' => $prv],
         ];
     }
 
@@ -86,15 +110,15 @@ class KeyPair
         $data = $this->getString($rawData);
 
         $privateKey = $this->handler['prv']['pkcs8pem'];
-        $signature = '';
+        $signature  = '';
 
         switch ($this->type) {
             case 'rsa':
                 openssl_sign($data, $signature, $privateKey, OPENSSL_ALGO_SHA256);
                 break;
             case 'secp256k1':
-                $ec = new EC('secp256k1');
-                $key = $ec->keyFromPrivate($privateKey, 'hex');
+                $ec        = new EC('secp256k1');
+                $key       = $ec->keyFromPrivate($privateKey, 'hex');
                 $signature = $key->sign(hash('sha256', $data));
                 $signature = $signature->toDER('hex');
                 break;
@@ -108,7 +132,7 @@ class KeyPair
     /** @api */
     public function verify(string $data, string $signature, string $encoding = 'base64'): bool
     {
-        if (!isset($this->handler['pub']['pkcs8pem'])) {
+        if (! isset($this->handler['pub']['pkcs8pem'])) {
             throw new Exception("Cannot verify without a public key");
         }
 
@@ -120,8 +144,8 @@ class KeyPair
                 $verified = openssl_verify($data, hex2bin($signature), $publicKey, OPENSSL_ALGO_SHA256) === 1;
                 break;
             case 'secp256k1':
-                $ec = new EC('secp256k1');
-                $key = $ec->keyFromPublic($publicKey, 'hex');
+                $ec       = new EC('secp256k1');
+                $key      = $ec->keyFromPublic($publicKey, 'hex');
                 $verified = $key->verify(hash('sha256', $data), $signature);
                 break;
             default:
@@ -135,7 +159,6 @@ class KeyPair
      * Makes sure the data is a string
      *
      * @param  mixed $data
-     * @return string
      * @throws Exception
      */
     private function getString($data): string
@@ -166,29 +189,29 @@ class KeyPair
         switch ($this->type) {
             case 'rsa':
                 $config = [
-                "private_key_bits" => $bits,
-                "private_key_type" => OPENSSL_KEYTYPE_RSA,
+                    "private_key_bits" => $bits,
+                    "private_key_type" => OPENSSL_KEYTYPE_RSA,
                 ];
-                $res = openssl_pkey_new($config);
+                $res    = openssl_pkey_new($config);
                 openssl_pkey_export($res, $privateKey);
                 $keyDetails = openssl_pkey_get_details($res);
-                $publicKey = $keyDetails['key'];
+                $publicKey  = $keyDetails['key'];
 
                 $keyPair = [
-                'pub' => ['pkcs8pem' => $publicKey],
-                'prv' => ['pkcs8pem' => $privateKey]
+                    'pub' => ['pkcs8pem' => $publicKey],
+                    'prv' => ['pkcs8pem' => $privateKey],
                 ];
                 break;
 
             case 'secp256k1':
-                $ec = new EC('secp256k1');
-                $key = $ec->genKeyPair();
+                $ec         = new EC('secp256k1');
+                $key        = $ec->genKeyPair();
                 $privateKey = $key->getPrivate('hex');
-                $publicKey = $key->getPublic('hex');
+                $publicKey  = $key->getPublic('hex');
 
                 $keyPair = [
-                'pub' => ['pkcs8pem' => $publicKey],
-                'prv' => ['pkcs8pem' => $privateKey]
+                    'pub' => ['pkcs8pem' => $publicKey],
+                    'prv' => ['pkcs8pem' => $privateKey],
                 ];
                 break;
 

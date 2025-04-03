@@ -1,10 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Akashic\OTK;
 
-use Elliptic\EC;
 use Akashic\Constants\KeyType;
+use Elliptic\EC;
 use Exception;
+
+use function hex2bin;
+use function str_replace;
+use function strpos;
 
 class Otk
 {
@@ -25,21 +31,21 @@ class Otk
     public static function restoreOtkFromKeypair($keyPair)
     {
         try {
-            $ec = new EC('secp256k1');
+            $ec      = new EC('secp256k1');
             $otkPriv = self::parsePrvKey($keyPair);
 
             if (strpos($otkPriv, '0x') === 0) {
                 $privKeyHex = str_replace('0x', '', $keyPair);
-                $key = $ec->keyFromPrivate($privKeyHex);
-                $publicKey = '0x' . $key->getPublic(true, 'hex');
+                $key        = $ec->keyFromPrivate($privKeyHex);
+                $publicKey  = '0x' . $key->getPublic(true, 'hex');
             } else {
                 $pemDecoded = hex2bin(ECKeyHandler::decodeECPrivateKey($otkPriv));
-                $key = $ec->keyFromPrivate($pemDecoded);
-                $publicKey = ECKeyHandler::encodeECPublicKey($key->getPublic(false, 'hex'));
+                $key        = $ec->keyFromPrivate($pemDecoded);
+                $publicKey  = ECKeyHandler::encodeECPublicKey($key->getPublic(false, 'hex'));
             }
 
             return [
-                'key' => [
+                'key'  => [
                     'prv' => ['pkcs8pem' => $otkPriv],
                     'pub' => ['pkcs8pem' => $publicKey],
                 ],

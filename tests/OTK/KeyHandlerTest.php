@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Akashic\Tests\OTK;
 
 use Akashic\OTK\KeyHandler;
@@ -16,7 +18,7 @@ class KeyHandlerTest extends TestCase
 
     public function testGenerateBIP39Key()
     {
-        $keyName = 'test-key';
+        $keyName    = 'test-key';
         $compressed = false;
 
         $keyPair = $this->keyHandler->generateBIP39Key($keyName, $compressed);
@@ -42,12 +44,12 @@ class KeyHandlerTest extends TestCase
 
     public function testRestoreBIP39Key()
     {
-        $keyName = 'test-key';
+        $keyName    = 'test-key';
         $compressed = false;
 
         // Generate a key pair to get a valid mnemonic
         $generatedKeyPair = $this->keyHandler->generateBIP39Key($keyName, $compressed);
-        $mnemonic = $generatedKeyPair['phrase'];
+        $mnemonic         = $generatedKeyPair['phrase'];
 
         // Restore the key pair from the mnemonic
         $restoredKeyPair = $this->keyHandler->restoreBIP39Key($keyName, $mnemonic, $compressed);

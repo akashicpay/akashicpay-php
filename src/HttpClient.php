@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Akashic;
 
 use Exception;
@@ -27,10 +29,8 @@ class HttpClient
             $response = $this->client->post(
                 $url,
                 [
-                'json' => $payload,
-                'headers' => [
-                    'Content-Type' => 'application/json',
-                ],
+                    'json'    => $payload,
+                    'headers' => ['Content-Type' => 'application/json'],
                 ]
             );
 
@@ -72,7 +72,7 @@ class HttpClient
     private function handleException(RequestException $e)
     {
         $response = $e->getResponse();
-        if (!$response) {
+        if (! $response) {
             throw new Exception($e->getMessage());
         }
 

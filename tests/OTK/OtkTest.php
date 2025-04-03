@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Akashic\Tests\OTK;
 
-use PHPUnit\Framework\TestCase;
-use Akashic\OTK\Otk;
 use Akashic\Constants\KeyType;
+use Akashic\OTK\Otk;
+use PHPUnit\Framework\TestCase;
 
 class OtkTest extends TestCase
 {

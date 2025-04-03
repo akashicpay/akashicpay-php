@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Akashic\OTK;
 
+use Akashic\Constants\KeyType;
+use BitWasp\Bitcoin\Mnemonic\Bip39\Bip39SeedGenerator;
 use BitWasp\Bitcoin\Mnemonic\MnemonicFactory;
 use Elliptic\EC;
-use BitWasp\Bitcoin\Mnemonic\Bip39\Bip39SeedGenerator;
-use Akashic\Constants\KeyType;
 use Exception;
 
 class KeyHandler
@@ -21,29 +23,29 @@ class KeyHandler
     public function generateBIP39Key($keyName, $compressed = false)
     {
         try {
-            $bip39 = MnemonicFactory::bip39();
-            $mnemonic = $bip39->create();
+            $bip39         = MnemonicFactory::bip39();
+            $mnemonic      = $bip39->create();
             $seedGenerator = new Bip39SeedGenerator();
-            $seed = $seedGenerator->getSeed($mnemonic);
-            $seedHex = $seed->getHex(); // Convert the seed to hex
+            $seed          = $seedGenerator->getSeed($mnemonic);
+            $seedHex       = $seed->getHex(); // Convert the seed to hex
 
-            $ec = new EC('secp256k1');
-            $key = $ec->keyFromPrivate($seedHex, 'hex');
+            $ec         = new EC('secp256k1');
+            $key        = $ec->keyFromPrivate($seedHex, 'hex');
             $privateKey = $key->getPrivate('hex');
-            $publicKey = $compressed ? $key->getPublic(true, 'hex') : $key->getPublic(false, 'hex');
+            $publicKey  = $compressed ? $key->getPublic(true, 'hex') : $key->getPublic(false, 'hex');
 
             return [
-                'key' => [
+                'key'    => [
                     'pub' => [
-                        'pkcs8pem' => "0x" . $publicKey
+                        'pkcs8pem' => "0x" . $publicKey,
                     ],
                     'prv' => [
-                        'pkcs8pem' => "0x" . $privateKey
-                    ]
+                        'pkcs8pem' => "0x" . $privateKey,
+                    ],
                 ],
-                'name' => $keyName,
-                'type' => KeyType::ELLIPTIC_CURVE,
-                'phrase' => $mnemonic
+                'name'   => $keyName,
+                'type'   => KeyType::ELLIPTIC_CURVE,
+                'phrase' => $mnemonic,
             ];
         } catch (Exception $e) {
             throw new Exception('Failed to generate BIP39 key pair. Try again.');
@@ -63,29 +65,27 @@ class KeyHandler
     {
         try {
             $seedGenerator = new Bip39SeedGenerator();
-            $seed = $seedGenerator->getSeed($phrase);
-            $seedHex = $seed->getHex(); // Convert the seed to hex
+            $seed          = $seedGenerator->getSeed($phrase);
+            $seedHex       = $seed->getHex(); // Convert the seed to hex
 
-            $ec = new EC('secp256k1');
-            $key = $ec->keyFromPrivate($seedHex, 'hex');
+            $ec         = new EC('secp256k1');
+            $key        = $ec->keyFromPrivate($seedHex, 'hex');
             $privateKey = $key->getPrivate('hex');
-            $publicKey = $compressed ? $key->getPublic(true, 'hex') : $key->getPublic(false, 'hex');
+            $publicKey  = $compressed ? $key->getPublic(true, 'hex') : $key->getPublic(false, 'hex');
 
-            $keyHolder = [
-                'key' => [
+            return [
+                'key'    => [
                     'pub' => [
-                        'pkcs8pem' => "0x" . $publicKey
+                        'pkcs8pem' => "0x" . $publicKey,
                     ],
                     'prv' => [
-                        'pkcs8pem' => "0x" . $privateKey
-                    ]
+                        'pkcs8pem' => "0x" . $privateKey,
+                    ],
                 ],
-                'name' => $keyName,
-                'type' => KeyType::ELLIPTIC_CURVE,
-                'phrase' => $phrase
+                'name'   => $keyName,
+                'type'   => KeyType::ELLIPTIC_CURVE,
+                'phrase' => $phrase,
             ];
-
-            return $keyHolder;
         } catch (Exception $e) {
             throw new Exception('Failed to restore BIP39 key pair. Try again.');
         }

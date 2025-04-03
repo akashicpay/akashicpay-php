@@ -1,14 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Akashic\OTK;
 
 use FG\ASN1\ASNObject;
-use FG\ASN1\Universal\Sequence;
-use FG\ASN1\Universal\OctetString;
+use FG\ASN1\Exception\ParserException;
 use FG\ASN1\Universal\BitString;
 use FG\ASN1\Universal\ObjectIdentifier;
-use FG\ASN1\Exception\ParserException;
+use FG\ASN1\Universal\OctetString;
+use FG\ASN1\Universal\Sequence;
 use RuntimeException;
+
+use function base64_decode;
+use function base64_encode;
+use function bin2hex;
+use function chunk_split;
+use function preg_replace;
+use function str_replace;
 
 class ECKeyHandler
 {
@@ -28,9 +37,9 @@ class ECKeyHandler
     public static function decodeECPrivateKey($pkcs8pem)
     {
         // Strip the PEM headers and decode the base64 content
-        $pkcs8pem = preg_replace('/-----BEGIN .*?-----/', '', $pkcs8pem);
-        $pkcs8pem = preg_replace('/-----END .*?-----/', '', $pkcs8pem);
-        $pkcs8pem = str_replace(["\r", "\n"], '', $pkcs8pem);
+        $pkcs8pem   = preg_replace('/-----BEGIN .*?-----/', '', $pkcs8pem);
+        $pkcs8pem   = preg_replace('/-----END .*?-----/', '', $pkcs8pem);
+        $pkcs8pem   = str_replace(["\r", "\n"], '', $pkcs8pem);
         $binaryData = base64_decode($pkcs8pem);
 
         try {
@@ -55,8 +64,6 @@ class ECKeyHandler
         $sequence->addChild($publicKey);
 
         $encoded = $sequence->getBinary();
-        return "-----BEGIN $label-----\r\n" .
-            chunk_split(base64_encode($encoded), 64, "\r\n") .
-            "-----END $label-----\r\n";
+        return "-----BEGIN $label-----\r\n" . chunk_split(base64_encode($encoded), 64, "\r\n") . "-----END $label-----\r\n";
     }
 }

@@ -1,39 +1,49 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Akashic;
 
-use Akashic\Constants\AkashicChainContracts;
-use Akashic\Constants\TestNetContracts;
-use Akashic\Constants\NetworkSymbol;
-use Akashic\Constants\EthereumSymbol;
-use Akashic\Constants\TronSymbol;
 use Akashic\Classes\IBaseTransaction;
-use Akashic\Constants\Environment;
 use Akashic\Constants\AkashicError;
+use Akashic\Constants\Environment;
+use Akashic\Constants\EthereumSymbol;
+use Akashic\Constants\MainNetContracts;
+use Akashic\Constants\NetworkSymbol;
+use Akashic\Constants\TestNetContracts;
+use Akashic\Constants\TronSymbol;
 use Exception;
+
+use function array_filter;
+use function gmdate;
+use function in_array;
+use function is_array;
+use function is_string;
+use function strpos;
+use function time;
 
 class AkashicChain
 {
     public const NITR0GEN_NATIVE_COIN = "#native";
     private $contracts;
-    private $dbIndex;
+    private int $dbIndex;
 
     public function __construct($env)
     {
         $this->contracts =
             $env === Environment::PRODUCTION
-                ? new AkashicChainContracts()
+                ? new MainNetContracts()
                 : new TestNetContracts();
-        $this->dbIndex = $env === Environment::PRODUCTION ? 0 : 15;
+        $this->dbIndex   = $env === Environment::PRODUCTION ? 0 : 15;
     }
 
     /**
      * Check for errors in the AkashicChain response
      *
-     * @param  $response
+     * @param  array $response
      * @throws Exception
      */
-    public function checkForAkashicChainError($response): void
+    public function checkForAkashicChainError(array $response): void
     {
         $commit = $response['$summary']["commit"] ?? null;
         if ($commit) {
@@ -48,9 +58,6 @@ class AkashicChain
 
     /**
      * Converts chain error to Akashic error based on predefined conditions.
-     *
-     * @param  string $error
-     * @return string
      */
     private function convertChainErrorToAkashicError(string $error): string
     {
@@ -67,9 +74,6 @@ class AkashicChain
 
     /**
      * Checks if the error is related to savings exceeded.
-     *
-     * @param  string $error
-     * @return bool
      */
     private function isChainErrorSavingsExceeded(string $error): bool
     {
@@ -91,25 +95,25 @@ class AkashicChain
     /**
      * Create a key creation transaction
      *
-     * @param  NetworkSymbol $coinSymbol
-     * @param  $otk
+     * @param  string $coinSymbol (i.e. a NetworkSymbol)
+     * @param  array $otk
      * @return IBaseTransaction
      */
-    public function keyCreateTransaction($coinSymbol, $otk)
+    public function keyCreateTransaction(string $coinSymbol, array $otk)
     {
         $txBody = [
-            '$tx' => [
+            '$tx'   => [
                 '$namespace' => $this->contracts::CONTRACT_NAMESPACE,
-                '$contract' => $this->contracts::CREATE,
-                '$i' => [
+                '$contract'  => $this->contracts::CREATE,
+                '$i'         => [
                     "owner" => [
-                        '$stream' => $otk["identity"],
-                        "symbol" => $this->getACSymbol($coinSymbol),
-                        "network" => $this->getACNetwork($coinSymbol),
+                        '$stream'  => $otk["identity"],
+                        "symbol"   => $this->getACSymbol($coinSymbol),
+                        "network"  => $this->getACNetwork($coinSymbol),
                         "business" => true,
                     ],
                 ],
-                "_dbIndex" => $this->dbIndex,
+                "_dbIndex"   => $this->dbIndex,
             ],
             '$sigs' => [],
         ];
@@ -121,30 +125,31 @@ class AkashicChain
     /**
      * Create a differential consensus transaction
      *
-     * @param  $otk
-     * @param  $key
      * @return IBaseTransaction
      */
-    public function differentialConsensusTransaction($otk, $key, $identifier)
-    {
+    public function differentialConsensusTransaction(
+        array $otk,
+        array $key,
+        string $identifier
+    ) {
         $txBody = [
-            '$tx' => [
+            '$tx'   => [
                 '$namespace' => $this->contracts::CONTRACT_NAMESPACE,
-                '$contract' => $this->contracts::DIFF_CONSENSUS,
-                '$i' => [
+                '$contract'  => $this->contracts::DIFF_CONSENSUS,
+                '$i'         => [
                     "owner" => [
                         '$stream' => $otk["identity"],
                         "address" => $key["address"],
-                        "hashes" => $key["hashes"],
+                        "hashes"  => $key["hashes"],
                     ],
                 ],
-                '$o' => [
+                '$o'         => [
                     "key" => [
                         '$stream' => $key["id"],
                     ],
                 ],
-                "_dbIndex" => $this->dbIndex,
-                "metadata" => ["identifier" => $identifier],
+                "_dbIndex"   => $this->dbIndex,
+                "metadata"   => ["identifier" => $identifier],
             ],
             '$sigs' => [],
         ];
@@ -156,24 +161,24 @@ class AkashicChain
     /**
      * Create an onboard OTK transaction
      *
-     * @param  $otk
-     * @return IBaseTransaction
+     * @param  array $otk
+     * @return array the shape of an {@link IBaseTransaction}
      */
-    public function onboardOtkTransaction($otk)
+    public function onboardOtkTransaction(array $otk): array
     {
         $txBody = [
-            '$tx' => [
+            '$tx'       => [
                 '$namespace' => $this->contracts::CONTRACT_NAMESPACE,
-                '$contract' => $this->contracts::ONBOARD,
-                '$i' => [
+                '$contract'  => $this->contracts::ONBOARD,
+                '$i'         => [
                     "otk" => [
                         "publicKey" => $otk["key"]["pub"]["pkcs8pem"],
-                        "type" => $otk["type"],
+                        "type"      => $otk["type"],
                     ],
                 ],
-                "_dbIndex" => $this->dbIndex,
+                "_dbIndex"   => $this->dbIndex,
             ],
-            '$sigs' => [],
+            '$sigs'     => [],
             '$selfsign' => true,
         ];
 
@@ -181,36 +186,36 @@ class AkashicChain
         return $this->signTransaction($txBody, $otk);
     }
 
-    public function l2Transaction(array $params)
+    public function l2Transaction(array $params): array
     {
-        $otk = $params["otk"];
-        $coinSymbol = $params["coinSymbol"];
-        $amount = $params["amount"];
-        $toAddress = $params["toAddress"];
-        $tokenSymbol = $params["tokenSymbol"] ?? self::NITR0GEN_NATIVE_COIN;
+        $otk              = $params["otk"];
+        $coinSymbol       = $params["coinSymbol"];
+        $amount           = $params["amount"];
+        $toAddress        = $params["toAddress"];
+        $tokenSymbol      = $params["tokenSymbol"] ?? self::NITR0GEN_NATIVE_COIN;
         $initiatedToNonL2 = $params["initiatedToNonL2"] ?? null;
 
         $txBody = [
-            '$tx' => [
+            '$tx'   => [
                 '$namespace' => $this->contracts::CONTRACT_NAMESPACE,
-                '$contract' => $this->contracts::CRYPTO_TRANSFER,
-                '$entry' => "transfer",
-                '$i' => [
+                '$contract'  => $this->contracts::CRYPTO_TRANSFER,
+                '$entry'     => "transfer",
+                '$i'         => [
                     "owner" => [
                         '$stream' => $otk["identity"],
                         "network" => $coinSymbol,
-                        "token" => $tokenSymbol,
-                        "amount" => $amount,
+                        "token"   => $tokenSymbol,
+                        "amount"  => $amount,
                     ],
                 ],
-                '$o' => [
+                '$o'         => [
                     "to" => ['$stream' => $toAddress],
                 ],
-                "_dbIndex" => $this->dbIndex,
-                "metadata" => $initiatedToNonL2
+                "_dbIndex"   => $this->dbIndex,
+                "metadata"   => $initiatedToNonL2
                     ? [
                         "initiatedToNonL2" => $initiatedToNonL2,
-                        "identifier" => $params["identifier"],
+                        "identifier"       => $params["identifier"],
                     ]
                     : ["identifier" => $params["identifier"]],
             ],
@@ -221,17 +226,17 @@ class AkashicChain
         return $this->signTransaction($txBody, $otk);
     }
 
-    public function l2ToL1SignTransaction(array $params)
+    public function l2ToL1SignTransaction(array $params): array
     {
-        $otk = $params["otk"];
-        $keyLedgerId = $params["keyLedgerId"];
-        $coinSymbol = $params["coinSymbol"];
-        $amount = $params["amount"];
-        $toAddress = $params["toAddress"];
-        $tokenSymbol = $params["tokenSymbol"] ?? self::NITR0GEN_NATIVE_COIN;
-        $identifier = $params["identifier"];
+        $otk          = $params["otk"];
+        $keyLedgerId  = $params["keyLedgerId"];
+        $coinSymbol   = $params["coinSymbol"];
+        $amount       = $params["amount"];
+        $toAddress    = $params["toAddress"];
+        $tokenSymbol  = $params["tokenSymbol"] ?? self::NITR0GEN_NATIVE_COIN;
+        $identifier   = $params["identifier"];
         $feesEstimate = $params["feesEstimate"];
-        $ethGasPrice = $params["ethGasPrice"];
+        $ethGasPrice  = $params["ethGasPrice"];
 
         $contractAddress =
             array_filter(
@@ -242,26 +247,26 @@ class AkashicChain
             )[0]["contract"] ?? null;
 
         $txBody = [
-            '$tx' => [
+            '$tx'   => [
                 '$namespace' => $this->contracts::CONTRACT_NAMESPACE,
-                '$contract' => $this->contracts::CRYPTO_TRANSFER,
-                '$entry' => "sign",
-                '$i' => [
+                '$contract'  => $this->contracts::CRYPTO_TRANSFER,
+                '$entry'     => "sign",
+                '$i'         => [
                     "owner" => [
-                        '$stream' => $otk["identity"],
-                        "network" => $coinSymbol,
-                        "token" => $tokenSymbol,
-                        "amount" => $amount,
-                        "to" => $toAddress,
+                        '$stream'         => $otk["identity"],
+                        "network"         => $coinSymbol,
+                        "token"           => $tokenSymbol,
+                        "amount"          => $amount,
+                        "to"              => $toAddress,
                         "contractAddress" => $contractAddress,
-                        "delegated" => true,
-                        "gas" => $ethGasPrice,
+                        "delegated"       => true,
+                        "gas"             => $ethGasPrice,
                     ],
                 ],
-                '$r' => ["wallet" => $keyLedgerId],
-                "_dbIndex" => $this->dbIndex,
-                "metadata" => [
-                    "identifier" => $identifier,
+                '$r'         => ["wallet" => $keyLedgerId],
+                "_dbIndex"   => $this->dbIndex,
+                "metadata"   => [
+                    "identifier"   => $identifier,
                     "feesEstimate" => $feesEstimate,
                 ],
             ],
@@ -275,8 +280,7 @@ class AkashicChain
     /**
      * Get the AC Symbol for the given coin symbol
      *
-     * @param  NetworkSymbol $coinSymbol
-     * @return string
+     * @param  string $coinSymbol (i.e. a NetworkSymbol)
      */
     private function getACSymbol($coinSymbol): string
     {
@@ -294,7 +298,6 @@ class AkashicChain
      * Get the AC Network for the given coin symbol
      *
      * @param  NetworkSymbol $coinSymbol
-     * @return string
      */
     private function getACNetwork(string $coinSymbol): string
     {
@@ -312,7 +315,7 @@ class AkashicChain
         }
     }
 
-    private function signTransaction($txBody, $otk): array
+    private function signTransaction($txBody, array $otk): array
     {
         try {
             $txBody = $this->addExpireToTxBody($txBody);
@@ -340,7 +343,6 @@ class AkashicChain
             );
         }
     }
-
 
     /**
      * Adds expiry time to the transaction body.
