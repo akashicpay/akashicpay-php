@@ -176,6 +176,7 @@ class AkashicPay
                 "coinSymbol" => $network,
                 "tokenSymbol" => $token,
                 "keyLedgerId" => $withdrawalKeys[0]["ledgerId"],
+                "identifier" => $recipientId,
             ]);
 
             $acResponse = $this->post($this->targetNode, $lT1x);

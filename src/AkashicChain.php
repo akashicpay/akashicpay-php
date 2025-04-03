@@ -176,6 +176,7 @@ class AkashicChain
         $amount = $params["amount"];
         $toAddress = $params["toAddress"];
         $tokenSymbol = $params["tokenSymbol"] ?? self::NITR0GEN_NATIVE_COIN;
+        $identifier = $params["identifier"];
 
         $o = [
             $keyLedgerId => ["amount" => $amount],
@@ -205,6 +206,7 @@ class AkashicChain
                     ],
                 ],
                 '$o' => $o,
+                "metadata" => $identifier ? ["identifier" => $identifier] : [],
             ],
             '$sigs' => [],
         ];
