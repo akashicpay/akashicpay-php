@@ -18,6 +18,7 @@ use Akashic\L1Network;
 use Akashic\Constants\TokenSymbol;
 use Akashic\Constants\NetworkSymbol;
 use Akashic\Utils\Currency;
+use Akashic\Utils\Prefix;
 
 class AkashicPay
 {
@@ -166,7 +167,7 @@ class AkashicPay
             );
 
             return [
-                "l2Hash" => $acResponse["data"]['$umid'],
+                "l2Hash" => Prefix::prefixWithAS($acResponse["data"]['$umid']),
             ];
         } else {
             $payload = [
@@ -206,7 +207,7 @@ class AkashicPay
             );
 
             return [
-                "l2Hash" => $acResponse["data"]['$umid'],
+                "l2Hash" => Prefix::prefixWithAS($acResponse["data"]['$umid']),
             ];
         }
     }
