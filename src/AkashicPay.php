@@ -192,6 +192,7 @@ class AkashicPay
                 "tokenSymbol" => $token,
                 "keyLedgerId" => $withdrawalKeys[0]["ledgerId"],
                 "identifier" => $recipientId,
+                "feesEstimate" => $response["data"]["fees"]["feesEstimate"],
             ]);
 
             $acResponse = $this->post($this->targetNode["node"], $lT1x);
