@@ -556,7 +556,7 @@ class AkashicPay
         return $this->akashicChain->signTransaction($tx, $this->otk);
     }
 
-    function boolsToString($value)
+    private function boolsToString($value)
     {
         if ($value === true) {
             return "true";

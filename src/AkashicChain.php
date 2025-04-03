@@ -12,6 +12,7 @@ use Akashic\Classes\ActiveLedgerResponse;
 use Akashic\Classes\IBaseTransaction;
 use Akashic\L1Network;
 use Akashic\Constants\Environment;
+use Akashic\Constants\AkashicError;
 
 class AkashicChain
 {
@@ -41,10 +42,53 @@ class AkashicChain
         if ($commit) {
             return;
         }
-        throw new \Exception(
-            "AkashicChain Failure: " .
-                ($response['$summary']["errors"][0] ?? "Unknown error")
+        $errorMessage = self::convertChainErrorToAkashicError(
+            $response['$summary']["errors"][0] ?? "Unknown error"
         );
+
+        throw new \Exception("AkashicChain Failure: " . $errorMessage);
+    }
+
+    /**
+     * Converts chain error to Akashic error based on predefined conditions.
+     *
+     * @param string $error
+     * @return string
+     */
+    private function convertChainErrorToAkashicError(string $error): string
+    {
+        if (self::isChainErrorSavingsExceeded($error)) {
+            return AkashicError::SAVINGS_EXCEEDED;
+        }
+
+        if (strpos($error, "Stream(s) not found") !== false) {
+            return AkashicError::L2_ADDRESS_NOT_FOUND;
+        }
+
+        return $error;
+    }
+
+    /**
+     * Checks if the error is related to savings exceeded.
+     *
+     * @param string $error
+     * @return bool
+     */
+    private function isChainErrorSavingsExceeded(string $error): bool
+    {
+        $messages = [
+            "balance is not sufficient",
+            "Couldn't parse integer",
+            "Part-Balance to low",
+        ];
+
+        foreach ($messages as $msg) {
+            if (strpos($error, $msg) !== false) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

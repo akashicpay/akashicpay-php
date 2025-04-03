@@ -15,4 +15,5 @@ class AkashicError
     public const IS_NOT_BP = "Please sign up on AkashicPay.com first";
     public const TRANSACTION_TOO_SMALL_ERROR = "Transaction is too small";
     public const UNSUPPORTED_COIN_ERROR = "Coin not supported";
+    public const SAVINGS_EXCEEDED = "Transaction amount exceeds total savings";
 }
