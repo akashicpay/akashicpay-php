@@ -226,7 +226,14 @@ class AkashicChain
         return $this->signTransaction($txBody, $otk);
     }
 
-    public function l2ToL1SignTransaction(array $params): array
+    /**
+     * Builds an L1 payout transaction that still needs to be signed and can then
+     * be sent directly to AC.
+     * For use only when the backend is unavailable.
+     *
+     * @api
+     * */
+    public function buildPayoutTransaction(array $params): array
     {
         $otk          = $params["otk"];
         $keyLedgerId  = $params["keyLedgerId"];
@@ -315,7 +322,7 @@ class AkashicChain
         }
     }
 
-    private function signTransaction($txBody, array $otk): array
+    public function signTransaction($txBody, array $otk): array
     {
         try {
             $txBody = $this->addExpireToTxBody($txBody);
