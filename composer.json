@@ -12,11 +12,13 @@
   "require": {
     "php": ">=7.4",
     "ext-gmp": "*",
+    "ext-openssl": "*",
     "fgrosse/phpasn1": "^2.5.0",
     "simplito/elliptic-php": "^1.0",
     "monolog/monolog": "^2.9",
     "guzzlehttp/guzzle": "^7.9",
-    "protonlabs/bitcoin": "^1.0"
+    "protonlabs/bitcoin": "^1.0",
+    "ext-json": "*"
   },
   "autoload": {
     "psr-4": {
