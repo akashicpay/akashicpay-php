@@ -212,7 +212,7 @@ class AkashicPay
                 $this->akashicUrl . AkashicEndpoints::PREPARE_TX,
                 $payload
             );
-            $withdrawalKeys = $response["data"]["withdrawalKeys"];
+            $withdrawalKey = $response["data"]["withdrawalKey"];
 
             $feesEstimate = Currency::convertToDecimals(
                 $response["data"]["fees"]["feesEstimate"],
@@ -227,7 +227,7 @@ class AkashicPay
                 "toAddress" => $toAddress,
                 "coinSymbol" => $network,
                 "tokenSymbol" => $token,
-                "keyLedgerId" => $withdrawalKeys[0]["ledgerId"],
+                "keyLedgerId" => $withdrawalKey["ledgerId"],
                 "identifier" => $recipientId,
                 "feesEstimate" => $feesEstimate,
                 "ethGasPrice" => $ethGasPrice,
