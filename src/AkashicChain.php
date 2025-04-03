@@ -48,12 +48,13 @@ class AkashicChain
                     'owner' => [
                         '$stream' => $otkIdentity,
                         'symbol' => self::getACSymbol($coinSymbol),
+                        'network' => $coinSymbol,
+                        'business' => true,
                     ],
-                    'metadata' => ['identifier' => $identifier],
                 ],
+                'metadata' => ['identifier' => $identifier],
             ],
             '$sigs' => [],
-            '$selfsign' => false,
         ];
     }
 
@@ -86,7 +87,6 @@ class AkashicChain
                 ],
             ],
             '$sigs' => [],
-            '$selfsign' => false,
         ];
     }
 
