@@ -48,7 +48,7 @@ class AkashicChain
                     'owner' => [
                         '$stream' => $otkIdentity,
                         'symbol' => self::getACSymbol($coinSymbol),
-                        'network' => $coinSymbol,
+                        'network' => self::getACNetwork($coinSymbol),
                         'business' => true,
                     ],
                 ],
@@ -131,6 +131,28 @@ class AkashicChain
             return 'eth';
         }
         return $coinSymbol;
+    }
+
+
+    /**
+     * Get the AC Network for the given coin symbol
+     *
+     * @param NetworkSymbol $coinSymbol
+     * @return string
+     */
+    private function getACNetwork(string $coinSymbol): string {
+        switch ($coinSymbol) {
+            case NetworkSymbol::Ethereum_Mainnet:
+                return 'ETH';
+            case NetworkSymbol::Ethereum_Sepolia:
+                return 'SEP';
+            case NetworkSymbol::Tron:
+                return 'trx';
+            case NetworkSymbol::Tron_Shasta:
+                return 'shasta';
+            default:
+                return $coinSymbol;
+        }
     }
 
     public static function signTransaction($txBody, $otk): array
