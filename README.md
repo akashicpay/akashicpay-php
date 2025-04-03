@@ -41,7 +41,7 @@ $akashicPay = new AkashicPay([
     // in development, you will use our testnet and testnet L1 chains
     'environment' => getenv('environment') === 'production' ? Environment::PRODUCTION : Environment::DEVELOPMENT,
     // optional, the SDK will try to find the fastest node if omitted
-    'targetNode' => getenv('environment') === 'production' ? ACNode::SINGAPORE_DAI : ACDevNode::SINGAPORE_1,
+    'targetNode' => getenv('environment') === 'production' ? ACNode::SINGAPORE_1 : ACDevNode::SINGAPORE_1,
     // use whatever secret management tool you prefer to load the private key
     // from your AkashicLink account. It should be of the form:
     // `"0x2d99270559d7702eadd1c5a483d0a795566dc76c18ad9d426c932de41bfb78b7"`
