@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace Akashic;
 
-require "vendor/autoload.php";
-
 use Akashic\Constants\ACDevNode;
 use Akashic\Constants\ACNode;
 use Akashic\Constants\AkashicBaseUrls;
