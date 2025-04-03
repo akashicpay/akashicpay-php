@@ -4,9 +4,9 @@ namespace Akashic\Constants;
 
 class AkashicChainContracts
 {
-    public const CONTRACT_NAMESPACE = "notabox.keys";
-    public const CREATE = "c278818b9f10d5f18381a711827e344d583f7ecf446cdfb4b92016b308838a72@3.0.6";
-    public const DIFF_CONSENSUS = "a9711259f9c0322c6eb1cca4c0baf1b460266be79c5c0f78cf1602a8476e0744@3.0.1";
-    public const ONBOARD = "df9e4e242c58cc6a03ca1679f007c7a04cad72c97fdb74bdfe9a4e1688077a79@1.5.0";
-    public const CRYPTO_TRANSFER = "a48df2fd31400a9b69d9b8bdb699618faed2999ca08c559695a4b74597d3e895@3.0.5";
+    public const CONTRACT_NAMESPACE = "akashic";
+    public const CREATE = "66512ecab1c265acf27008de29bc3b6f474af1d4b723216b1635b5f75693372e@1.0.0";
+    public const DIFF_CONSENSUS = "8667534942f5468f65c0505672389834483c1185722a571a286430d321990b3a@1.0.0";
+    public const ONBOARD = "e9dd831155c0c2ac80360377412c044d8ad82535f9e919a2b1a03fd1f74f9d37@1.0.0";
+    public const CRYPTO_TRANSFER = "a7c0f535721d70d0c0cc6ab8cd19bb51195e9e52098c896def975410dea9b964f@1.0.0";
 }
