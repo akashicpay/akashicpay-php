@@ -29,8 +29,10 @@ class AkashicChain
 {
     public const NITR0GEN_NATIVE_COIN = "#native";
     private $contracts;
-    private int $dbIndex;
-    private Logger $logger;
+    /** @var int */
+    private $dbIndex;
+    /** @var Logger */
+    private $logger;
 
     public function __construct(
         string $env,

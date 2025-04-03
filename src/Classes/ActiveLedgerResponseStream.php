@@ -8,8 +8,8 @@ namespace Akashic\Classes;
 class ActiveLedgerResponseStream
 {
     /** @var array */
-    public array $new = [];
+    public $new = [];
 
     /** @var array */
-    public array $updated = [];
+    public $updated = [];
 }

@@ -6,7 +6,8 @@ namespace Akashic\Constants;
 
 class AkashicErrorDetail
 {
-    private static array $errorDetails = [
+    /** @var array */
+    private static $errorDetails = [
         AkashicErrorCode::TEST_NET_OTK_ONBOARDING_FAILED => 'Failed to setup test-otk. Please try again',
         AkashicErrorCode::INCORRECT_PRIVATE_KEY_FORMAT   => 'Private Key is not in correct format',
         AkashicErrorCode::UNKNOWN_ERROR                  => 'Akashic failed with an unknown error. Please try again later',

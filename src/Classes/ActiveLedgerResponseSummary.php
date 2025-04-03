@@ -7,12 +7,15 @@ namespace Akashic\Classes;
 /** @api */
 class ActiveLedgerResponseSummary
 {
-    public int $total;
+    /** @var int */
+    public $total;
 
-    public int $vote;
+    /** @var int */
+    public $vote;
 
-    public int $commit;
+    /** @var int */
+    public $commit;
 
     /** @var array|null */
-    public ?array $errors = null;
+    public $errors = null;
 }

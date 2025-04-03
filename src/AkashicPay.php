@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace Akashic;
@@ -42,14 +41,22 @@ class AkashicPay
     private const AC_PRIVATE_KEY_REGEX = '/^0x[a-f\d]{64}$/';
     private const L2_REGEX             = '/^AS[A-Fa-f\d]{64}$/';
     private const DATADOG_API_KEY      = '10f3796eb5494075b36b7d89ae456a65';
-    private array $otk;
-    private array $targetNode;
-    private string $akashicUrl;
-    private string $akashicPayUrl;
-    private Logger $logger;
-    private string $env;
-    private HttpClient $httpClient;
-    private AkashicChain $akashicChain;
+    /** @var array */
+    private $otk;
+    /** @var array */
+    private $targetNode;
+    /** @var string */
+    private $akashicUrl;
+    /** @var string */
+    private $akashicPayUrl;
+    /** @var Logger */
+    private $logger;
+    /** @var string */
+    private $env;
+    /** @var HttpClient */
+    private $httpClient;
+    /** @var AkashicChain */
+    private $akashicChain;
 
     public function __construct($args)
     {
@@ -421,7 +428,7 @@ class AkashicPay
 
         // Process supported currencies
         $supportedCurrencySymbols = array_unique(array_keys($supportedCurrencies));
-        $existingKeys             = array_unique(array_map(fn($key) => $key['coinSymbol'], $keys));
+        $existingKeys             = array_unique(array_map("self::getCoinSymbol", $keys));
 
         foreach ($supportedCurrencySymbols as $coinSymbol) {
             if (! in_array($coinSymbol, $existingKeys)) {
@@ -797,5 +804,10 @@ class AkashicPay
                 "Invalid private key: " . $e->getMessage()
             );
         }
+    }
+
+    private function getCoinSymbol($key)
+    {
+        return $key['coinSymbol'];
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Akashic\Utils;
 
 use Exception;
+use Monolog\Formatter\FormatterInterface;
 use Monolog\Formatter\JsonFormatter;
 use Monolog\Handler\AbstractProcessingHandler;
 use Monolog\Handler\Curl\Util;
@@ -40,15 +41,17 @@ class DatadogHandler extends AbstractProcessingHandler
 
     /**
      * Datadog Api Key access
+     * 
+     * @var string
      */
-    private string $apiKey;
+    private $apiKey;
 
     /**
      * Datadog's optionals attributes
      *
      * @var array
      */
-    private array $attributes;
+    private $attributes;
 
     /**
      * @param string $apiKey Datadog Api Key access
@@ -162,7 +165,7 @@ class DatadogHandler extends AbstractProcessingHandler
     /**
      * Returns the default formatter to use with this handler
      */
-    protected function getDefaultFormatter(): JsonFormatter
+    protected function getDefaultFormatter(): FormatterInterface
     {
         return new JsonFormatter();
     }

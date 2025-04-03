@@ -19,11 +19,13 @@
     <file>tests</file>
 
     <!-- Include all rules from the Laminas Coding Standard -->
-    <rule ref="LaminasCodingStandard">
-        <!-- Idiotic -->
+    <!-- TODO: Disable LaminasCodingStandard because LaminasCodingStandard 2.1 supports php7.2-->
+    <!-- But has dependency issue -->
+    <!-- Idiotic -->
+    <!-- <rule ref="LaminasCodingStandard">
         <exclude name="Squiz.Commenting.FunctionComment.ThrowsNotCapital"/> 
         <exclude name="Squiz.Commenting.FunctionComment.ThrowsNoFullStop"/>
-    </rule>
+    </rule> -->
     <!-- Relax the type hinting rules. When we've improved, we should remove. -->
     <rule ref="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingAnyTypeHint">
         <type>warning</type>
