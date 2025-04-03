@@ -17,6 +17,7 @@ use Akashic\Constants\AkashicBaseUrls;
 use Akashic\L1Network;
 use Akashic\Constants\TokenSymbol;
 use Akashic\Constants\NetworkSymbol;
+use Akashic\Utils\Currency;
 
 class AkashicPay
 {
@@ -101,12 +102,16 @@ class AkashicPay
         $toAddress = $to;
         $initiatedToNonL2 = null;
         $isL2 = false;
+
+        // map TokenSymbol.TETHER to TokenSymbol.USDT
         if (
             $token === TokenSymbol::USDT &&
             $network === NetworkSymbol::TRON_SHASTA
         ) {
             $token = TOkenSymbol::TETHER;
         }
+        // convert to backend currency
+        $amount = Currency::convertToDecimals($amount, $network, $token);
 
         $result = $this->lookForL2Address($to, $network);
 

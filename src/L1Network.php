@@ -7,6 +7,12 @@ use Akashic\Constants\TokenSymbol;
 
 class L1Network
 {
+    // 1 ETH = 1,000,000,000,000,000,000 WEI
+    const ETH_DECIMAL = 18;
+
+    // 1 TRX = 1,000,000 SUN
+    const TRX_DECIMAL = 6;
+
     const ETH_REGEX = [
         "address" => '/^0x[A-Fa-f\d]{40}$/',
         "hash" => '/^0x([A-Fa-f\d]{64})$/',
@@ -22,6 +28,11 @@ class L1Network
     const NETWORK_DICTIONARY = [
         NetworkSymbol::ETHEREUM_MAINNET => [
             "regex" => self::ETH_REGEX,
+            "nativeCoin" => [
+                "decimal" => self::ETH_DECIMAL,
+                "symbol" => "ETH",
+                "displayName" => "ETH",
+            ],
             "tokens" => [
                 [
                     "symbol" => TokenSymbol::USDT,
@@ -39,6 +50,11 @@ class L1Network
         ],
         NetworkSymbol::ETHEREUM_SEPOLIA => [
             "regex" => self::ETH_REGEX,
+            "nativeCoin" => [
+                "decimal" => self::ETH_DECIMAL,
+                "symbol" => "SEP",
+                "displayName" => "Sepolia-ETH",
+            ],
             "tokens" => [
                 [
                     "symbol" => TokenSymbol::USDT,
@@ -50,6 +66,11 @@ class L1Network
         ],
         NetworkSymbol::TRON => [
             "regex" => self::TRX_REGEX,
+            "nativeCoin" => [
+                "decimal" => self::TRX_DECIMAL,
+                "symbol" => "TRX",
+                "displayName" => "TRX",
+            ],
             "tokens" => [
                 [
                     "symbol" => TokenSymbol::USDT,
@@ -67,6 +88,11 @@ class L1Network
         ],
         NetworkSymbol::TRON_SHASTA => [
             "regex" => self::TRX_REGEX,
+            "nativeCoin" => [
+                "decimal" => self::TRX_DECIMAL,
+                "symbol" => "tTRX",
+                "displayName" => "TRX",
+            ],
             "tokens" => [
                 [
                     "symbol" => TokenSymbol::USDT,
