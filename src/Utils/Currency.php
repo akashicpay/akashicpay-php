@@ -2,6 +2,7 @@
 
 namespace Akashic\Utils;
 
+use Exception;
 use Akashic\L1Network;
 use Akashic\Constants\AkashicError;
 
@@ -10,10 +11,11 @@ class Currency
     /**
      * Method for safe conversion from coin/token decimals.
      *
-     * @param  string           $amount
-     * @param  NetworkSymbol    $coinSymbol
-     * @param  TokenSymbol|null $tokenSymbol
+     * @param string $amount
+     * @param string $coinSymbol (which should be a NetworkSymbol)
+     * @param string|null $tokenSymbol (which should be a TokenSymbol)
      * @return string
+     * @throws Exception
      */
     public static function convertToDecimals(
         string $amount,
@@ -24,7 +26,7 @@ class Currency
             $coinSymbol,
             $tokenSymbol
         );
-        $convertedAmount = pow(10, $conversionFactor) * (float) $amount;
+        $convertedAmount = (10 ** $conversionFactor) * (float) $amount;
         self::throwIfNotInteger($convertedAmount);
 
         return strval($convertedAmount);
@@ -53,13 +55,13 @@ class Currency
             }
         }
 
-        throw new \Exception(AkashicError::UNSUPPORTED_COIN_ERROR);
+        throw new Exception(AkashicError::UNSUPPORTED_COIN_ERROR);
     }
 
-    private static function throwIfNotInteger($amount)
+    private static function throwIfNotInteger($amount): void
     {
         if ($amount->mod(1)->__toString() !== "0") {
-            throw new \Exception(AkashicError::TRANSACTION_TOO_SMALL_ERROR);
+            throw new Exception(AkashicError::TRANSACTION_TOO_SMALL_ERROR);
         }
     }
 }

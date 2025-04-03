@@ -2,10 +2,12 @@
 
 namespace Akashic\Classes;
 
+/** @api */
 class IBaseTransaction
 {
     /**
      * @var bool|null
+     * @api
      */
     public ?bool $selfsign = null;
 

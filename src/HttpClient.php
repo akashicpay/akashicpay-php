@@ -2,6 +2,7 @@
 
 namespace Akashic;
 
+use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 
@@ -14,6 +15,7 @@ class HttpClient
         $this->client = new Client();
     }
 
+    /** @api getting false-positives here */
     public function post(string $url, $payload)
     {
         try {
@@ -33,6 +35,7 @@ class HttpClient
         }
     }
 
+    /** @api getting false-positives here */
     public function get(string $url)
     {
         try {
@@ -50,7 +53,7 @@ class HttpClient
 
         if ($statusCode >= 400) {
             $errorResponse = json_decode($response->getBody(), true);
-            throw new \Exception($errorResponse['error'] . ': ' . $errorResponse['message']);
+            throw new Exception($errorResponse['error'] . ': ' . $errorResponse['message']);
         }
 
         return [
@@ -64,9 +67,9 @@ class HttpClient
         if ($e->hasResponse()) {
             $response = $e->getResponse();
             $errorResponse = json_decode($response->getBody(), true);
-            throw new \Exception($errorResponse['error'] . ': ' . $errorResponse['message']);
+            throw new Exception($errorResponse['error'] . ': ' . $errorResponse['message']);
         } else {
-            throw new \Exception($e->getMessage());
+            throw new Exception($e->getMessage());
         }
     }
 }

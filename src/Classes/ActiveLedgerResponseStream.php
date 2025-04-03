@@ -2,7 +2,8 @@
 
 namespace Akashic\Classes;
 
-class ActiveLedgerResponseStreams
+/** @api */
+class ActiveLedgerResponseStream
 {
     /**
      * @var array

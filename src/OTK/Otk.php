@@ -2,19 +2,15 @@
 
 namespace Akashic\OTK;
 
-use FG\ASN1\ASNObject;
-use FG\ASN1\Universal\Sequence;
-use FG\ASN1\Universal\OctetString;
-use FG\ASN1\Exception\ParserException;
 use Elliptic\EC;
 use Akashic\Constants\KeyType;
+use Exception;
 
 class Otk
 {
     public static function restoreOtkFromPhrase($phrase)
     {
-        $kh = new KeyHandler();
-        return $kh->restoreBIP39Key('otk', $phrase, true);
+        return (new KeyHandler())->restoreBIP39Key('otk', $phrase, true);
     }
 
     private static function parsePrvKey($prvKey)
@@ -31,7 +27,6 @@ class Otk
         try {
             $ec = new EC('secp256k1');
             $otkPriv = self::parsePrvKey($keyPair);
-            $publicKey = null;
 
             if (strpos($otkPriv, '0x') === 0) {
                 $privKeyHex = str_replace('0x', '', $keyPair);
@@ -51,8 +46,8 @@ class Otk
                 'type' => KeyType::ELLIPTIC_CURVE,
                 'name' => 'otk',
             ];
-        } catch (\Exception $e) {
-            throw new \Exception('Failed to restore OTK. Try again');
+        } catch (Exception $e) {
+            throw new Exception('Failed to restore OTK. Try again');
         }
     }
 

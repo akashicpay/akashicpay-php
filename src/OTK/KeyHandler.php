@@ -6,6 +6,7 @@ use BitWasp\Bitcoin\Mnemonic\MnemonicFactory;
 use Elliptic\EC;
 use BitWasp\Bitcoin\Mnemonic\Bip39\Bip39SeedGenerator;
 use Akashic\Constants\KeyType;
+use Exception;
 
 class KeyHandler
 {
@@ -15,7 +16,7 @@ class KeyHandler
      * @param  string $keyName
      * @param  bool   $compressed
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     public function generateBIP39Key($keyName, $compressed = false)
     {
@@ -31,7 +32,7 @@ class KeyHandler
             $privateKey = $key->getPrivate('hex');
             $publicKey = $compressed ? $key->getPublic(true, 'hex') : $key->getPublic(false, 'hex');
 
-            $keyHolder = [
+            return [
                 'key' => [
                     'pub' => [
                         'pkcs8pem' => "0x" . $publicKey
@@ -44,10 +45,8 @@ class KeyHandler
                 'type' => KeyType::ELLIPTIC_CURVE,
                 'phrase' => $mnemonic
             ];
-
-            return $keyHolder;
-        } catch (\Exception $e) {
-            throw new \Exception('Failed to generate BIP39 key pair. Try again.');
+        } catch (Exception $e) {
+            throw new Exception('Failed to generate BIP39 key pair. Try again.');
         }
     }
 
@@ -58,12 +57,11 @@ class KeyHandler
      * @param  string $phrase
      * @param  bool   $compressed
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     public function restoreBIP39Key($keyName, $phrase, $compressed = false)
     {
         try {
-            $bip39 = MnemonicFactory::bip39();
             $seedGenerator = new Bip39SeedGenerator();
             $seed = $seedGenerator->getSeed($phrase);
             $seedHex = $seed->getHex(); // Convert the seed to hex
@@ -88,8 +86,8 @@ class KeyHandler
             ];
 
             return $keyHolder;
-        } catch (\Exception $e) {
-            throw new \Exception('Failed to restore BIP39 key pair. Try again.');
+        } catch (Exception $e) {
+            throw new Exception('Failed to restore BIP39 key pair. Try again.');
         }
     }
 }

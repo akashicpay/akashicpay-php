@@ -19,17 +19,20 @@ use Akashic\Constants\AkashicEndpoints;
 use Akashic\Utils\Currency;
 use Akashic\Utils\Prefix;
 
+/** @api */
 class AkashicPay
 {
-    public const AC_PRIVATE_KEY_REGEX = '/^0x[a-f\d]{64}$/';
+    private const AC_PRIVATE_KEY_REGEX = '/^0x[a-f\d]{64}$/';
+    private const L2_REGEX = '/^AS[A-Fa-f\d]{64}$/';
     private $otk;
     private $targetNode;
-    private $akashicUrl;
-    private $logger;
+    private string $akashicUrl;
+    private Logger $logger;
     private $env;
-    private $httpClient;
-    private $akashicChain;
+    private HttpClient $httpClient;
+    private AkashicChain $akashicChain;
 
+    /** @api */
     public function __construct($args)
     {
         $this->env = $args["environment"] ?? Environment::PRODUCTION;
@@ -156,7 +159,7 @@ class AkashicPay
                 $initiatedToNonL2 = $to;
                 $isL2 = true;
             }
-        } elseif (preg_match(L2Regex::L2_REGEX, $to)) {
+        } elseif (preg_match(self::L2_REGEX, $to)) {
             // Sending L2 by L2 address
             if (!$l2Address) {
                 throw new Exception(AkashicError::L2_ADDRESS_NOT_FOUND);
@@ -203,61 +206,61 @@ class AkashicPay
             return [
                 "l2Hash" => Prefix::prefixWithAS($acResponse["data"]['$umid']),
             ];
-        } else {
-            $payload = [
-                "toAddress" => $to,
-                "coinSymbol" => $network,
-                "amount" => $amount,
-                "tokenSymbol" => $token,
-                "identity" => $this->otk["identity"],
-            ];
-
-            $response = $this->post(
-                $this->akashicUrl . AkashicEndpoints::PREPARE_TX,
-                $payload
-            );
-            $withdrawalKey = $response["data"]["withdrawalKey"];
-
-            $feesEstimate = Currency::convertToDecimals(
-                $response["data"]["fees"]["feesEstimate"],
-                $network
-            );
-
-            $ethGasPrice = $response["data"]["ethGasPrice"];
-
-            $lT1x = $this->akashicChain->l2ToL1SignTransaction(
-                [
-                "otk" => $this->otk,
-                "amount" => $decimalAmount,
-                "toAddress" => $toAddress,
-                "coinSymbol" => $network,
-                "tokenSymbol" => $token,
-                "keyLedgerId" => $withdrawalKey["ledgerId"],
-                "identifier" => $recipientId,
-                "feesEstimate" => $feesEstimate,
-                "ethGasPrice" => $ethGasPrice,
-                ]
-            );
-
-            $acResponse = $this->post($this->targetNode["node"], $lT1x);
-
-            $this->akashicChain->checkForAkashicChainError($acResponse["data"]);
-
-            $this->logger->info(
-                "Paid out " .
-                $amount .
-                " " .
-                $token .
-                " to user " .
-                $recipientId .
-                " at " .
-                $to
-            );
-
-            return [
-                "l2Hash" => Prefix::prefixWithAS($acResponse["data"]['$umid']),
-            ];
         }
+
+        $payload = [
+            "toAddress" => $to,
+            "coinSymbol" => $network,
+            "amount" => $amount,
+            "tokenSymbol" => $token,
+            "identity" => $this->otk["identity"],
+        ];
+
+        $response = $this->post(
+            $this->akashicUrl . AkashicEndpoints::PREPARE_TX,
+            $payload
+        );
+        $withdrawalKey = $response["data"]["withdrawalKey"];
+
+        $feesEstimate = Currency::convertToDecimals(
+            $response["data"]["fees"]["feesEstimate"],
+            $network
+        );
+
+        $ethGasPrice = $response["data"]["ethGasPrice"];
+
+        $lT1x = $this->akashicChain->l2ToL1SignTransaction(
+            [
+            "otk" => $this->otk,
+            "amount" => $decimalAmount,
+            "toAddress" => $toAddress,
+            "coinSymbol" => $network,
+            "tokenSymbol" => $token,
+            "keyLedgerId" => $withdrawalKey["ledgerId"],
+            "identifier" => $recipientId,
+            "feesEstimate" => $feesEstimate,
+            "ethGasPrice" => $ethGasPrice,
+            ]
+        );
+
+        $acResponse = $this->post($this->targetNode["node"], $lT1x);
+
+        $this->akashicChain->checkForAkashicChainError($acResponse["data"]);
+
+        $this->logger->info(
+            "Paid out " .
+            $amount .
+            " " .
+            $token .
+            " to user " .
+            $recipientId .
+            " at " .
+            $to
+        );
+
+        return [
+            "l2Hash" => Prefix::prefixWithAS($acResponse["data"]['$umid']),
+        ];
     }
 
     /**
@@ -337,6 +340,7 @@ class AkashicPay
      * @param  string      $aliasOrL1OrL2Address
      * @param  string|null $network
      * @return array
+     * @api
      */
     public function lookForL2Address($aliasOrL1OrL2Address, $network = null)
     {
@@ -358,6 +362,7 @@ class AkashicPay
      *
      * @param  array $getTransactionParams
      * @return array
+     * @api
      */
     public function getTransfers(array $getTransactionParams)
     {
@@ -369,7 +374,7 @@ class AkashicPay
             ]
         );
         $query = http_build_query(
-            array_map([AkashicPay::class, "boolsToString"], $queryParameters)
+            array_map("self::boolsToString", $queryParameters)
         );
         $transactions = $this->get(
             $this->akashicUrl .
@@ -397,6 +402,7 @@ class AkashicPay
      * Get total balances, divided by Network and Token.
      *
      * @return array
+     * @api
      */
     public function getBalance()
     {
@@ -427,6 +433,7 @@ class AkashicPay
      *
      * @param  string $l2TxHash l2Hash of transaction
      * @return array|null
+     * @api
      */
     public function getTransactionDetails($l2TxHash)
     {
@@ -437,38 +444,36 @@ class AkashicPay
             urlencode($l2TxHash)
         );
         $transaction = $response["data"]["transaction"] ?? null;
-        if ($transaction) {
-            return array_merge(
-                $transaction,
-                [
+        if (!$transaction) {
+            return null;
+        }
+
+        return array_merge(
+            $transaction,
+            [
                 "tokenSymbol" =>
                     $transaction["tokenSymbol"] === TokenSymbol::TETHER
                         ? TokenSymbol::USDT
                         : $transaction["tokenSymbol"],
-                ]
-            ) ?? null;
-        } else {
-            return null;
-        }
+            ]
+        );
     }
 
     /**
      * Get key by BP and identifier
      *
-     * @return address
+     * @return ?array address
      */
-    public function getByOwnerAndIdentifier($getByOwnerAndIdentifierParams)
+    public function getByOwnerAndIdentifier($getByOwnerAndIdentifierParams): ?array
     {
         $queryParameters = array_merge(
             $getByOwnerAndIdentifierParams,
-            [
-            "identity" => $this->otk["identity"],
-            ]
+            ["identity" => $this->otk["identity"]]
         );
         $query = http_build_query(
-            array_map([AkashicPay::class, "boolsToString"], $queryParameters)
+            array_map("self::boolsToString", $queryParameters)
         );
-        $transactions = $this->get(
+        return $this->get(
             $this->akashicUrl .
             AkashicEndpoints::IDENTIFIER_LOOKUP .
             "?" .
@@ -480,10 +485,10 @@ class AkashicPay
      * Finds an AkashicChain node to target for requests. The SDK will attempt to
      * find the fastest node for you.
      *
-     * @Returns The URL of an AC node on the network matching your environment
+     * @Returns string The URL of an AC node on the network matching your environment
      * (production or development)
      */
-    private function chooseBestACNode()
+    private function chooseBestACNode(): array
     {
         // TODO: implement race condition
         // $nodes = $this->env === Environment::PRODUCTION ? ACNode::NODES : ACDevNode::NODES;
@@ -543,8 +548,8 @@ class AkashicPay
     /**
      * Sets your OTK to sign transactions on AkashicChain (AC)
      *
-     * @param string privateKey private key from Akashic Link.
-     * @param string l2Address L2-address of your Akashic account
+     * @param string $privateKey private key from Akashic Link.
+     * @param string $l2Address L2-address of your Akashic account
      */
     private function setOtkFromKeyPair(
         string $privateKey,
@@ -556,9 +561,7 @@ class AkashicPay
 
         $this->otk = array_merge(
             Otk::restoreOtkFromKeypair($privateKey),
-            [
-            "identity" => $l2Address,
-            ]
+            ["identity" => $l2Address,]
         );
         $this->logger->debug("OTK set from private key");
     }
@@ -566,9 +569,9 @@ class AkashicPay
     /**
      * Sets your OTK to sign transactions on AkashicChain (AC)
      *
-     * @param string recoveryPhrase the recovery phrase generated when you
+     * @param string $recoveryPhrase the recovery phrase generated when you
      * created your Akashic Link account.
-     * @param string l2Address L2-address of your Akashic account
+     * @param string $l2Address L2-address of your Akashic account
      */
     private function setOtkFromRecoveryPhrase(
         string $recoveryPhrase,
@@ -583,20 +586,15 @@ class AkashicPay
         $this->logger->debug("OTK set from recovery phrase");
     }
 
-    private function post(string $url, $payload)
+    private function post(string $url, $payload): ?array
     {
         $this->logger->info("POSTing to AC url");
         return $this->httpClient->post($url, $payload);
     }
 
-    private function get(string $url)
+    private function get(string $url): ?array
     {
         return $this->httpClient->get($url);
-    }
-
-    private function signTransaction($tx)
-    {
-        return $this->akashicChain->signTransaction($tx, $this->otk);
     }
 
     private function boolsToString($value)

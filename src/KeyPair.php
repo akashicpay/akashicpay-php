@@ -3,6 +3,7 @@
 namespace Akashic;
 
 use Elliptic\EC;
+use Exception;
 
 class KeyPair
 {
@@ -51,7 +52,7 @@ class KeyPair
                 }
                 break;
             default:
-                throw new \Exception("Unknown / unset key type: {$this->type}");
+                throw new Exception("Unknown / unset key type: {$this->type}");
         }
     }
 
@@ -72,17 +73,17 @@ class KeyPair
 
     private function encodeECPrivateKey(string $key, string $pubKey): string
     {
-        // Encoding logic for EC Private Key
-        // Assuming you have a function to encode EC Private Key
-        return $key; // Placeholder
+        // TODO Encoding logic for EC Private Key
+        //  Assuming you have a function to encode EC Private Key
+        return $key . $pubKey; // Placeholder
     }
 
     public function sign($rawData, string $encoding = 'base64'): string
     {
         if (empty($this->handler['prv']['pkcs8pem'])) {
-            throw new \Exception("Cannot sign without a private key");
+            throw new Exception("Cannot sign without a private key");
         }
-        $data = self::getString($rawData);
+        $data = $this->getString($rawData);
 
         $privateKey = $this->handler['prv']['pkcs8pem'];
         $signature = '';
@@ -98,21 +99,21 @@ class KeyPair
                 $signature = $signature->toDER('hex');
                 break;
             default:
-                throw new \Exception("Unsupported key type for signing: {$this->type}");
+                throw new Exception("Unsupported key type for signing: {$this->type}");
         }
 
         return $encoding === 'base64' ? base64_encode(hex2bin($signature)) : $signature;
     }
 
+    /** @api */
     public function verify(string $data, string $signature, string $encoding = 'base64'): bool
     {
         if (!isset($this->handler['pub']['pkcs8pem'])) {
-            throw new \Exception("Cannot verify without a public key");
+            throw new Exception("Cannot verify without a public key");
         }
 
         $publicKey = $this->handler['pub']['pkcs8pem'];
         $signature = $encoding === 'base64' ? bin2hex(base64_decode($signature)) : $signature;
-        $verified = false;
 
         switch ($this->type) {
             case 'rsa':
@@ -124,7 +125,7 @@ class KeyPair
                 $verified = $key->verify(hash('sha256', $data), $signature);
                 break;
             default:
-                throw new \Exception("Unsupported key type for verification: {$this->type}");
+                throw new Exception("Unsupported key type for verification: {$this->type}");
         }
 
         return $verified;
@@ -135,7 +136,7 @@ class KeyPair
      *
      * @param  mixed $data
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     private function getString($data): string
     {
@@ -156,13 +157,12 @@ class KeyPair
 
         // Handle other data types as needed (e.g., integers, floats, etc.)
         // In this case, we will throw an exception for unsupported types
-        throw new \Exception("Unsupported data type");
+        throw new Exception("Unsupported data type");
     }
 
+    /** @api */
     public function generate(int $bits = 2048): array
     {
-        $keyPair = [];
-
         switch ($this->type) {
             case 'rsa':
                 $config = [
@@ -193,7 +193,7 @@ class KeyPair
                 break;
 
             default:
-                throw new \Exception("Unknown key type: {$this->type}");
+                throw new Exception("Unknown key type: {$this->type}");
         }
 
         return $keyPair;

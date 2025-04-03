@@ -2,6 +2,7 @@
 
 namespace Akashic\Classes;
 
+/** @api */
 class IBaseTransactionTxBody
 {
     /**
@@ -27,12 +28,13 @@ class IBaseTransactionTxBody
     /**
      * @var mixed|null
      */
-    public $o = null;
+    public $o;
 
     /**
      * @var mixed|null
+     * @api
      */
-    public $r = null;
+    public $r;
 
     /**
      * TxBody constructor.

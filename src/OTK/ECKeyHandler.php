@@ -25,7 +25,7 @@ class ECKeyHandler
         throw new RuntimeException('PPK not found inside ASN');
     }
 
-    public static function decodeECPrivateKey($pkcs8pem, $label = 'EC PRIVATE KEY')
+    public static function decodeECPrivateKey($pkcs8pem)
     {
         // Strip the PEM headers and decode the base64 content
         $pkcs8pem = preg_replace('/-----BEGIN .*?-----/', '', $pkcs8pem);

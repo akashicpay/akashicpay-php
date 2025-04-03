@@ -14,7 +14,6 @@ use Exception;
 
 class AkashicChain
 {
-    public const L2_REGEX = '/^AS[A-Fa-f\d]{64}$/';
     public const NITR0GEN_NATIVE_COIN = "#native";
     private $contracts;
     private $dbIndex;
@@ -40,7 +39,7 @@ class AkashicChain
         if ($commit) {
             return;
         }
-        $errorMessage = self::convertChainErrorToAkashicError(
+        $errorMessage = $this->convertChainErrorToAkashicError(
             $response['$summary']["errors"][0] ?? "Unknown error"
         );
 
@@ -55,7 +54,7 @@ class AkashicChain
      */
     private function convertChainErrorToAkashicError(string $error): string
     {
-        if (self::isChainErrorSavingsExceeded($error)) {
+        if ($this->isChainErrorSavingsExceeded($error)) {
             return AkashicError::SAVINGS_EXCEEDED;
         }
 
@@ -94,7 +93,6 @@ class AkashicChain
      *
      * @param  NetworkSymbol $coinSymbol
      * @param  $otk
-     * @param  string        $identifier
      * @return IBaseTransaction
      */
     public function keyCreateTransaction($coinSymbol, $otk)
@@ -106,8 +104,8 @@ class AkashicChain
                 '$i' => [
                     "owner" => [
                         '$stream' => $otk["identity"],
-                        "symbol" => self::getACSymbol($coinSymbol),
-                        "network" => self::getACNetwork($coinSymbol),
+                        "symbol" => $this->getACSymbol($coinSymbol),
+                        "network" => $this->getACNetwork($coinSymbol),
                         "business" => true,
                     ],
                 ],
@@ -220,7 +218,7 @@ class AkashicChain
         ];
 
         // Sign Transaction
-        return self::signTransaction($txBody, $otk);
+        return $this->signTransaction($txBody, $otk);
     }
 
     public function l2ToL1SignTransaction(array $params)
@@ -275,7 +273,7 @@ class AkashicChain
         ];
 
         // Sign Transaction
-        return self::signTransaction($txBody, $otk);
+        return $this->signTransaction($txBody, $otk);
     }
 
     /**
@@ -288,7 +286,9 @@ class AkashicChain
     {
         if (in_array($coinSymbol, TronSymbol::VALUES, true)) {
             return "trx";
-        } elseif (in_array($coinSymbol, EthereumSymbol::VALUES, true)) {
+        }
+
+        if (in_array($coinSymbol, EthereumSymbol::VALUES, true)) {
             return "eth";
         }
         return $coinSymbol;
@@ -324,20 +324,18 @@ class AkashicChain
             if (is_string($txBody)) {
                 // Sign the string
                 return $key->sign($txBody);
-            } elseif (
-                is_array($txBody)
-                && isset($txBody['$tx'])
-                && isset($txBody['$sigs'])
-            ) {
+            }
+
+            if (is_array($txBody) && isset($txBody['$tx'], $txBody['$sigs'])) {
                 // Sign the transaction in the array
                 $identifier = $otk["identity"] ?? $otk["name"];
 
                 $txBody['$sigs'][$identifier] = $key->sign($txBody['$tx']);
 
                 return $txBody;
-            } else {
-                throw new Exception("Invalid transaction body provided");
             }
+
+            throw new Exception("Invalid transaction body provided");
         } catch (Exception $e) {
             throw new Exception(
                 "Error signing transaction: " . $e->getMessage()
