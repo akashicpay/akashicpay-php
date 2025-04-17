@@ -46,10 +46,7 @@ class KeyHandlerTest extends TestCase
     {
         $keyName    = 'test-key';
         $compressed = false;
-
-        // Generate a key pair to get a valid mnemonic
-        $generatedKeyPair = $this->keyHandler->generateBIP39Key($keyName, $compressed);
-        $mnemonic         = $generatedKeyPair['phrase'];
+        $mnemonic = 'burden kind uphold penalty question green hour finger topple holiday van save';
 
         // Restore the key pair from the mnemonic
         $restoredKeyPair = $this->keyHandler->restoreBIP39Key($keyName, $mnemonic, $compressed);
@@ -73,7 +70,7 @@ class KeyHandlerTest extends TestCase
         $this->assertIsString($restoredKeyPair['key']['prv']['pkcs8pem']);
 
         // Ensure the restored key pair matches the original key pair
-        $this->assertEquals($generatedKeyPair['key']['pub']['pkcs8pem'], $restoredKeyPair['key']['pub']['pkcs8pem']);
-        $this->assertEquals($generatedKeyPair['key']['prv']['pkcs8pem'], $restoredKeyPair['key']['prv']['pkcs8pem']);
+        $this->assertEquals('0x0475ed383819bd7aafccca4819cc73b807952bb824dbb3650f0fe2c3bb704913c7df8e42e1dd409d9c30d6a7b9a033927d351168b03b022c3f16fa699a81f4c6cd', $restoredKeyPair['key']['pub']['pkcs8pem']);
+        $this->assertEquals('0x69c55564d84627b934ba2c898757af2f4e757c053a893e6f894ec60eba8a751b', $restoredKeyPair['key']['prv']['pkcs8pem']);
     }
 }

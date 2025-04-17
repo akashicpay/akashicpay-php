@@ -64,15 +64,10 @@ class KeyHandler
     public function restoreBIP39Key($keyName, $phrase, $compressed = false)
     {
         try {
-            $seedGenerator = new Bip39SeedGenerator();
-            $seed          = $seedGenerator->getSeed($phrase);
-            $seedHex       = $seed->getHex(); // Convert the seed to hex
-
             $ec         = new EC('secp256k1');
-            $key        = $ec->keyFromPrivate($seedHex, 'hex');
-            $privateKey = $key->getPrivate('hex');
-            $publicKey  = $compressed ? $key->getPublic(true, 'hex') : $key->getPublic(false, 'hex');
-
+            $privateKey = bin2hex(hash('sha256', $phrase, true));
+            $keyPair = $ec->keyFromPrivate($privateKey);
+            $publicKey = $keyPair->getPublic($compressed, 'hex');
             return [
                 'key'    => [
                     'pub' => [
