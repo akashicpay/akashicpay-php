@@ -207,7 +207,7 @@ class AkashicChain
         return $this->signTransaction($txBody, $otk);
     }
 
-    public function l2Transaction(array $params): array
+    public function l2Transaction(array $params, bool $isFxBp = false): array
     {
         $otk              = $params["otk"];
         $coinSymbol       = $params["coinSymbol"];
@@ -221,7 +221,7 @@ class AkashicChain
                 '$namespace' => $this->contracts::CONTRACT_NAMESPACE,
                 '$contract'  => $this->contracts::CRYPTO_TRANSFER,
                 '$entry'     => "transfer",
-                '$i'         => [
+                '$i'         => $isFxBp ? [
                     "owner" => [
                         '$stream' => $otk["identity"],
                         "network" => $coinSymbol,
@@ -232,6 +232,13 @@ class AkashicChain
                         '$stream' => $this->fxMultiSignIdentity,
                         '$sigOnly' => true
                     ]
+                ] : [
+                    "owner" => [
+                        '$stream' => $otk["identity"],
+                        "network" => $coinSymbol,
+                        "token"   => $tokenSymbol,
+                        "amount"  => $amount,
+                    ],
                 ],
                 '$o'         => [
                     "to" => ['$stream' => $toAddress],

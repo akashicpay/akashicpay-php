@@ -232,7 +232,7 @@ class AkashicPay
                     "tokenSymbol"      => $token,
                     "initiatedToNonL2" => $initiatedToNonL2,
                     "identifier"       => $recipientId,
-                ]
+                ], $this->isFxBp
             );
 
             if ($this->isFxBp) {
