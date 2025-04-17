@@ -331,9 +331,11 @@ class AkashicPay
      * @param  string $identifier  userID or similar identifier of the user
      *                             making the deposit
      * @param  string $referenceId optional referenceId to identify the order
+     * @param  string $requestedCurrency optional requestedCurrency to identify the order
+     * @param  string $requestedAmount optional requestedAmount to identify the order
      * @return array
      */
-    public function getDepositAddress($network, $identifier, $referenceId = null)
+    public function getDepositAddress($network, $identifier, $referenceId = null, $requestedCurrency = null, $requestedAmount = null)
     {
         $response = $this->getByOwnerAndIdentifier(
             [
@@ -353,6 +355,12 @@ class AkashicPay
                     "toAddress"   => $address,
                     "coinSymbol"  => $network,
                 ];
+                if ($requestedCurrency && $requestedAmount) {
+                    $payloadToSign["requestedValue"] = [
+                        "currency" => $requestedCurrency,
+                        "amount" => $requestedAmount,
+                    ];
+                }
                 $this->createDepositOrder(array_merge($payloadToSign, [
                     "signature" => $this->sign($payloadToSign),
                 ]));
@@ -411,6 +419,12 @@ class AkashicPay
                 "toAddress"   => $newKey["address"],
                 "coinSymbol"  => $network,
             ];
+            if ($requestedCurrency && $requestedAmount) {
+                $payloadToSign["requestedValue"] = [
+                    "currency" => $requestedCurrency,
+                    "amount" => $requestedAmount,
+                ];
+            }
             $this->createDepositOrder(array_merge($payloadToSign, [
                 "signature" => $this->sign($payloadToSign),
             ]));
@@ -428,9 +442,11 @@ class AkashicPay
      * @param  string $identifier userID or similar identifier of the user
      *                            making the deposit
      * @param  string $referenceId optional referenceId to identify the order
+     * @param  string $requestedCurrency optional requestedCurrency to identify the order
+     * @param  string $requestedAmount optional requestedAmount to identify the order
      * @return string
      */
-    public function getDepositUrl($identifier, $referenceId = null)
+    public function getDepositUrl($identifier, $referenceId = null, $requestedCurrency = null, $requestedAmount = null)
     {
         // Perform asynchronous tasks sequentially
         $keys                = $this->getKeysByOwnerAndIdentifier(['identifier' => $identifier]);
@@ -453,18 +469,20 @@ class AkashicPay
                 "referenceId" => $referenceId,
                 "identifier"  => $identifier,
             ];
+            if ($requestedCurrency && $requestedAmount) {
+                $payloadToSign["requestedValue"] = [
+                    "currency" => $requestedCurrency,
+                    "amount" => $requestedAmount,
+                ];
+            }
             $this->createDepositOrder(array_merge($payloadToSign, [
                 "signature" => $this->sign($payloadToSign),
             ]));
         }
 
         // Construct the deposit URL
-        return sprintf(
-            '%s/sdk/deposit?identity=%s&identifier=%s',
-            $this->akashicPayUrl,
-            urlencode($this->otk["identity"]),
-            urlencode($identifier)
-        );
+        return "{$this->akashicPayUrl}/sdk/deposit?identity={$this->otk['identity']}&identifier={$identifier}" .
+        ($referenceId ? "&referenceId={$referenceId}" : "");
     }
 
     /**
