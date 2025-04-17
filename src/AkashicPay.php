@@ -101,20 +101,11 @@ class AkashicPay
         if (! isset($args["l2Address"])) {
             $this->setNewOTK();
         } else {
+            $checkIfBpResponse = $this->checkIfBp($args["l2Address"]);
+            $this->isFxBp = $checkIfBpResponse["data"]["isFxBp"];
             // Chck if BP if on prod
-            if ($this->env === Environment::PRODUCTION) {
-                $checkIfBpUrl =
-                    $this->akashicUrl
-                    . AkashicEndpoints::IS_BP
-                    . "?address="
-                    . urlencode($args["l2Address"]);
-                $isBp         = $this->get($checkIfBpUrl)["data"]["isBp"];
-                $isFxBp         = $this->get($checkIfBpUrl)["data"]["isFxBp"];
-
-                if (! $isBp) {
-                    throw new AkashicException(AkashicErrorCode::IS_NOT_BP);
-                }
-                $this->isFxBp = $isFxBp;
+            if ($this->env === Environment::PRODUCTION && !$checkIfBpResponse["data"]["isBp"]) {
+                throw new AkashicException(AkashicErrorCode::IS_NOT_BP);
             }
 
             if (isset($args["privateKey"]) && $args["privateKey"]) {
@@ -645,6 +636,22 @@ class AkashicPay
             . AkashicEndpoints::CREATE_DEPOSIT_ORDER,
             $payload
         )["data"];
+    }
+
+   
+    /**
+     * Check if BP
+     *
+     * @return array
+     */ 
+    public function checkIfBp($l2Address)
+    {
+        $checkIfBpUrl = $this->akashicUrl
+            . AkashicEndpoints::IS_BP
+            . "?address="
+            . urlencode($l2Address);
+
+        return $this->get($checkIfBpUrl);
     }
 
     /**

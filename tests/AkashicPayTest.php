@@ -46,25 +46,41 @@ class AkashicPayTest extends TestCase
             "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"; // Replace with actual key pair
         $l2Address = "your-l2-address-here"; // Replace with actual L2 address
 
-        $akPay = new AkashicPay(
-            [
-                "environment" => Environment::DEVELOPMENT,
-                "privateKey"  => $keyPair,
-                "l2Address"   => $l2Address,
+        // Create mock without calling the constructor
+        $akPayMock = $this->getMockBuilder(AkashicPay::class)
+            ->disableOriginalConstructor() // Prevent constructor execution
+            ->onlyMethods(['checkIfBp'])
+            ->getMock();
+
+        // Mock the checkIfBp method
+        $akPayMock->method('checkIfBp')
+        ->willReturn([
+            "data" => [
+                "isFxBp" => false,
+                "isBp"   => true
             ]
-        );
+        ]);
 
-        $otk = $this->getPrivateProperty($akPay, "otk");
+        // Manually initialize required properties via reflection
+        $reflection = new ReflectionClass(AkashicPay::class);
 
-        $this->assertNotNull(
-            $otk,
-            "OTK should not be null after building with a key pair"
-        );
-        $this->assertArrayHasKey(
-            "identity",
-            $otk,
-            "OTK should contain an identity"
-        );
+        // Call constructor manually with arguments
+        $constructor = $reflection->getConstructor();
+        $constructor->setAccessible(true);
+        $constructor->invoke($akPayMock, [
+            "environment" => Environment::DEVELOPMENT,
+            "privateKey"  => $keyPair,
+            "l2Address"   => $l2Address,
+        ]);
+
+        // Get otk property
+        $otkProperty = $reflection->getProperty('otk');
+        $otkProperty->setAccessible(true);
+        $otk = $otkProperty->getValue($akPayMock);
+
+        // Assertions
+        $this->assertNotNull($otk, "OTK should not be null after building with a key pair");
+        $this->assertArrayHasKey("identity", $otk, "OTK should contain an identity");
     }
 
     public function testBuildWithRecoveryPhrase(): void
@@ -72,15 +88,37 @@ class AkashicPayTest extends TestCase
         $recoveryPhrase = "your-recovery-phrase-here"; // Replace with actual recovery phrase
         $l2Address      = "your-l2-address-here"; // Replace with actual L2 address
 
-        $akPay = new AkashicPay(
-            [
-                "environment"    => Environment::DEVELOPMENT,
-                "recoveryPhrase" => $recoveryPhrase,
-                "l2Address"      => $l2Address,
-            ]
-        );
+        // Create mock without calling the constructor
+        $akPayMock = $this->getMockBuilder(AkashicPay::class)
+            ->disableOriginalConstructor() // Prevent constructor execution
+            ->onlyMethods(['checkIfBp'])
+            ->getMock();
 
-        $otk = $this->getPrivateProperty($akPay, "otk");
+        // Mock the checkIfBp method
+        $akPayMock->method('checkIfBp')
+        ->willReturn([
+            "data" => [
+                "isFxBp" => false,
+                "isBp"   => true
+            ]
+        ]);
+
+        // Manually initialize required properties via reflection
+        $reflection = new ReflectionClass(AkashicPay::class);
+
+        // Call constructor manually with arguments
+        $constructor = $reflection->getConstructor();
+        $constructor->setAccessible(true);
+        $constructor->invoke($akPayMock, [
+            "environment" => Environment::DEVELOPMENT,
+            "recoveryPhrase"  => $recoveryPhrase,
+            "l2Address"   => $l2Address,
+        ]);
+
+        // Get otk property
+        $otkProperty = $reflection->getProperty('otk');
+        $otkProperty->setAccessible(true);
+        $otk = $otkProperty->getValue($akPayMock);
 
         $this->assertNotNull(
             $otk,
