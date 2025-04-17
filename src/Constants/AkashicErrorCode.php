@@ -15,4 +15,5 @@ class AkashicErrorCode
     public const L2_ADDRESS_NOT_FOUND           = 'L2ADDRESS_NOT_FOUND';
     public const IS_NOT_BP                      = 'NOT_SIGNED_UP';
     public const SAVINGS_EXCEEDED               = 'FUNDS_EXCEEDED';
+    public const ASSIGNED_KEY_FAILURE           = 'ASSIGNED_KEY_FAILURE';
 }

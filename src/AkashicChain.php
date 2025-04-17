@@ -259,6 +259,49 @@ class AkashicChain
     }
 
     /**
+     * Create an assign key
+     *
+     * @param  array $params
+     * @param  array $params["otk"] the OTK to use for signing
+     * @param  array $params["ledgerId"] the ledger ID to assign
+     * @param  array $params["identifier"] the identifier for the transaction
+     * @return array the shape of an {@link IBaseTransaction}
+     * @throws Exception
+     * @api
+     */
+    public function assignKey(array $params): array
+    {
+        $otk        = $params["otk"];
+        $ledgerId   = $params["ledgerId"];
+        $identifier = $params["identifier"];
+
+        $txBody = [
+            '$tx'   => [
+                '$namespace' => $this->contracts::CONTRACT_NAMESPACE,
+                '$contract'  => $this->contracts::ASSIGN_KEY,
+                '$i'         => [
+                    "owner" => [
+                        '$stream' => $otk["identity"],
+                    ],
+                ],
+                '$o'         => [
+                    "key" => [
+                        '$stream' => $ledgerId,
+                    ]
+                ],
+                "_dbIndex"   => $this->dbIndex,
+                "metadata"   => [
+                    "identifier"   => $identifier,
+                ],
+            ],
+            '$sigs' => [],
+        ];
+
+        // Sign Transaction
+        return $this->signTransaction($txBody, $otk);
+    }
+
+    /**
      * Builds an L1 payout transaction that still needs to be signed and can then
      * be sent directly to AC.
      * For use only when the backend is unavailable.

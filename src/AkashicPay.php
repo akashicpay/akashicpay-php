@@ -336,7 +336,32 @@ class AkashicPay
         );
 
         $address = $response["address"] ?? null;
+        $unassignedLedgerId = $response["unassignedLedgerId"];
+
+        // unassignedLedgerId indiciate that the key is not assigned to an owner
+        // and we need to assign it
         if ($address) {
+            if ($unassignedLedgerId) {
+                $tx = $this->akashicChain->assignKey(
+                    $this->otk,
+                    $unassignedLedgerId,
+                    $identifier
+                );
+                $response = $this->post($this->targetNode["node"], $tx);
+        
+                $assignedKey = $response["data"]['$responses'][0] ?? null;
+                if (! $assignedKey) {
+                    $this->logger->warning(
+                        "Key assigned on "
+                        . $network
+                        . " failed for identifier "
+                        . $identifier
+                        . ". Responses: "
+                        . $response["data"]['$responses']
+                    );
+                    throw new AkashicException(AkashicErrorCode::ASSIGNED_KEY_FAILURE);
+                }
+            }
             if ($referenceId) {
                 $payloadToSign = [
                     "identity"    => $this->otk["identity"],
@@ -663,7 +688,7 @@ class AkashicPay
     {
         $queryParameters = array_merge(
             $getByOwnerAndIdentifierParams,
-            ["identity" => $this->otk["identity"]]
+            ["identity" => $this->otk["identity"], "usePreSeed" => true]
         );
         $query           = http_build_query(
             array_map("self::boolsToString", $queryParameters)
