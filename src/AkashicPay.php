@@ -453,7 +453,7 @@ class AkashicPay
         $supportedCurrencies = $this->getSupportedCurrencies();
 
         // Process supported currencies
-        $supportedCurrencySymbols = array_unique(array_keys($supportedCurrencies));
+        $supportedCurrencySymbols = array_unique(array_merge(...array_values($supportedCurrencies)));
         $existingKeys             = array_unique(array_map("self::getCoinSymbol", $keys));
 
         foreach ($supportedCurrencySymbols as $coinSymbol) {
