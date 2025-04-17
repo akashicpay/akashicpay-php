@@ -16,4 +16,5 @@ class AkashicEndpoints
     public const IS_BP                  = '/v0/owner/is-bp';
     public const SUPPORTED_CURRENCIES   = '/v1/config/supported-currencies';
     public const CREATE_DEPOSIT_ORDER   = '/v0/deposit-request';
+    public const PREPARE_L2_TXN         = '/v0/l2-txn-orchestrator/prepare-l2-withdrawal';
 }

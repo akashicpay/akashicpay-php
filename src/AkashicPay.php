@@ -55,6 +55,8 @@ class AkashicPay
     private $httpClient;
     /** @var AkashicChain */
     private $akashicChain;
+    /** @var boolean */
+    private $isFxBp;
 
     public function __construct($args)
     {
@@ -107,10 +109,12 @@ class AkashicPay
                     . "?address="
                     . urlencode($args["l2Address"]);
                 $isBp         = $this->get($checkIfBpUrl)["data"]["isBp"];
+                $isFxBp         = $this->get($checkIfBpUrl)["data"]["isFxBp"];
 
                 if (! $isBp) {
                     throw new AkashicException(AkashicErrorCode::IS_NOT_BP);
                 }
+                $this->isFxBp = $isFxBp;
             }
 
             if (isset($args["privateKey"]) && $args["privateKey"]) {
@@ -230,6 +234,11 @@ class AkashicPay
                     "identifier"       => $recipientId,
                 ]
             );
+
+            if ($this->isFxBp) {
+                $response = $this->prepareL2Transaction($l2Tx);
+                $l2Tx = $response['preparedTxn'];
+            }
 
             $acResponse = $this->post($this->targetNode["node"], $l2Tx);
 
@@ -578,6 +587,19 @@ class AkashicPay
                         : $transaction["tokenSymbol"],
             ]
         );
+    }
+
+    /**
+     * Prepares an L2 transaction by sending transaction data to the Akashic API.
+     *
+     * @param array $transactionData The transaction data required for the L2 withdrawal.
+     * @return array The signed transactionData
+     * @throws \GuzzleHttp\Exception\GuzzleException If the HTTP request fails.
+     */
+    protected function prepareL2Transaction($transactionData)
+    {
+        // Send a POST request to the Akashic API with the transaction data
+        return $this->post($this->akashicUrl . AkashicEndpoints::PREPARE_L2_TXN, ['signedTx' => $transactionData])['data'];
     }
 
     /**
