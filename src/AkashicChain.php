@@ -33,6 +33,8 @@ class AkashicChain
     private $dbIndex;
     /** @var Logger */
     private $logger;
+    /** @var string */
+    private $fxMultiSignIdentity;
 
     public function __construct(
         string $env,
@@ -44,6 +46,7 @@ class AkashicChain
                 : new TestNetContracts();
         $this->dbIndex   = $env === Environment::PRODUCTION ? 0 : 15;
         $this->logger    = $logger;
+        $this->fxMultiSignIdentity = $env === Environment::PRODUCTION ? 'ASad1414566948845b404e8b6ac91639cc3643129d0ef8b7828ede7a0ac1044d6e' : 'ASeffcb8790aff2439522ef4bd834cca5233dc1670e5fa1c93fa19305323937a17';
     }
 
     /**
@@ -225,6 +228,10 @@ class AkashicChain
                         "token"   => $tokenSymbol,
                         "amount"  => $amount,
                     ],
+                    'afx' => [
+                        '$stream' => $this->fxMultiSignIdentity,
+                        '$sigOnly' => true
+                    ]
                 ],
                 '$o'         => [
                     "to" => ['$stream' => $toAddress],
