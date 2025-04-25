@@ -7,5 +7,5 @@ namespace Akashic\Constants;
 class AkashicPayBaseUrls
 {
     public const BASE_URL     = 'https://www.akashicpay.com';
-    public const BASE_URL_DEV = 'https://www.staging-akashicpay.com';
+    public const BASE_URL_DEV = 'https://testnet.akashicpay.com';
 }
