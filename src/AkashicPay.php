@@ -342,11 +342,11 @@ class AkashicPay
         // and we need to assign it
         if ($address) {
             if ($unassignedLedgerId) {
-                $tx = $this->akashicChain->assignKey(
-                    $this->otk,
-                    $unassignedLedgerId,
-                    $identifier
-                );
+                $tx = $this->akashicChain->assignKey([
+                    "otk" => $this->otk,
+                    "ledgerId" => $unassignedLedgerId,
+                    "identifier" => $identifier,
+                ]);
                 $response = $this->post($this->targetNode["node"], $tx);
         
                 $assignedKey = $response["data"]['$responses'][0] ?? null;
@@ -357,7 +357,7 @@ class AkashicPay
                         . " failed for identifier "
                         . $identifier
                         . ". Responses: "
-                        . $response["data"]['$responses']
+                        . $response["data"]
                     );
                     throw new AkashicException(AkashicErrorCode::ASSIGNED_KEY_FAILURE);
                 }
@@ -399,7 +399,7 @@ class AkashicPay
                 . " failed for identifier "
                 . $identifier
                 . ". Responses: "
-                . $response["data"]['$responses']
+                . $response["data"]
             );
             throw new AkashicException(AkashicErrorCode::KEY_CREATION_FAILURE);
         }
