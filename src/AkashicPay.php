@@ -322,7 +322,7 @@ class AkashicPay
      * @param  string $identifier  userID or similar identifier of the user
      *                             making the deposit
      * @param  string $referenceId optional referenceId to identify the order
-     * @param  string $requestedCurrency optional requestedCurrency to identify the order
+     * @param  string $requestedCurrency CurrencySymbol optional requestedCurrency to identify the order
      * @param  string $requestedAmount optional requestedAmount to identify the order
      * @return array
      */
@@ -458,7 +458,7 @@ class AkashicPay
      * @param  string $identifier userID or similar identifier of the user
      *                            making the deposit
      * @param  string $referenceId optional referenceId to identify the order
-     * @param  string $requestedCurrency optional requestedCurrency to identify the order
+     * @param  string $requestedCurrency CurrencySymbol optional requestedCurrency to identify the order
      * @param  string $requestedAmount optional requestedAmount to identify the order
      * @return string
      */
