@@ -524,6 +524,20 @@ class AkashicPay
     }
 
     /**
+     * Get exchange rates for all supported main-net coins in value of requested currency
+     *
+     * @param string $requestedCurrency
+     * @return array
+     */
+    public function getExchangeRates(string $requestedCurrency): array
+    {
+        $url = $this->akashicUrl
+            . AkashicEndpoints::EXCHANGE_RATES
+            . '/' . urlencode($requestedCurrency);
+        return $this->get($url)['data'];
+    }
+
+    /**
      * Check which L2-address an alias or L1-address belongs to. Or call with an
      * L2-address to verify it exists
      *
