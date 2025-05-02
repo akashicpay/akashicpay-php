@@ -317,16 +317,43 @@ class AkashicPay
 
     /**
      * Get an L1-address on the specified network for a user to deposit into
+     * 
+     * @param  string $network     L1-network
+     * @param  string $identifier  userID or similar identifier of the user
+     *                             making the deposit
+     * @param  string $referenceId referenceId to identify the order
+     * @return array
+     */
+    public function getDepositAddress($network, $identifier, $referenceId = null)
+    {
+        return $this->getDepositAddressFunc($network, $identifier, $referenceId);
+    }
+
+    /**
+     * Get an L1-address on the specified network for a user to deposit into
      *
      * @param  string $network     L1-network
      * @param  string $identifier  userID or similar identifier of the user
      *                             making the deposit
-     * @param  string $referenceId optional referenceId to identify the order
-     * @param  string $requestedCurrency CurrencySymbol optional requestedCurrency to identify the order
-     * @param  string $requestedAmount optional requestedAmount to identify the order
+     * @param  string $referenceId referenceId to identify the order
+     * @param  string $requestedCurrency CurrencySymbol requestedCurrency to identify the order
+     * @param  string $requestedAmount requestedAmount to identify the order
+     * @param  string $token       Optional. Include if sending token, e.g. `USDT`
      * @return array
      */
-    public function getDepositAddress($network, $identifier, $referenceId = null, $token = null, $requestedCurrency = null, $requestedAmount = null)
+    public function getDepositAddressWithRequestedValue(
+        $network,
+        $identifier,
+        $referenceId,
+        $requestedCurrency,
+        $requestedAmount,
+        $token = null
+    ) {
+        return $this->getDepositAddressFunc($network, $identifier, $referenceId, $token, $requestedCurrency, $requestedAmount);
+    }
+
+
+    private function getDepositAddressFunc($network, $identifier, $referenceId = null, $token = null, $requestedCurrency = null, $requestedAmount = null)
     {
         $response = $this->getByOwnerAndIdentifier(
             [
@@ -480,11 +507,30 @@ class AkashicPay
      * @param  string $identifier userID or similar identifier of the user
      *                            making the deposit
      * @param  string $referenceId optional referenceId to identify the order
-     * @param  string $requestedCurrency CurrencySymbol optional requestedCurrency to identify the order
-     * @param  string $requestedAmount optional requestedAmount to identify the order
      * @return string
      */
-    public function getDepositUrl($identifier, $referenceId = null, $requestedCurrency = null, $requestedAmount = null)
+    public function getDepositUrl($identifier, $referenceId = null)
+    {
+        return $this->getDepositUrlFunc($identifier, $referenceId);
+    }
+
+    /**
+     * Get deposit page url with requested value
+     * Callback will match the requested value
+     *
+     * @param  string $identifier userID or similar identifier of the user
+     *                            making the deposit
+     * @param  string $referenceId referenceId to identify the order
+     * @param  string $requestedCurrency CurrencySymbol requestedCurrency to identify the order
+     * @param  string $requestedAmount requestedAmount to identify the order
+     * @return string
+     */
+    public function getDepositUrlWithRequestedValue($identifier, $referenceId, $requestedCurrency, $requestedAmount)
+    {
+        return $this->getDepositUrlFunc($identifier, $referenceId, $requestedCurrency, $requestedAmount);
+    }
+
+    private function getDepositUrlFunc($identifier, $referenceId = null, $requestedCurrency = null, $requestedAmount = null)
     {
         // Perform asynchronous tasks sequentially
         $keys                = $this->getKeysByOwnerAndIdentifier(['identifier' => $identifier]);
