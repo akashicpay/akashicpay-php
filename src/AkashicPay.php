@@ -326,7 +326,7 @@ class AkashicPay
      * @param  string $requestedAmount optional requestedAmount to identify the order
      * @return array
      */
-    public function getDepositAddress($network, $identifier, $referenceId = null, $requestedCurrency = null, $requestedAmount = null)
+    public function getDepositAddress($network, $identifier, $referenceId = null, $token = null, $requestedCurrency = null, $requestedAmount = null)
     {
         $response = $this->getByOwnerAndIdentifier(
             [
@@ -347,9 +347,9 @@ class AkashicPay
                     "ledgerId" => $unassignedLedgerId,
                     "identifier" => $identifier,
                 ]);
-                $response = $this->post($this->targetNode["node"], $tx);
+                $acResponse = $this->post($this->targetNode["node"], $tx);
         
-                $assignedKey = $response["data"]['$responses'][0] ?? null;
+                $assignedKey = $acResponse["data"]['$responses'][0] ?? null;
                 if (! $assignedKey) {
                     $this->logger->warning(
                         "Key assigned on "
@@ -357,7 +357,7 @@ class AkashicPay
                         . " failed for identifier "
                         . $identifier
                         . ". Responses: "
-                        . $response["data"]
+                        . $acResponse["data"]
                     );
                     throw new AkashicException(AkashicErrorCode::ASSIGNED_KEY_FAILURE);
                 }
@@ -377,9 +377,20 @@ class AkashicPay
                         "amount" => $requestedAmount,
                     ];
                 }
-                $this->createDepositOrder(array_merge($payloadToSign, [
+                $result = $this->createDepositOrder(array_merge($payloadToSign, [
                     "signature" => $this->sign($payloadToSign),
                 ]));
+                return [
+                    "address"    => $response["address"],
+                    "identifier" => $identifier,
+                    "referenceId" => $referenceId,
+                    "requestedAmount" => $result["requestedValue"]["amount"] ?? $requestedAmount,
+                    "requestedCurrency" => $result["requestedValue"]["currency"] ?? $requestedCurrency,
+                    "network" => $result["coinSymbol"] ?? $network,
+                    "token" => $result["tokenSymbol"] ?? $token,
+                    "exchangeRate" => $result["exchangeRate"] ?? null,
+                    "amount" => $result["amount"] ?? null,
+                ];
             }
 
             return [
@@ -441,9 +452,20 @@ class AkashicPay
                     "amount" => $requestedAmount,
                 ];
             }
-            $this->createDepositOrder(array_merge($payloadToSign, [
+            $result = $this->createDepositOrder(array_merge($payloadToSign, [
                 "signature" => $this->sign($payloadToSign),
             ]));
+            return [
+                "address"    => $newKey["address"],
+                "identifier" => $identifier,
+                "referenceId" => $referenceId,
+                "requestedAmount" => $result["requestedValue"]["amount"] ?? $requestedAmount,
+                "requestedCurrency" => $result["requestedValue"]["currency"] ?? $requestedCurrency,
+                "network" => $result["coinSymbol"] ?? $network,
+                "token" => $result["tokenSymbol"] ?? $token,
+                "exchangeRate" => $result["exchangeRate"] ?? null,
+                "amount" => $result["amount"] ?? null,
+            ];
         }
 
         return [
