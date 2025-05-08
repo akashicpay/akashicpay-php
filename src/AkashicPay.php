@@ -57,6 +57,8 @@ class AkashicPay
     private $akashicChain;
     /** @var boolean */
     private $isFxBp;
+    /** @var string */
+    private $apiSecret;
 
     public function __construct($args)
     {
@@ -97,6 +99,8 @@ class AkashicPay
         $this->httpClient = new HttpClient($this->logger);
 
         $this->targetNode = $args["targetNode"] ?? $this->chooseBestACNode();
+
+        $this->apiSecret = $args["apiSecret"] ?? null;
 
         if (! isset($args["l2Address"])) {
             $this->setNewOTK();
@@ -955,5 +959,54 @@ class AkashicPay
     private function getCoinSymbol($key)
     {
         return $key['coinSymbol'];
+    }
+
+    /**
+     * Verify HMAC callback signature against body and secret with sorted keys
+     *
+     * @param mixed  $body
+     * @param string $signature
+     * @param string $apiSecret
+     * @return bool
+     */
+    public function verifyCallbackSignature($body, string $signature): bool
+    {
+        if (empty($this->apiSecret)) {
+            throw new Exception("API secret is empty");
+        }
+        try {
+            $sorted = $this->sortKeys($body);
+            $json = json_encode($sorted, JSON_UNESCAPED_SLASHES);
+            if ($json === false) {
+                return false;
+            }
+            $computed = hash_hmac('sha256', $json, $this->apiSecret);
+            return hash_equals($computed, $signature);
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Recursively sort array keys for consistent JSON serialization
+     *
+     * @param mixed $obj
+     * @return mixed
+     */
+    private function sortKeys($obj)
+    {
+        if (is_array($obj)) {
+            $keys = array_keys($obj);
+            $isAssoc = $keys !== range(0, count($obj) - 1);
+            if ($isAssoc) {
+                ksort($obj, SORT_STRING);
+                foreach ($obj as &$val) {
+                    $val = $this->sortKeys($val);
+                }
+                return $obj;
+            }
+            return array_map([$this, 'sortKeys'], $obj);
+        }
+        return $obj;
     }
 }
