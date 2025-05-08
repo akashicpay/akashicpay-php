@@ -511,11 +511,12 @@ class AkashicPay
      * @param  string $identifier userID or similar identifier of the user
      *                            making the deposit
      * @param  string $referenceId optional referenceId to identify the order
+     * @param  string $displayCurrencies optional displayCurrencies, comma separated
      * @return string
      */
-    public function getDepositUrl($identifier, $referenceId = null)
+    public function getDepositUrl($identifier, $referenceId = null, $displayCurrencies = null)
     {
-        return $this->getDepositUrlFunc($identifier, $referenceId);
+        return $this->getDepositUrlFunc($identifier, $referenceId, $displayCurrencies);
     }
 
     /**
@@ -527,14 +528,15 @@ class AkashicPay
      * @param  string $referenceId referenceId to identify the order
      * @param  string $requestedCurrency CurrencySymbol requestedCurrency to identify the order
      * @param  string $requestedAmount requestedAmount to identify the order
+     * @param  string $displayCurrencies optional displayCurrencies, comma separated
      * @return string
      */
-    public function getDepositUrlWithRequestedValue($identifier, $referenceId, $requestedCurrency, $requestedAmount)
+    public function getDepositUrlWithRequestedValue($identifier, $referenceId, $requestedCurrency, $requestedAmount, $displayCurrencies = null)
     {
-        return $this->getDepositUrlFunc($identifier, $referenceId, $requestedCurrency, $requestedAmount);
+        return $this->getDepositUrlFunc($identifier, $referenceId, $displayCurrencies, $requestedCurrency, $requestedAmount);
     }
 
-    private function getDepositUrlFunc($identifier, $referenceId = null, $requestedCurrency = null, $requestedAmount = null)
+    private function getDepositUrlFunc($identifier, $referenceId = null, $displayCurrencies = null, $requestedCurrency = null, $requestedAmount = null)
     {
         // Perform asynchronous tasks sequentially
         $keys                = $this->getKeysByOwnerAndIdentifier(['identifier' => $identifier]);
@@ -570,7 +572,7 @@ class AkashicPay
 
         // Construct the deposit URL
         return "{$this->akashicPayUrl}/sdk/deposit?identity={$this->otk['identity']}&identifier={$identifier}" .
-        ($referenceId ? "&referenceId={$referenceId}" : "");
+        ($referenceId ? "&referenceId={$referenceId}" : "") . ($displayCurrencies ? "&displayCurrencies={$displayCurrencies}" : "");
     }
 
     /**
