@@ -1038,14 +1038,14 @@ class AkashicPay
     }
 
     /**
-     * Map receive currency from mainnet to testnet
+     * Map receive currency from mainnet to testnet if in development
      *
      * @param string|null $currency
      * @return string|null
      */
     private function mapMainToTestCurrency(?string $currency): ?string
     {
-        if ($currency === CurrencySymbol::ETH) {
+        if ($this->env === Environment::DEVELOPMENT && $currency === CurrencySymbol::ETH) {
             return 'SEP';
         }
         return $currency;
