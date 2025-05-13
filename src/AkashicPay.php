@@ -961,14 +961,13 @@ class AkashicPay
     }
 
     /**
-     * Verify HMAC callback signature against body and secret with sorted keys
+     * Verify HMAC signature against body and secret with sorted keys
      *
      * @param mixed  $body
      * @param string $signature
-     * @param string $apiSecret
      * @return bool
      */
-    public function verifyCallbackSignature($body, string $signature): bool
+    public function verifySignature($body, string $signature): bool
     {
         if (empty($this->apiSecret)) {
             throw new Exception("API secret is empty");
