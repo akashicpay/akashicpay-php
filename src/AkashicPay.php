@@ -13,6 +13,7 @@ use Akashic\Constants\AkashicPayBaseUrls;
 use Akashic\Constants\Environment;
 use Akashic\Constants\NetworkSymbol;
 use Akashic\Constants\TokenSymbol;
+use Akashic\Constants\CurrencySymbol;
 use Akashic\OTK\Otk;
 use Akashic\Utils\Currency;
 use Akashic\Utils\DatadogHandler;
@@ -172,13 +173,8 @@ class AkashicPay
         $initiatedToNonL2 = null;
         $isL2             = false;
 
-        // map TokenSymbol.TETHER to TokenSymbol.USDT
-        if (
-            $token === TokenSymbol::USDT
-            && $network === NetworkSymbol::TRON_SHASTA
-        ) {
-            $token = TokenSymbol::TETHER;
-        }
+        // normalize token input for Tron Shasta network
+        $token = $this->normalizeTokenInput($network, $token);
         // convert to backend currency
         $decimalAmount = Currency::convertToDecimals($amount, $network, $token);
 
@@ -511,12 +507,12 @@ class AkashicPay
      * @param  string $identifier userID or similar identifier of the user
      *                            making the deposit
      * @param  string $referenceId optional referenceId to identify the order
-     * @param  string $displayCurrencies optional displayCurrencies, comma separated
+     * @param  array  $receiveCurrencies optional currencies to be display on deposit page, comma separated
      * @return string
      */
-    public function getDepositUrl($identifier, $referenceId = null, $displayCurrencies = null)
+    public function getDepositUrl($identifier, $referenceId = null, $receiveCurrencies = null)
     {
-        return $this->getDepositUrlFunc($identifier, $referenceId, $displayCurrencies);
+        return $this->getDepositUrlFunc($identifier, $referenceId, $receiveCurrencies);
     }
 
     /**
@@ -528,15 +524,15 @@ class AkashicPay
      * @param  string $referenceId referenceId to identify the order
      * @param  string $requestedCurrency CurrencySymbol requestedCurrency to identify the order
      * @param  string $requestedAmount requestedAmount to identify the order
-     * @param  string $displayCurrencies optional displayCurrencies, comma separated
+     * @param  array  $receiveCurrencies optional currencies to be display on deposit page, comma separated
      * @return string
      */
-    public function getDepositUrlWithRequestedValue($identifier, $referenceId, $requestedCurrency, $requestedAmount, $displayCurrencies = null)
+    public function getDepositUrlWithRequestedValue($identifier, $referenceId, $requestedCurrency, $requestedAmount, $receiveCurrencies = null)
     {
-        return $this->getDepositUrlFunc($identifier, $referenceId, $displayCurrencies, $requestedCurrency, $requestedAmount);
+        return $this->getDepositUrlFunc($identifier, $referenceId, $receiveCurrencies, $requestedCurrency, $requestedAmount);
     }
 
-    private function getDepositUrlFunc($identifier, $referenceId = null, $displayCurrencies = null, $requestedCurrency = null, $requestedAmount = null)
+    private function getDepositUrlFunc($identifier, $referenceId = null, $receiveCurrencies = null, $requestedCurrency = null, $requestedAmount = null)
     {
         // Perform asynchronous tasks sequentially
         $keys                = $this->getKeysByOwnerAndIdentifier(['identifier' => $identifier]);
@@ -571,8 +567,18 @@ class AkashicPay
         }
 
         // Construct the deposit URL
-        return "{$this->akashicPayUrl}/sdk/deposit?identity={$this->otk['identity']}&identifier={$identifier}" .
-        ($referenceId ? "&referenceId={$referenceId}" : "") . ($displayCurrencies ? "&displayCurrencies={$displayCurrencies}" : "");
+        $url = "{$this->akashicPayUrl}/sdk/deposit?identity={$this->otk['identity']}&identifier={$identifier}";
+        if ($referenceId) {
+            $url .= "&referenceId={$referenceId}";
+        }
+        if ($receiveCurrencies) {
+            $mappedReceiveCurrencies = join(",", array_map(
+                [$this, "mapMainToTestCurrency"],
+                $receiveCurrencies
+            ));
+            $url .= "&receiveCurrencies={$mappedReceiveCurrencies}";
+        }
+        return $url;
     }
 
     /**
@@ -641,10 +647,7 @@ class AkashicPay
                 return array_merge(
                     $t,
                     [
-                        "tokenSymbol"
-                    => $t["tokenSymbol"] === TokenSymbol::TETHER
-                        ? TokenSymbol::USDT
-                        : $t["tokenSymbol"],
+                        "tokenSymbol" => $this->normalizeTokenSymbol($t["tokenSymbol"]),
                     ]
                 );
             },
@@ -669,10 +672,7 @@ class AkashicPay
             function ($bal) {
                 return [
                     "networkSymbol" => $bal["coinSymbol"],
-                    "tokenSymbol"
-                    => $bal["tokenSymbol"] === TokenSymbol::TETHER
-                        ? TokenSymbol::USDT
-                        : $bal["tokenSymbol"],
+                    "tokenSymbol" => $this->normalizeTokenSymbol($bal["tokenSymbol"]),
                     "balance" => $bal["balance"],
                 ];
             },
@@ -703,10 +703,7 @@ class AkashicPay
         return array_merge(
             $transaction,
             [
-                "tokenSymbol"
-                    => $transaction["tokenSymbol"] === TokenSymbol::TETHER
-                        ? TokenSymbol::USDT
-                        : $transaction["tokenSymbol"],
+                "tokenSymbol" => $this->normalizeTokenSymbol($transaction["tokenSymbol"]),
             ]
         );
     }
@@ -1010,5 +1007,48 @@ class AkashicPay
             return array_map([$this, 'sortKeys'], $obj);
         }
         return $obj;
+    }
+
+    /**
+     * Normalize token symbols (map TETHER to USDT)
+     *
+     * @param string|null $symbol
+     * @return string|null
+     */
+    private function normalizeTokenSymbol(?string $symbol): ?string
+    {
+        if ($symbol === TokenSymbol::TETHER) {
+            return TokenSymbol::USDT;
+        }
+        return $symbol;
+    }
+
+    /**
+     * Normalize token input (map USDT to TETHER for Tron Shasta network)
+     *
+     * @param string $network
+     * @param string|null $token
+     * @return string|null
+     */
+    private function normalizeTokenInput(string $network, ?string $token): ?string
+    {
+        if ($network === NetworkSymbol::TRON_SHASTA && $token === TokenSymbol::USDT) {
+            return TokenSymbol::TETHER;
+        }
+        return $token;
+    }
+
+    /**
+     * Map receive currency from mainnet to testnet
+     *
+     * @param string|null $currency
+     * @return string|null
+     */
+    private function mapMainToTestCurrency(?string $currency): ?string
+    {
+        if ($currency === CurrencySymbol::ETH) {
+            return 'SEP';
+        }
+        return $currency;
     }
 }
