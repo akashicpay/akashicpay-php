@@ -16,7 +16,6 @@ use Akashic\Constants\TokenSymbol;
 use Akashic\Constants\CurrencySymbol;
 use Akashic\OTK\Otk;
 use Akashic\Utils\Currency;
-use Akashic\Utils\DatadogHandler;
 use Akashic\Utils\Prefix;
 use Exception;
 use Monolog\Handler\StreamHandler;
@@ -39,7 +38,6 @@ class AkashicPay
 {
     private const AC_PRIVATE_KEY_REGEX = '/^0x[a-f\d]{64}$/';
     private const L2_REGEX             = '/^AS[A-Fa-f\d]{64}$/';
-    private const DATADOG_API_KEY      = '10f3796eb5494075b36b7d89ae456a65';
     /** @var array */
     private $otk;
     /** @var array */
@@ -82,7 +80,6 @@ class AkashicPay
         $stream = new StreamHandler("php://stdout", Logger::DEBUG);
         $this->logger->pushHandler($stream);
 
-        // send log to datadog by http
         $attributes  = [
             'hostname' => $_SERVER['SERVER_NAME'] ?? 'localhost',
             'service'  => 'php-sdk',
@@ -91,8 +88,6 @@ class AkashicPay
         if (isset($args["l2Address"])) {
             $attributes['identity'] = $args["l2Address"];
         }
-        $datadogLogs = new DatadogHandler(self::DATADOG_API_KEY, $attributes, Logger::WARNING);
-        $this->logger->pushHandler($datadogLogs);
 
         $this->akashicChain = new AkashicChain($this->env, $this->logger);
 
