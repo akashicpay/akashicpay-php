@@ -19,27 +19,6 @@ class AkashicPayTest extends TestCase
         return $property->getValue($object);
     }
 
-    public function testBuildWithNewOTK(): void
-    {
-        $akPay = new AkashicPay(
-            [
-                "environment" => Environment::DEVELOPMENT,
-            ]
-        );
-
-        $otk = $this->getPrivateProperty($akPay, "otk");
-
-        $this->assertNotNull(
-            $otk,
-            "OTK should not be null after building with a new OTK"
-        );
-        $this->assertArrayHasKey(
-            "identity",
-            $otk,
-            "OTK should contain an identity"
-        );
-    }
-
     public function testBuildWithKeyPair(): void
     {
         $keyPair   =

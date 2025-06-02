@@ -98,57 +98,34 @@ class AkashicPay
 
         $this->apiSecret = $args["apiSecret"] ?? null;
 
-        if (! isset($args["l2Address"])) {
-            $this->setNewOTK();
-        } else {
-            $checkIfBpResponse = $this->checkIfBp($args["l2Address"]);
-            $this->isFxBp = $checkIfBpResponse["data"]["isFxBp"];
-            // Chck if BP if on prod
-            if ($this->env === Environment::PRODUCTION && !$checkIfBpResponse["data"]["isBp"]) {
-                throw new AkashicException(AkashicErrorCode::IS_NOT_BP);
-            }
 
-            if (isset($args["privateKey"]) && $args["privateKey"]) {
-                $this->setOtkFromKeyPair(
-                    $args["privateKey"],
-                    $args["l2Address"]
-                );
-            } elseif (
-                isset($args["recoveryPhrase"])
-                && $args["recoveryPhrase"]
-            ) {
-                $this->setOtkFromRecoveryPhrase(
-                    $args["recoveryPhrase"],
-                    $args["l2Address"]
-                );
-            } else {
-                throw new AkashicException(
-                    AkashicErrorCode::INCORRECT_PRIVATE_KEY_FORMAT
-                );
-            }
+        $checkIfBpResponse = $this->checkIfBp($args["l2Address"]);
+        $this->isFxBp = $checkIfBpResponse["data"]["isFxBp"];
+        // Only BPs can use SDK
+        if (!$checkIfBpResponse["data"]["isBp"]) {
+            throw new AkashicException(AkashicErrorCode::IS_NOT_BP);
+        }
+
+        if (isset($args["privateKey"]) && $args["privateKey"]) {
+            $this->setOtkFromKeyPair(
+                $args["privateKey"],
+                $args["l2Address"]
+            );
+        } elseif (
+            isset($args["recoveryPhrase"])
+            && $args["recoveryPhrase"]
+        ) {
+            $this->setOtkFromRecoveryPhrase(
+                $args["recoveryPhrase"],
+                $args["l2Address"]
+            );
+        } else {
+            throw new AkashicException(
+                AkashicErrorCode::INCORRECT_PRIVATE_KEY_FORMAT
+            );
         }
 
         $this->logger->info("AkashicPay instance initialised");
-    }
-
-    /**
-     * Get the OTK (One-Time-Key) object for this instance.
-     *
-     * @return array if the environment is development. This enables you to
-     * easily create an OTK and re-use it in future tests or dev work.
-     * @throws AkashicException if the environment is production.
-     */
-    public function getKeyBackup()
-    {
-        if ($this->env === "production") {
-            throw new AkashicException(AkashicErrorCode::ACCESS_DENIED);
-        }
-
-        return [
-            "l2Address"  => $this->otk["identity"],
-            "privateKey" => $this->otk["key"]["prv"]["pkcs8pem"],
-            "raw"        => $this->otk,
-        ];
     }
 
     /**
@@ -837,34 +814,6 @@ class AkashicPay
         return $this->env === Environment::PRODUCTION
             ? ACNode::SINGAPORE_1
             : ACDevNode::SINGAPORE_1;
-    }
-
-    /**
-     * Generates a new OTK and assigns it to `this.otk`. The OTK will live and die
-     * with the lifetime of this AkashicPay instance.
-     *
-     * Only for us in development/testing environments.
-     */
-    private function setNewOTK(): void
-    {
-        $this->logger->info(
-            "Generating new OTK for development environment. Access it via `this->otk()`"
-        );
-        $otk       = Otk::generateOTK();
-        $onboardTx = $this->akashicChain->onboardOtkTransaction($otk);
-
-        $response = $this->post($this->targetNode["node"], $onboardTx);
-        $identity = $response["data"]['$streams']["new"][0]["id"] ?? null;
-
-        if ($identity === null) {
-            throw new AkashicException(AkashicErrorCode::TEST_NET_OTK_ONBOARDING_FAILED);
-        }
-
-        $this->otk = array_merge($otk, ["identity" => "AS" . $identity]);
-        $this->logger->debug(
-            "New OTK generated and onboarded with identity: "
-            . $this->otk["identity"]
-        );
     }
 
     /**

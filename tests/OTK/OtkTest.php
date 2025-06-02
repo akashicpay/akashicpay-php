@@ -44,11 +44,4 @@ EOD;
         $this->assertArrayHasKey('pub', $result['key'], "Key array should have 'pub'.");
         $this->assertEquals(KeyType::ELLIPTIC_CURVE, $result['type'], "Key type should be 'ELLIPTIC_CURVE'.");
     }
-
-    public function testGenerateOTK()
-    {
-        // This test assumes a functional generateBIP39Key method in KeyHandler
-        $result = Otk::generateOTK();
-        $this->assertNotNull($result, "Generated OTK should not be null.");
-    }
 }
