@@ -482,9 +482,9 @@ class AkashicPay
      * @param  array  $receiveCurrencies optional currencies to be display on deposit page, comma separated
      * @return string
      */
-    public function getDepositUrl($identifier, $referenceId = null, $receiveCurrencies = null)
+    public function getDepositUrl($identifier, $referenceId = null, $receiveCurrencies = null, $redirectUrl = null)
     {
-        return $this->getDepositUrlFunc($identifier, $referenceId, $receiveCurrencies);
+        return $this->getDepositUrlFunc($identifier, $referenceId, $receiveCurrencies, $redirectUrl);
     }
 
     /**
@@ -499,12 +499,12 @@ class AkashicPay
      * @param  array  $receiveCurrencies optional currencies to be display on deposit page, comma separated
      * @return string
      */
-    public function getDepositUrlWithRequestedValue($identifier, $referenceId, $requestedCurrency, $requestedAmount, $receiveCurrencies = null)
+    public function getDepositUrlWithRequestedValue($identifier, $referenceId, $requestedCurrency, $requestedAmount, $receiveCurrencies = null, $redirectUrl = null)
     {
-        return $this->getDepositUrlFunc($identifier, $referenceId, $receiveCurrencies, $requestedCurrency, $requestedAmount);
+        return $this->getDepositUrlFunc($identifier, $referenceId, $receiveCurrencies, $redirectUrl, $requestedCurrency, $requestedAmount);
     }
 
-    private function getDepositUrlFunc($identifier, $referenceId = null, $receiveCurrencies = null, $requestedCurrency = null, $requestedAmount = null)
+    private function getDepositUrlFunc($identifier, $referenceId = null, $receiveCurrencies = null, $redirectUrl = null, $requestedCurrency = null, $requestedAmount = null)
     {
         // Perform asynchronous tasks sequentially
         $keys                = $this->getKeysByOwnerAndIdentifier(['identifier' => $identifier]);
@@ -542,6 +542,11 @@ class AkashicPay
         $url = "{$this->akashicPayUrl}/sdk/deposit?identity={$this->otk['identity']}&identifier={$identifier}";
         if ($referenceId) {
             $url .= "&referenceId={$referenceId}";
+        }
+        if ($redirectUrl) {
+            // strtr and rtrim makes sure it follows base64url encoding
+            $encodedRedirectUrl = rtrim(strtr(base64_encode($redirectUrl), '+/', '-_'), '=');
+            $url .= "&redirectUrl={$encodedRedirectUrl}";
         }
         if ($receiveCurrencies) {
             $mappedReceiveCurrencies = join(",", array_map(
