@@ -9,7 +9,7 @@
   "release": {
     "extends": "semantic-release-monorepo",
     "branches": [
-      "staging-1"
+      "staging"
     ],
     "repositoryUrl": "https://gitlab.com/dreamsai/cpg-2/HeliumPay-monorepo",
     "tagFormat": "phpsdk-v${version}",
@@ -21,6 +21,10 @@
           "releaseRules": [
             {
               "type": "chore",
+              "release": "patch"
+            },
+            {
+              "type": "refactor",
               "release": "patch"
             }
           ]
