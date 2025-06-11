@@ -159,7 +159,8 @@ class AkashicChain
                 '$contract'  => $this->contracts::DIFF_CONSENSUS,
                 '$i'         => [
                     "owner" => [
-                        '$stream' => $otk["identity"],
+                        'publicKey' => $otk["key"]["pub"]["pkcs8pem"],
+                        'type' => $otk["type"],
                         "address" => $key["address"],
                         "hashes"  => $key["hashes"],
                     ],
@@ -173,10 +174,15 @@ class AkashicChain
                 "metadata"   => ["identifier" => $identifier],
             ],
             '$sigs' => [],
+            '$selfsign' => true,
         ];
 
+        // clone otk to set identity, (as it is now a reference, cloning it to avoid side effects)
+        $otkClone = clone $otk;
+        $otkClone["identity"] = "owner";
+
         // Sign Transaction
-        return $this->signTransaction($txBody, $otk);
+        return $this->signTransaction($txBody, $otkClone);
     }
 
     /**
