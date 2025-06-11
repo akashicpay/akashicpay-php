@@ -14,6 +14,7 @@ use Akashic\Constants\Environment;
 use Akashic\Constants\NetworkSymbol;
 use Akashic\Constants\TokenSymbol;
 use Akashic\Constants\CurrencySymbol;
+use Akashic\Constants\Networks;
 use Akashic\OTK\Otk;
 use Akashic\Utils\Currency;
 use Akashic\Utils\Prefix;
@@ -327,6 +328,14 @@ class AkashicPay
 
     private function getDepositAddressFunc($network, $identifier, $referenceId = null, $token = null, $requestedCurrency = null, $requestedAmount = null)
     {
+        // Prevent using mainnets in development or testnets in production
+        if (
+            ($this->env === Environment::DEVELOPMENT && in_array($network, Networks::MAIN_NETS, true))
+            || ($this->env === Environment::PRODUCTION && in_array($network, Networks::TEST_NETS, true))
+        ) {
+            throw new AkashicException(AkashicErrorCode::NETWORK_ENVIRONMENT_MISMATCH);
+        }
+        
         $response = $this->getByOwnerAndIdentifier(
             [
                 "identifier" => $identifier,

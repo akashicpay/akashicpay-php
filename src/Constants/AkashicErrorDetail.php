@@ -17,7 +17,8 @@ class AkashicErrorDetail
         AkashicErrorCode::L2_ADDRESS_NOT_FOUND           => 'L2 Address not found',
         AkashicErrorCode::IS_NOT_BP                      => 'Please sign up on AkashicPay.com first',
         AkashicErrorCode::SAVINGS_EXCEEDED               => 'Transaction amount exceeds total savings',
-        AkashicErrorCode::ASSIGNED_KEY_FAILURE           => 'Failed to assign wallet. Please try again'
+        AkashicErrorCode::ASSIGNED_KEY_FAILURE           => 'Failed to assign wallet. Please try again',
+        AkashicErrorCode::NETWORK_ENVIRONMENT_MISMATCH   => 'The L1-network does not match the SDK-environment'
     ];
 
     /**
