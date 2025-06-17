@@ -398,6 +398,7 @@ class AkashicPay
                     "token" => $result["tokenSymbol"] ?? $token,
                     "exchangeRate" => $result["exchangeRate"] ?? null,
                     "amount" => $result["amount"] ?? null,
+                    "expires" => $result["expires"] ?? null,
                 ];
             }
 
@@ -473,6 +474,7 @@ class AkashicPay
                 "token" => $result["tokenSymbol"] ?? $token,
                 "exchangeRate" => $result["exchangeRate"] ?? null,
                 "amount" => $result["amount"] ?? null,
+                "expires" => $result["expires"] ?? null,
             ];
         }
 
