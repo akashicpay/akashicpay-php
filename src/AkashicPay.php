@@ -618,7 +618,6 @@ class AkashicPay
             $getTransactionParams,
             [
                 "identity"          => $this->otk["identity"],
-                "withSigningErrors" => true,
             ]
         );
         $query           = http_build_query(
