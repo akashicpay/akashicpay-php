@@ -24,9 +24,18 @@
               "release": "patch"
             },
             {
+              "type": "enh",
+              "release": "patch"
+            },
+            {
               "type": "refactor",
               "release": "patch"
+            },
+            {
+              "type": "hotfix",
+              "release": "patch"
             }
+
           ]
         }
       ],
