@@ -16,6 +16,7 @@ class CurrencySymbol
     public const EUR = 'EUR';
     public const HKD = 'HKD';
     public const IDR = 'IDR';
+    public const INR = 'INR';
     public const JPY = 'JPY';
     public const KHR = 'KHR';
     public const KRW = 'KRW';
