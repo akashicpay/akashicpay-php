@@ -15,6 +15,7 @@ use Akashic\Constants\NetworkSymbol;
 use Akashic\Constants\TokenSymbol;
 use Akashic\Constants\CurrencySymbol;
 use Akashic\Constants\Networks;
+use Akashic\Constants\CallbackEvent;
 use Akashic\OTK\Otk;
 use Akashic\Utils\Currency;
 use Akashic\Utils\Prefix;
@@ -796,6 +797,160 @@ class AkashicPay
     }
 
     /**
+     * Experimental feature to onboard a new BP from SDK
+     * 
+     * @param string $l2Address L2 address of the BP
+     * @param string $privateKey Private key of the BP
+     * @return array OTK and apiPrivateKey
+     */
+    public function onboardBp($l2Address, $privateKey): array {
+        $otk = array_merge(
+            Otk::restoreOtkFromKeypair($privateKey),
+            ["identity" => $l2Address]
+        );
+        $this->becomeBp($otk);
+        $apiPrivateKey = $this->generateApiKeyPair($otk);
+        return [
+            'apiPrivateKey' => $apiPrivateKey["key"]["prv"]["pkcs8pem"]
+        ];
+    }
+
+    /**
+     * Experimental feature to add callback URLs for deposit and payout events from SDK
+     * 
+     * @param string $l2Address L2 address of the BP
+     * @param string $privateKey Private key of the BP
+     * @param array $params Parameters containing URLs for different events
+     *                      e.g. pendingDepositUrl, confirmedDepositUrl, etc.
+     */
+
+    public function addCallbackUrls($l2Address, $privateKey, $params): void {
+        $otk = array_merge(
+            Otk::restoreOtkFromKeypair($privateKey),
+            ["identity" => $l2Address]
+        );
+        $urls = [
+            [
+                "url" => $params["pendingDepositUrl"] ?? null,
+                "events" => [CallbackEvent::PENDING_DEPOSIT],
+            ],
+            [
+                "url" => $params["confirmedDepositUrl"] ?? null,
+                "events" => [CallbackEvent::CONFIRMED_DEPOSIT],
+            ],
+            [
+                "url" => $params["failedDepositUrl"] ?? null,
+                "events" => [CallbackEvent::FAILED_DEPOSIT],
+            ],
+            [
+                "url" => $params["pendingPayoutUrl"] ?? null,
+                "events" => [CallbackEvent::PENDING_PAYOUT],
+            ],
+            [
+                "url" => $params["confirmedPayoutUrl"] ?? null,
+                "events" => [CallbackEvent::CONFIRMED_PAYOUT],
+            ],
+            [
+                "url" => $params["failedPayoutUrl"] ?? null,
+                "events" => [CallbackEvent::FAILED_PAYOUT],
+            ],
+        ];
+        $filtered = array_filter($urls, function($item) {
+            return !is_null($item['url']);
+        });
+        foreach ($filtered as &$url) {
+            $url["enabledCurrencies"] = [
+                [
+                    "coinSymbol" => $this->env === Environment::PRODUCTION
+                        ? NetworkSymbol::ETHEREUM_MAINNET
+                        : NetworkSymbol::ETHEREUM_SEPOLIA,
+                    "currencies" => [$this->akashicChain::NITR0GEN_NATIVE_COIN, TokenSymbol::USDT],
+                ],
+                [
+                    "coinSymbol" => $this->env === Environment::PRODUCTION
+                        ? NetworkSymbol::TRON
+                        : NetworkSymbol::TRON_SHASTA,
+                    "currencies" => [$this->akashicChain::NITR0GEN_NATIVE_COIN, $this->env === Environment::PRODUCTION
+                        ? TokenSymbol::USDT
+                        : TokenSymbol::TETHER],
+                ],
+            ];
+        }
+
+        $payloadToSign = [
+            "identity"    => $otk["identity"],
+            "expires"     => strtotime("+1 minutes") * 1000,
+            "callbackUrls" => $filtered,
+        ];
+        $payload = array_merge($payloadToSign, [
+            "signature" => $this->sign($payloadToSign, $otk),
+        ]);
+        // Retry setCallbackUrls operation up to 3 times with 1 second delay
+        // Due to potential delay in secondary OTK generation and onboarding process
+        $this->retryWithAttempts(function () use ($payload) {
+            $this->post(
+                $this->akashicUrl . AkashicEndpoints::SET_CALLBACK_URLS,
+                $payload
+            );
+        }, 3, 1000000);
+    }
+
+    /**
+     * Call AP to become a BP
+     * 
+     * @param array $otk OTK to become a BP with
+     */
+    private function becomeBp($otk): void {
+        $payloadToSign = [
+            "identity"    => $otk["identity"],
+            "expires"     => strtotime("+1 minutes") * 1000,
+        ];
+        $payload = array_merge($payloadToSign, [
+            "signature" => $this->sign($payloadToSign, $otk),
+        ]);
+        $this->post(
+            $this->akashicUrl
+            . AkashicEndpoints::BECOME_BP,
+            $payload
+        );
+    }
+
+    /**
+     * Generate a new API/SDK key pair for integration
+     *
+     * @param array $otk OTK to generate the key pair from
+     * @return array The generated API key pair
+     */
+    private function generateApiKeyPair($otk): array {
+        $this->logger->info(
+            "Generating new API/SDK key pair for integration."
+        );
+        $secondaryApiKeyPair       = Otk::generateOTK();
+        $secondaryOtkTx = $this->akashicChain->secondaryOtkTransaction([
+            "otk" => $otk,
+            "newPubKey" => $secondaryApiKeyPair["key"]["pub"]["pkcs8pem"],
+        ]);
+
+        $this->post($this->akashicUrl . AkashicEndpoints::GENERATE_SECONDARY_OTK, ['signedTx' => $secondaryOtkTx]);
+
+        return $secondaryApiKeyPair;
+    }
+
+    private function setCallbackUrls($payload) {
+        try {
+            $this->post(
+                $this->akashicUrl
+                . AkashicEndpoints::SET_CALLBACK_URLS,
+                $payload
+            );
+            return true;
+        } catch (Exception $e) {
+            $this->logger->error("Failed to set callback URLs: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
      * Finds an AkashicChain node to target for requests. The SDK will attempt to
      * find the fastest node for you.
      *
@@ -894,14 +1049,15 @@ class AkashicPay
         return $value;
     }
 
-    private function sign($data)
+    private function sign($data, $otk = null)
     {
+        $otk = $otk ?? $this->otk;
         try {
             // Convert private key into the correct format
-            $pemPrivate = "-----BEGIN EC PRIVATE KEY-----\n" . $this->otk["key"]["prv"]["pkcs8pem"] . "\n-----END EC PRIVATE KEY-----";
+            $pemPrivate = "-----BEGIN EC PRIVATE KEY-----\n" . $otk["key"]["prv"]["pkcs8pem"] . "\n-----END EC PRIVATE KEY-----";
 
-            if (str_starts_with($this->otk["key"]["prv"]["pkcs8pem"], '0x')) {
-                $keyPair = new KeyPair('secp256k1', $this->otk["key"]["prv"]["pkcs8pem"]);
+            if (str_starts_with($otk["key"]["prv"]["pkcs8pem"], '0x')) {
+                $keyPair = new KeyPair('secp256k1', $otk["key"]["prv"]["pkcs8pem"]);
             } else {
                 $keyPair = new KeyPair('secp256k1', $pemPrivate);
             }
@@ -1008,5 +1164,30 @@ class AkashicPay
             return 'SEP';
         }
         return $currency;
+    }
+
+    /**
+     * Retry a callback up to $maxAttempts times with $delay microseconds between attempts
+     *
+     * @param callable $callback
+     * @param int $maxAttempts
+     * @param int $delay (microseconds)
+     * @throws Exception
+     */
+    private function retryWithAttempts(callable $callback, int $maxAttempts = 3, int $delay = 1000000): void
+    {
+        $attempt = 0;
+        while ($attempt < $maxAttempts) {
+            try {
+                $callback();
+                return;
+            } catch (Exception $e) {
+                $attempt++;
+                if ($attempt >= $maxAttempts) {
+                    throw new Exception("Operation failed after $maxAttempts attempts: " . $e->getMessage());
+                }
+                usleep($delay);
+            }
+        }
     }
 }

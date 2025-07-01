@@ -168,9 +168,9 @@ class KeyPair
             return bin2hex($data); // Return binary data as a hex string
         }
 
-        // Check if data is an object or array and convert to JSON string
+        // Check if data is an object or array and convert to canonical JSON string
         if (is_array($data) || is_object($data)) {
-            return json_encode($data);
+            return $this->canonicalize($data);
         }
 
         // Check if data is a string and return it
@@ -181,6 +181,16 @@ class KeyPair
         // Handle other data types as needed (e.g., integers, floats, etc.)
         // In this case, we will throw an exception for unsupported types
         throw new Exception("Unsupported data type");
+    }
+
+    /**
+     * Canonicalize data for deterministic JSON serialization
+     * @param mixed $data
+     * @return string
+     */
+    private function canonicalize($data): string
+    {
+        return json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
 
     /** @api */

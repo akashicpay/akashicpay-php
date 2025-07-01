@@ -56,4 +56,10 @@ class Otk
             throw new Exception('Failed to restore OTK. Try again');
         }
     }
+
+    public static function generateOTK()
+    {
+        $kh = new KeyHandler();
+        return $kh->generateBIP39Key('otk', true);
+    }
 }

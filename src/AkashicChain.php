@@ -365,6 +365,39 @@ class AkashicChain
         return $this->signTransaction($txBody, $otk);
     }
 
+    public function secondaryOtkTransaction(array $params): array
+    {
+        $otk        = $params["otk"];
+        $newPubKey   = $params["newPubKey"];
+        $oldPubKeyToRemove = $params["oldPubKeyToRemove"] ?? null;
+
+        $owner = [
+            '$stream' => $otk["identity"],
+            'add' => [
+                'type' => 'secp256k1',
+                'public' => $newPubKey,
+            ],
+        ];
+        if ($oldPubKeyToRemove !== null) {
+            $owner['remove'] = $oldPubKeyToRemove;
+        }
+
+        $txBody = [
+            '$tx'   => [
+                '$namespace' => $this->contracts::CONTRACT_NAMESPACE,
+                '$contract'  => $this->contracts::CREATE_SECONDARY_OTK,
+                '$i'         => [
+                    "owner" => $owner,
+                ],
+                "_dbIndex"   => $this->dbIndex,
+            ],
+            '$sigs' => [],
+        ];
+
+        // Sign Transaction
+        return $this->signTransaction($txBody, $otk);
+    }
+
     /**
      * Get the AC Symbol for the given coin symbol
      *

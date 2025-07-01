@@ -18,4 +18,7 @@ class AkashicEndpoints
     public const CREATE_DEPOSIT_ORDER   = '/v0/deposit-request';
     public const PREPARE_L2_TXN         = '/v0/l2-txn-orchestrator/prepare-l2-withdrawal';
     public const EXCHANGE_RATES         = '/v0/exchange-rate';
+    public const BECOME_BP              = '/v0/owner/become-bp';
+    public const GENERATE_SECONDARY_OTK = '/v0/owner/generate-secondary-otk';
+    public const SET_CALLBACK_URLS      = '/v0/owner/set-callback-urls';
 }
