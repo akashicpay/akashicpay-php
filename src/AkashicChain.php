@@ -175,6 +175,7 @@ class AkashicChain
             ],
             '$sigs' => [],
             '$selfsign' => true,
+            '$unanimous' => true,
         ];
 
         // clone otk to set identity, (as it is now a reference, cloning it to avoid side effects)
