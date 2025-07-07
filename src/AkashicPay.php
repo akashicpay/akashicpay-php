@@ -855,9 +855,9 @@ class AkashicPay
                 "events" => [CallbackEvent::FAILED_PAYOUT],
             ],
         ];
-        $filtered = array_filter($urls, function($item) {
+        $filtered = array_values(array_filter($urls, function($item) {
             return !is_null($item['url']);
-        });
+        }));
         foreach ($filtered as &$url) {
             $url["enabledCurrencies"] = [
                 [
