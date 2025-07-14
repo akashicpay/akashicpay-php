@@ -313,6 +313,7 @@ class AkashicPay
      * @param  string $requestedCurrency CurrencySymbol requestedCurrency to identify the order
      * @param  string $requestedAmount requestedAmount to identify the order
      * @param  string $token       Optional. Include if sending token, e.g. `USDT`
+     * @param  float|null $markupPercentage Optional. Include if you want to add a markup percentage to the requested amount
      * @return array
      */
     public function getDepositAddressWithRequestedValue(
@@ -321,13 +322,14 @@ class AkashicPay
         $referenceId,
         $requestedCurrency,
         $requestedAmount,
-        $token = null
+        $token = null,
+        $markupPercentage = null
     ) {
-        return $this->getDepositAddressFunc($network, $identifier, $referenceId, $token, $requestedCurrency, $requestedAmount);
+        return $this->getDepositAddressFunc($network, $identifier, $referenceId, $token, $requestedCurrency, $requestedAmount, $markupPercentage);
     }
 
 
-    private function getDepositAddressFunc($network, $identifier, $referenceId = null, $token = null, $requestedCurrency = null, $requestedAmount = null)
+    private function getDepositAddressFunc($network, $identifier, $referenceId = null, $token = null, $requestedCurrency = null, $requestedAmount = null, $markupPercentage = null)
     {
         // Prevent using mainnets in development or testnets in production
         if (
@@ -386,6 +388,9 @@ class AkashicPay
                         "amount" => $requestedAmount,
                     ];
                 }
+                if ($markupPercentage) {
+                    $payloadToSign["markupPercentage"] = $markupPercentage;
+                }
                 $result = $this->createDepositOrder(array_merge($payloadToSign, [
                     "signature" => $this->sign($payloadToSign),
                 ]));
@@ -400,6 +405,7 @@ class AkashicPay
                     "exchangeRate" => $result["exchangeRate"] ?? null,
                     "amount" => $result["amount"] ?? null,
                     "expires" => $result["expires"] ?? null,
+                    "markupPercentage" => $result["markupPercentage"] ?? $markupPercentage,
                 ];
             }
 
@@ -462,6 +468,9 @@ class AkashicPay
                     "amount" => $requestedAmount,
                 ];
             }
+            if ($markupPercentage) {
+                $payloadToSign["markupPercentage"] = $markupPercentage;
+            }
             $result = $this->createDepositOrder(array_merge($payloadToSign, [
                 "signature" => $this->sign($payloadToSign),
             ]));
@@ -476,6 +485,7 @@ class AkashicPay
                 "exchangeRate" => $result["exchangeRate"] ?? null,
                 "amount" => $result["amount"] ?? null,
                 "expires" => $result["expires"] ?? null,
+                "markupPercentage" => $result["markupPercentage"] ?? $markupPercentage,
             ];
         }
 
@@ -509,14 +519,16 @@ class AkashicPay
      * @param  string $requestedCurrency CurrencySymbol requestedCurrency to identify the order
      * @param  string $requestedAmount requestedAmount to identify the order
      * @param  array  $receiveCurrencies optional currencies to be display on deposit page, comma separated
+     * @param  float|null $markupPercentage optional markup percentage to be applied to the requested amount
+     * @param  string|null $redirectUrl optional redirect URL after deposit
      * @return string
      */
-    public function getDepositUrlWithRequestedValue($identifier, $referenceId, $requestedCurrency, $requestedAmount, $receiveCurrencies = null, $redirectUrl = null)
+    public function getDepositUrlWithRequestedValue($identifier, $referenceId, $requestedCurrency, $requestedAmount, $receiveCurrencies = null, $markupPercentage = null, $redirectUrl = null)
     {
-        return $this->getDepositUrlFunc($identifier, $referenceId, $receiveCurrencies, $redirectUrl, $requestedCurrency, $requestedAmount);
+        return $this->getDepositUrlFunc($identifier, $referenceId, $receiveCurrencies, $redirectUrl, $requestedCurrency, $requestedAmount, $markupPercentage);
     }
 
-    private function getDepositUrlFunc($identifier, $referenceId = null, $receiveCurrencies = null, $redirectUrl = null, $requestedCurrency = null, $requestedAmount = null)
+    private function getDepositUrlFunc($identifier, $referenceId = null, $receiveCurrencies = null, $redirectUrl = null, $requestedCurrency = null, $requestedAmount = null, $markupPercentage = null)
     {
         // Perform asynchronous tasks sequentially
         $keys                = $this->getKeysByOwnerAndIdentifier(['identifier' => $identifier]);
@@ -544,6 +556,9 @@ class AkashicPay
                     "currency" => $requestedCurrency,
                     "amount" => $requestedAmount,
                 ];
+            }
+            if ($markupPercentage) {
+                $payloadToSign["markupPercentage"] = $markupPercentage;
             }
             $this->createDepositOrder(array_merge($payloadToSign, [
                 "signature" => $this->sign($payloadToSign),
