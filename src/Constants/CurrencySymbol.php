@@ -10,6 +10,8 @@ class CurrencySymbol
     public const USDT = 'USDT';
     public const TRX = 'TRX';
     public const ETH = 'ETH';
+    public const BNB = 'BNB';
+
     // Fiat
     public const CHF = 'CHF';
     public const CNY = 'CNY';

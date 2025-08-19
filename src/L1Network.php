@@ -66,6 +66,39 @@ class L1Network
                 ],
             ],
         ],
+        NetworkSymbol::BINANCE_SMART_CHAIN_MAINNET => [
+            'regex'      => self::ETH_REGEX,
+            'nativeCoin' => [
+                'decimal'     => self::ETH_DECIMAL,
+                'symbol'      => 'BNB',
+                'displayName' => 'BNB',
+            ],
+            'tokens'     => [
+                [
+                    'symbol'      => TokenSymbol::USDT,
+                    'displayName' => 'USDT (BNB)',
+                    'contract'    => '0x55d398326f99059ff775485246999027b3197955',
+                    'decimal'     => 18,
+                ],
+                
+            ],
+        ],
+        NetworkSymbol::BINANCE_SMART_CHAIN_TESTNET => [
+            'regex'      => self::ETH_REGEX,
+            'nativeCoin' => [
+                'decimal'     => self::ETH_DECIMAL,
+                'symbol'      => 'tBNB',
+                'displayName' => 'BNB-Test',
+            ],
+            'tokens'     => [
+                [
+                    'symbol'      => TokenSymbol::USDT,
+                    'displayName' => 'USDT (BNB-Test)',
+                    'contract'    => '0xa62be7ec09f56a813f654a9ac1aa6d29d96f604e',
+                    'decimal'     => 18,
+                ],
+            ],
+        ],
         NetworkSymbol::TRON             => [
             'regex'      => self::TRX_REGEX,
             'nativeCoin' => [

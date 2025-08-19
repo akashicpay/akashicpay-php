@@ -7,6 +7,7 @@ namespace Akashic;
 use Akashic\Classes\IBaseTransaction;
 use Akashic\Constants\AkashicErrorCode;
 use Akashic\Constants\AkashicException;
+use Akashic\Constants\BinanceSymbol;
 use Akashic\Constants\Environment;
 use Akashic\Constants\EthereumSymbol;
 use Akashic\Constants\MainNetContracts;
@@ -413,6 +414,10 @@ class AkashicChain
         if (in_array($coinSymbol, EthereumSymbol::VALUES, true)) {
             return "eth";
         }
+
+        if (in_array($coinSymbol, BinanceSymbol::VALUES, true)) {
+            return "bnb";
+        }
         return $coinSymbol;
     }
 
@@ -428,6 +433,10 @@ class AkashicChain
                 return "ETH";
             case NetworkSymbol::ETHEREUM_SEPOLIA:
                 return "SEP";
+            case NetworkSymbol::BINANCE_SMART_CHAIN_MAINNET:
+                return "BNB";
+            case NetworkSymbol::BINANCE_SMART_CHAIN_TESTNET:
+                return "tBNB";
             case NetworkSymbol::TRON:
                 return "trx";
             case NetworkSymbol::TRON_SHASTA:

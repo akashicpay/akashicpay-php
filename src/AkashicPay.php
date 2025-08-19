@@ -863,6 +863,12 @@ class AkashicPay
                         : NetworkSymbol::ETHEREUM_SEPOLIA,
                     "currencies" => [$this->akashicChain::NITR0GEN_NATIVE_COIN, TokenSymbol::USDT],
                 ],
+                 [
+                    "coinSymbol" => $this->env === Environment::PRODUCTION
+                        ? NetworkSymbol::BINANCE_SMART_CHAIN_MAINNET
+                        : NetworkSymbol::BINANCE_SMART_CHAIN_TESTNET,
+                    "currencies" => [$this->akashicChain::NITR0GEN_NATIVE_COIN, TokenSymbol::USDT],
+                ],
                 [
                     "coinSymbol" => $this->env === Environment::PRODUCTION
                         ? NetworkSymbol::TRON
