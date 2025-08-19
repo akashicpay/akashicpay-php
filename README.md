@@ -68,34 +68,16 @@ To do this, no AkashicLink is necessary; you can build an AkashicPay instance as
 use Akashic\AkashicPay;
 use Akashic\Constants\Environment;
 
-// production is the default environment.
-// And in production, an otk must be specified
 $akashicPay = new AkashicPay([
     'environment' => Environment::DEVELOPMENT,
+    'privateKey' => getenv('akashicTestKey'),
+    // this is the address of your AkashicLink account. Of the form "AS1234..."
+    'l2Address' => getenv('testL2Address'),
 ]);
 
-// for security reasons, this would throw if the environment was production
-// but you can use this in development to record and re-use your otk
-$keyPair = $akashicPay->getKeyBackup();
-print('my testing L2 address: ' . $keyPair['l2Address'] . ' and private key: ' . $keyPair['privateKey']);
 
 ```
 
-Then, to reuse the same otk in later testing (recommended), simply supply the otk during setup:
-
-```php
-use Akashic\AkashicPay;
-use Akashic\Constants\Environment;
-
-// production is the default environment.
-// And in production, an otk must be specified
-$akashicPay = new AkashicPay([
-    'environment' => Environment::DEVELOPMENT,
-    'privateKey' => getenv('akashicKey'),
-    'l2Address' => getenv('l2Address'),
-]);
-
-```
 
 You can now create an L1-wallet on a testnet:
 
@@ -106,8 +88,11 @@ $address = $akashicPay->getDepositAddress(NetworkSymbol::TRON_SHASTA, 'EndUser12
 
 ```
 
-Use a faucet (e.g. via the [Tron Discord](https://discord.com/invite/nSBF64yb5U)) to deposit some coin into the created wallet.
-While you won't receive callbacks during testing, you can check to see if your balance has increased with:
+Use a faucet (e.g. via the [Tron
+Discord](https://discord.com/invite/nSBF64yb5U)) to deposit some coin into the
+created wallet.
+
+You can check to see if your balance has increased with:
 
 ```php
 $balances = $akashicPay->getBalance();
@@ -116,8 +101,14 @@ $balances = $akashicPay->getBalance();
 
 # Documentation
 
-Link to further docs here
+For more in-depth documentation describing the SDKs functions in detail,
+explanations of terminology, and guides on how to use AkashicPay.com, see https://docs.akashicpay.com/
+
 
 # Contributing
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for information
+
+# License
+
+This project is licensed under the [MIT](./LICENSE) License
