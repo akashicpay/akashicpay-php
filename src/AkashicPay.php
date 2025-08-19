@@ -133,14 +133,15 @@ class AkashicPay
     /**
      * Send a crypto-transaction
      *
-     * @param  string      $referenceId userID or similar identifier to identify the transaction
+     * @param  string      $recipientId userID or similar identifier of the user
+     *                                  requesting the payout
      * @param  string      $to          L1 or L2 address of receiver
      * @param  string      $amount
      * @param  string      $network     L1-Network the funds belong to, e.g. `ETH`
      * @param  string|null $token       Optional. Include if sending token, e.g. `USDT`
      * @return array|string $l2Hash|$error L2 Transaction hash of the transaction or error
      */
-    public function payout($referenceId, $to, $amount, $network, $token = null)
+    public function payout($recipientId, $to, $amount, $network, $token = null)
     {
         $toAddress        = $to;
         $initiatedToNonL2 = null;
@@ -193,7 +194,7 @@ class AkashicPay
                     "coinSymbol"       => $network,
                     "tokenSymbol"      => $this->mapUSDTToTether($network, $token),
                     "initiatedToNonL2" => $initiatedToNonL2,
-                    "referenceId"       => $referenceId,
+                    "identifier"       => $recipientId,
                 ], $this->isFxBp
             );
 
@@ -217,7 +218,7 @@ class AkashicPay
                 . " "
                 . $token
                 . " to user "
-                . $referenceId
+                . $recipientId
                 . " at "
                 . $to
             );
@@ -233,7 +234,7 @@ class AkashicPay
             "amount"                => $amount,
             "tokenSymbol"           => $token,
             "identity"              => $this->otk["identity"],
-            "referenceId"            => $referenceId,
+            "identifier"            => $recipientId,
             "feeDelegationStrategy" => "Delegate",
         ];
 
@@ -276,7 +277,7 @@ class AkashicPay
             . " "
             . $token
             . " to user "
-            . $referenceId
+            . $recipientId
             . " at "
             . $to
         );
@@ -626,7 +627,7 @@ class AkashicPay
 
     /**
      * Get all or a subset of transactions. Optionally paginated with `page` and `limit`.
-     * Optionally parameters: `layer`, `status`, `startDate`, `endDate`, `hideSmallTransactions`.
+     * Optionally parameters: `layer`, `status`, `startDate`, `endDate`, `hideSmallTransactions`, `identifier`, `referenceId`
      * `hideSmallTransactions` excludes values below 1 USD
      *
      * @param  array $getTransactionParams
@@ -868,12 +869,6 @@ class AkashicPay
                     "coinSymbol" => $this->env === Environment::PRODUCTION
                         ? NetworkSymbol::ETHEREUM_MAINNET
                         : NetworkSymbol::ETHEREUM_SEPOLIA,
-                    "currencies" => [$this->akashicChain::NITR0GEN_NATIVE_COIN, TokenSymbol::USDT],
-                ],
-                 [
-                    "coinSymbol" => $this->env === Environment::PRODUCTION
-                        ? NetworkSymbol::BINANCE_SMART_CHAIN_MAINNET
-                        : NetworkSymbol::BINANCE_SMART_CHAIN_TESTNET,
                     "currencies" => [$this->akashicChain::NITR0GEN_NATIVE_COIN, TokenSymbol::USDT],
                 ],
                 [
