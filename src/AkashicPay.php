@@ -147,8 +147,6 @@ class AkashicPay
         $initiatedToNonL2 = null;
         $isL2             = false;
 
-        // normalize token input for Tron Shasta network
-        $token = $this->normalizeTokenInput($network, $token);
         // convert to backend currency
         $decimalAmount = Currency::convertToDecimals($amount, $network, $token);
 
@@ -194,7 +192,7 @@ class AkashicPay
                     "amount"           => $decimalAmount,
                     "toAddress"        => $toAddress,
                     "coinSymbol"       => $network,
-                    "tokenSymbol"      => $token,
+                    "tokenSymbol"      => $this->mapUSDTToTether($network, $token),
                     "initiatedToNonL2" => $initiatedToNonL2,
                     "identifier"       => $recipientId,
                 ], $this->isFxBp
@@ -645,17 +643,7 @@ class AkashicPay
             . "?"
             . $query
         )["data"]["transactions"];
-        return array_map(
-            function ($t) {
-                return array_merge(
-                    $t,
-                    [
-                        "tokenSymbol" => $this->normalizeTokenSymbol($t["tokenSymbol"]),
-                    ]
-                );
-            },
-            $transactions
-        );
+        return $transactions;
     }
 
     /**
@@ -675,7 +663,7 @@ class AkashicPay
             function ($bal) {
                 return [
                     "networkSymbol" => $bal["coinSymbol"],
-                    "tokenSymbol" => $this->normalizeTokenSymbol($bal["tokenSymbol"]),
+                    "tokenSymbol" => $bal["tokenSymbol"],
                     "balance" => $bal["balance"],
                 ];
             },
@@ -703,12 +691,7 @@ class AkashicPay
             return null;
         }
 
-        return array_merge(
-            $transaction,
-            [
-                "tokenSymbol" => $this->normalizeTokenSymbol($transaction["tokenSymbol"]),
-            ]
-        );
+        return $transaction;
     }
 
     /**
@@ -885,9 +868,7 @@ class AkashicPay
                     "coinSymbol" => $this->env === Environment::PRODUCTION
                         ? NetworkSymbol::TRON
                         : NetworkSymbol::TRON_SHASTA,
-                    "currencies" => [$this->akashicChain::NITR0GEN_NATIVE_COIN, $this->env === Environment::PRODUCTION
-                        ? TokenSymbol::USDT
-                        : TokenSymbol::TETHER],
+                    "currencies" => [$this->akashicChain::NITR0GEN_NATIVE_COIN, TokenSymbol::USDT],
                 ],
             ];
         }
@@ -1139,32 +1120,20 @@ class AkashicPay
     }
 
     /**
-     * Normalize token symbols (map TETHER to USDT)
+     * Map USDT to TETHER for Tron Shasta network
      *
-     * @param string|null $symbol
+     * @param string $coinSymbol
+     * @param string|null $tokenSymbol
      * @return string|null
      */
-    private function normalizeTokenSymbol(?string $symbol): ?string
+    private function mapUSDTToTether(string $coinSymbol, ?string $tokenSymbol): ?string
     {
-        if ($symbol === TokenSymbol::TETHER) {
-            return TokenSymbol::USDT;
+        if (!$tokenSymbol) {
+            return null;
         }
-        return $symbol;
-    }
-
-    /**
-     * Normalize token input (map USDT to TETHER for Tron Shasta network)
-     *
-     * @param string $network
-     * @param string|null $token
-     * @return string|null
-     */
-    private function normalizeTokenInput(string $network, ?string $token): ?string
-    {
-        if ($network === NetworkSymbol::TRON_SHASTA && $token === TokenSymbol::USDT) {
-            return TokenSymbol::TETHER;
-        }
-        return $token;
+        return $coinSymbol === NetworkSymbol::TRON_SHASTA && $tokenSymbol === TokenSymbol::USDT
+            ? TokenSymbol::TETHER
+            : $tokenSymbol;
     }
 
     /**

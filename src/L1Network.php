@@ -97,8 +97,8 @@ class L1Network
             ],
             'tokens'     => [
                 [
-                    'symbol'      => TokenSymbol::TETHER,
-                    'displayName' => 'TETHER (Shasta-TRX)',
+                    'symbol'      => TokenSymbol::USDT,
+                    'displayName' => 'USDT (Shasta-TRX)',
                     'contract'    => 'TG3XXyExBkPp9nzdajDZsozEu4BkaSJozs',
                     'decimal'     => 6,
                 ],
