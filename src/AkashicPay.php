@@ -904,6 +904,38 @@ class AkashicPay
     }
 
     /**
+     * Experimental feature to update BP settings from SDK
+     * 
+     * @param string $l2Address L2 address of the BP
+     * @param string $privateKey Private key of the BP
+     * @param array $params Parameters containing enableManualTransactionCallback, etc.
+     */
+
+    public function updateSettings($l2Address, $privateKey, $params): void {
+        $otk = array_merge(
+            Otk::restoreOtkFromKeypair($privateKey),
+            ["identity" => $l2Address]
+        );
+
+        $payloadToSign = [
+            "identity"    => $otk["identity"],
+            "expires"     => strtotime("+1 minutes") * 1000,
+            "enableManualTransactionCallback" => $params["enableManualTransactionCallback"] ?? null,
+        ];
+        $payload = array_merge($payloadToSign, [
+            "signature" => $this->sign($payloadToSign, $otk),
+        ]);
+        // Retry setCallbackUrls operation up to 3 times with 1 second delay
+        // Due to potential delay in secondary OTK generation and onboarding process
+        $this->retryWithAttempts(function () use ($payload) {
+            $this->post(
+                $this->akashicUrl . AkashicEndpoints::UPDATE_CALLBACK_SETTINGS,
+                $payload
+            );
+        }, 3, 1000000);
+    }
+
+    /**
      * Call AP to become a BP
      * 
      * @param array $otk OTK to become a BP with
@@ -942,20 +974,6 @@ class AkashicPay
         $this->post($this->akashicUrl . AkashicEndpoints::GENERATE_SECONDARY_OTK, ['signedTx' => $secondaryOtkTx]);
 
         return $secondaryApiKeyPair;
-    }
-
-    private function setCallbackUrls($payload) {
-        try {
-            $this->post(
-                $this->akashicUrl
-                . AkashicEndpoints::SET_CALLBACK_URLS,
-                $payload
-            );
-            return true;
-        } catch (Exception $e) {
-            $this->logger->error("Failed to set callback URLs: " . $e->getMessage());
-            return false;
-        }
     }
 
     /**
