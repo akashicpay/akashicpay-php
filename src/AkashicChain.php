@@ -323,7 +323,7 @@ class AkashicChain
         $amount       = $params["amount"];
         $toAddress    = $params["toAddress"];
         $tokenSymbol  = $params["tokenSymbol"] ?? self::NITR0GEN_NATIVE_COIN;
-        $identifier   = $params["identifier"];
+        $referenceId   = $params["referenceId"];
         $feesEstimate = $params["feesEstimate"];
         $ethGasPrice  = $params["ethGasPrice"];
 
@@ -355,7 +355,7 @@ class AkashicChain
                 '$r'         => ["wallet" => $keyLedgerId],
                 "_dbIndex"   => $this->dbIndex,
                 "metadata"   => [
-                    "identifier"   => $identifier,
+                    "referenceId"   => $referenceId,
                     "feesEstimate" => $feesEstimate,
                 ],
             ],
