@@ -133,14 +133,15 @@ class AkashicPay
     /**
      * Send a crypto-transaction
      *
-     * @param  string      $referenceId userID or similar identifier to identify the transaction
+     * @param  string      $recipientId userID or similar identifier of the user
+     *                                  requesting the payout
      * @param  string      $to          L1 or L2 address of receiver
      * @param  string      $amount
      * @param  string      $network     L1-Network the funds belong to, e.g. `ETH`
      * @param  string|null $token       Optional. Include if sending token, e.g. `USDT`
      * @return array|string $l2Hash|$error L2 Transaction hash of the transaction or error
      */
-    public function payout($referenceId, $to, $amount, $network, $token = null)
+    public function payout($recipientId, $to, $amount, $network, $token = null)
     {
         $toAddress        = $to;
         $initiatedToNonL2 = null;
@@ -193,7 +194,7 @@ class AkashicPay
                     "coinSymbol"       => $network,
                     "tokenSymbol"      => $this->mapUSDTToTether($network, $token),
                     "initiatedToNonL2" => $initiatedToNonL2,
-                    "referenceId"       => $referenceId,
+                    "identifier"       => $recipientId,
                 ], $this->isFxBp
             );
 
@@ -217,7 +218,7 @@ class AkashicPay
                 . " "
                 . $token
                 . " to user "
-                . $referenceId
+                . $recipientId
                 . " at "
                 . $to
             );
@@ -233,7 +234,7 @@ class AkashicPay
             "amount"                => $amount,
             "tokenSymbol"           => $token,
             "identity"              => $this->otk["identity"],
-            "referenceId"            => $referenceId,
+            "identifier"            => $recipientId,
             "feeDelegationStrategy" => "Delegate",
         ];
 
@@ -276,7 +277,7 @@ class AkashicPay
             . " "
             . $token
             . " to user "
-            . $referenceId
+            . $recipientId
             . " at "
             . $to
         );
@@ -499,11 +500,13 @@ class AkashicPay
      *                            making the deposit
      * @param  string $referenceId optional referenceId to identify the order
      * @param  array  $receiveCurrencies optional currencies to be display on deposit page, comma separated
+     * @param  array  $networks optional networks to be display on deposit page, comma separated
+     * @param  string $redirectUrl optional redirect URL after deposit
      * @return string
      */
-    public function getDepositUrl($identifier, $referenceId = null, $receiveCurrencies = null, $redirectUrl = null)
+    public function getDepositUrl($identifier, $referenceId = null, $receiveCurrencies = null, $networks = null, $redirectUrl = null)
     {
-        return $this->getDepositUrlFunc($identifier, $referenceId, $receiveCurrencies, $redirectUrl);
+        return $this->getDepositUrlFunc($identifier, $referenceId, $receiveCurrencies, $networks, $redirectUrl);
     }
 
     /**
@@ -516,16 +519,17 @@ class AkashicPay
      * @param  string $requestedCurrency CurrencySymbol requestedCurrency to identify the order
      * @param  string $requestedAmount requestedAmount to identify the order
      * @param  array  $receiveCurrencies optional currencies to be display on deposit page, comma separated
+     * @param  array  $networks optional networks to be display on deposit page, comma separated
      * @param  float|null $markupPercentage optional markup percentage to be applied to the requested amount
      * @param  string|null $redirectUrl optional redirect URL after deposit
      * @return string
      */
-    public function getDepositUrlWithRequestedValue($identifier, $referenceId, $requestedCurrency, $requestedAmount, $receiveCurrencies = null, $markupPercentage = null, $redirectUrl = null)
+    public function getDepositUrlWithRequestedValue($identifier, $referenceId, $requestedCurrency, $requestedAmount, $receiveCurrencies = null, $networks = null, $markupPercentage = null, $redirectUrl = null)
     {
-        return $this->getDepositUrlFunc($identifier, $referenceId, $receiveCurrencies, $redirectUrl, $requestedCurrency, $requestedAmount, $markupPercentage);
+        return $this->getDepositUrlFunc($identifier, $referenceId, $receiveCurrencies, $networks, $redirectUrl, $requestedCurrency, $requestedAmount, $markupPercentage);
     }
 
-    private function getDepositUrlFunc($identifier, $referenceId = null, $receiveCurrencies = null, $redirectUrl = null, $requestedCurrency = null, $requestedAmount = null, $markupPercentage = null)
+    private function getDepositUrlFunc($identifier, $referenceId = null, $receiveCurrencies = null, $networks = null, $redirectUrl = null, $requestedCurrency = null, $requestedAmount = null, $markupPercentage = null)
     {
         // Perform asynchronous tasks sequentially
         $keys                = $this->getKeysByOwnerAndIdentifier(['identifier' => $identifier]);
@@ -578,6 +582,10 @@ class AkashicPay
                 $receiveCurrencies
             ));
             $url .= "&receiveCurrencies={$mappedReceiveCurrencies}";
+        }
+        if ($networks) {
+            $mappedNetworks = join(",", $networks);
+            $url .= "&networks={$mappedNetworks}";
         }
         return $url;
     }
@@ -861,12 +869,6 @@ class AkashicPay
                     "coinSymbol" => $this->env === Environment::PRODUCTION
                         ? NetworkSymbol::ETHEREUM_MAINNET
                         : NetworkSymbol::ETHEREUM_SEPOLIA,
-                    "currencies" => [$this->akashicChain::NITR0GEN_NATIVE_COIN, TokenSymbol::USDT],
-                ],
-                 [
-                    "coinSymbol" => $this->env === Environment::PRODUCTION
-                        ? NetworkSymbol::BINANCE_SMART_CHAIN_MAINNET
-                        : NetworkSymbol::BINANCE_SMART_CHAIN_TESTNET,
                     "currencies" => [$this->akashicChain::NITR0GEN_NATIVE_COIN, TokenSymbol::USDT],
                 ],
                 [
