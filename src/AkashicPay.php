@@ -345,7 +345,7 @@ class AkashicPay
         );
 
         $address = $response["address"] ?? null;
-        $unassignedLedgerId = $response["unassignedLedgerId"];
+        $unassignedLedgerId = $response["unassignedLedgerId"] ?? null;
 
         // unassignedLedgerId indiciate that the key is not assigned to an owner
         // and we need to assign it
