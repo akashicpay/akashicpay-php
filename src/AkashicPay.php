@@ -38,7 +38,8 @@ use function urlencode;
 /** @api */
 class AkashicPay
 {
-    private const AC_PRIVATE_KEY_REGEX = '/^0x[a-f\d]{64}$/';
+    // private key could be 62 or 64 characters long despite being prefixed with 0x
+    private const AC_PRIVATE_KEY_REGEX = '/^0x[a-f\d]{62,64}$/';
     private const L2_REGEX             = '/^AS[A-Fa-f\d]{64}$/';
     /** @var array */
     private $otk;
