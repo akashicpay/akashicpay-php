@@ -38,8 +38,7 @@ use function urlencode;
 /** @api */
 class AkashicPay
 {
-    // private key could be 62 or 64 characters long despite being prefixed with 0x
-    private const AC_PRIVATE_KEY_REGEX = '/^0x[a-f\d]{62,64}$/';
+    private const AC_PRIVATE_KEY_REGEX = '/^0x[a-f\d]{64}$/';
     private const L2_REGEX             = '/^AS[A-Fa-f\d]{64}$/';
     /** @var array */
     private $otk;
@@ -246,7 +245,7 @@ class AkashicPay
             $preparedTxn = $response["data"]["preparedTxn"];
         } catch (Exception $e) {
             $this->logger->error($e->getMessage());
-            if (str_contains($e->getMessage(), 'exceeds total savings')) {
+            if (str_contains($e->getMessage(), 'savingsExceeded')) {
                 return [
                     "error" => AkashicErrorCode::SAVINGS_EXCEEDED,
                 ];
@@ -345,7 +344,7 @@ class AkashicPay
         );
 
         $address = $response["address"] ?? null;
-        $unassignedLedgerId = $response["unassignedLedgerId"] ?? null;
+        $unassignedLedgerId = $response["unassignedLedgerId"];
 
         // unassignedLedgerId indiciate that the key is not assigned to an owner
         // and we need to assign it
@@ -670,7 +669,7 @@ class AkashicPay
             function ($bal) {
                 return [
                     "networkSymbol" => $bal["coinSymbol"],
-                    "tokenSymbol" => $bal["tokenSymbol"] ?? null,
+                    "tokenSymbol" => $bal["tokenSymbol"],
                     "balance" => $bal["balance"],
                 ];
             },
