@@ -669,7 +669,7 @@ class AkashicPay
             function ($bal) {
                 return [
                     "networkSymbol" => $bal["coinSymbol"],
-                    "tokenSymbol" => $bal["tokenSymbol"],
+                    "tokenSymbol" => $bal["tokenSymbol"] ?? null,
                     "balance" => $bal["balance"],
                 ];
             },
