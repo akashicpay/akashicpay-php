@@ -290,6 +290,7 @@ class AkashicChain
                 '$i'         => [
                     "owner" => [
                         '$stream' => $otk["identity"],
+                        '$sigOnly'=> true
                     ],
                 ],
                 '$o'         => [
