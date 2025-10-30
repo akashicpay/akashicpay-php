@@ -64,6 +64,12 @@ class L1Network
                     'contract'    => '0xa62be7ec09f56a813f654a9ac1aa6d29d96f604e',
                     'decimal'     => 6,
                 ],
+                [
+                    'symbol'      => TokenSymbol::USDC,
+                    'displayName' => 'USDC (Sepolia-ETH)',
+                    'contract'    => '0x92ac12b566954e3d0e966cca7c9ddc44ca80ae29',
+                    'decimal'     => 6,
+                ],
             ],
         ],
         NetworkSymbol::BINANCE_SMART_CHAIN_MAINNET => [
@@ -78,6 +84,12 @@ class L1Network
                     'symbol'      => TokenSymbol::USDT,
                     'displayName' => 'USDT (BNB)',
                     'contract'    => '0x55d398326f99059ff775485246999027b3197955',
+                    'decimal'     => 18,
+                ],
+                [
+                    'symbol'      => TokenSymbol::USDC,
+                    'displayName' => 'USDT (BNB)',
+                    'contract'    => '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d',
                     'decimal'     => 18,
                 ],
                 
@@ -95,6 +107,12 @@ class L1Network
                     'symbol'      => TokenSymbol::USDT,
                     'displayName' => 'USDT (BNB-Test)',
                     'contract'    => '0xa62be7ec09f56a813f654a9ac1aa6d29d96f604e',
+                    'decimal'     => 18,
+                ],
+                [
+                    'symbol'      => TokenSymbol::USDC,
+                    'displayName' => 'USDC (BNB-Test)',
+                    'contract'    => '0x9114eb6b5d281ae405c23082cf56043dac280cba',
                     'decimal'     => 18,
                 ],
             ],

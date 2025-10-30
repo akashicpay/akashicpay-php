@@ -8,6 +8,7 @@ class CurrencySymbol
 {
     // Crypto
     public const USDT = 'USDT';
+    public const USDC = 'USDC';
     public const TRX = 'TRX';
     public const ETH = 'ETH';
     public const BNB = 'BNB';
