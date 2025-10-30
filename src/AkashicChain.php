@@ -267,21 +267,23 @@ class AkashicChain
     }
 
     /**
-     * Create an assign key
+     * Create an assign key transaction
      *
-     * @param  array $params
-     * @param  array $params["otk"] the OTK to use for signing
-     * @param  array $params["ledgerId"] the ledger ID to assign
-     * @param  array $params["identifier"] the identifier for the transaction
+     * @param  array $ledgerIds the ledger ID(s) to assign
+     * @param  array $otk the OTK to use for signing
+     * @param  string $identifier the identifier for the transaction
      * @return array the shape of an {@link IBaseTransaction}
      * @throws Exception
      * @api
      */
-    public function assignKey(array $params): array
+    public function assignKey(array $ledgerIds, array $otk, string $identifier): array
     {
-        $otk        = $params["otk"];
-        $ledgerId   = $params["ledgerId"];
-        $identifier = $params["identifier"];
+        $keys = [];
+        // Turn ledgerIds into object with key1: { $stream: ledgerId1 }, key2: { $stream: ledgerId2 }
+        // Each ledgerId is assigned to a key named 'key1', 'key2', etc. for multi-key assignment.
+        foreach ($ledgerIds as $index => $ledgerId) {
+            $keys["key" . ($index + 1)] = ['$stream' => $ledgerId];
+        }
 
         $txBody = [
             '$tx'   => [
@@ -289,18 +291,14 @@ class AkashicChain
                 '$contract'  => $this->contracts::ASSIGN_KEY,
                 '$i'         => [
                     "owner" => [
-                        '$stream' => $otk["identity"],
-                        '$sigOnly'=> true
+                        '$stream'  => $otk["identity"],
+                        '$sigOnly' => true
                     ],
                 ],
-                '$o'         => [
-                    "key" => [
-                        '$stream' => $ledgerId,
-                    ]
-                ],
+                '$o'         => $keys,
                 "_dbIndex"   => $this->dbIndex,
                 "metadata"   => [
-                    "identifier"   => $identifier,
+                    "identifier" => $identifier,
                 ],
             ],
             '$sigs' => [],

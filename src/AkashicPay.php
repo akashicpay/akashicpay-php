@@ -351,11 +351,7 @@ class AkashicPay
         // and we need to assign it
         if ($address) {
             if ($unassignedLedgerId) {
-                $tx = $this->akashicChain->assignKey([
-                    "otk" => $this->otk,
-                    "ledgerId" => $unassignedLedgerId,
-                    "identifier" => $identifier,
-                ]);
+                $tx = $this->akashicChain->assignKey([$unassignedLedgerId], $this->otk, $identifier);
                 $acResponse = $this->post($this->targetNode["node"], $tx);
         
                 $assignedKey = $acResponse["data"]['$responses'][0] ?? null;
@@ -413,43 +409,7 @@ class AkashicPay
             ];
         }
 
-        $tx       = $this->akashicChain->keyCreateTransaction($network, $this->otk);
-        $response = $this->post($this->targetNode["node"], $tx);
-
-        $newKey = $response["data"]['$responses'][0] ?? null;
-        if (! $newKey) {
-            $this->logger->warning(
-                "Key creation on "
-                . $network
-                . " failed for identifier "
-                . $identifier
-                . ". Responses: "
-                . $response["data"]
-            );
-            throw new AkashicException(AkashicErrorCode::KEY_CREATION_FAILURE);
-        }
-
-        $txBody       = $this->akashicChain->differentialConsensusTransaction(
-            $this->otk,
-            $newKey,
-            $identifier
-        );
-        $diffResponse = $this->post($this->targetNode["node"], $txBody)["data"];
-
-        if (
-            isset($diffResponse['$responses'][0])
-            && $diffResponse['$responses'][0] !== "confirmed"
-        ) {
-            $this->logger->warning(
-                "Key creation on "
-                . $network
-                . " failed at differential consensus for identifier "
-                . $identifier
-                . ". Unhealthy key: "
-                . $newKey
-            );
-            throw new AkashicException(AkashicErrorCode::UNHEALTHY_KEY);
-        }
+        $newKey = $this->createKey($network, $identifier);
 
         if ($referenceId) {
             $payloadToSign = [
@@ -533,16 +493,17 @@ class AkashicPay
     {
         // Perform asynchronous tasks sequentially
         $keys                = $this->getKeysByOwnerAndIdentifier(['identifier' => $identifier]);
-        $supportedCurrencies = $this->getSupportedCurrencies();
-
-        // Process supported currencies
-        $supportedCurrencySymbols = array_unique(array_merge(...array_values($supportedCurrencies)));
+        $preseedNetworks = $this->getPreseedNetworks();
         $existingKeys             = array_unique(array_map("self::getCoinSymbol", $keys));
 
-        foreach ($supportedCurrencySymbols as $coinSymbol) {
-            if (! in_array($coinSymbol, $existingKeys)) {
-                $this->getDepositAddress($coinSymbol, $identifier);
+        $unassignedNetworks = [];
+        foreach ($preseedNetworks as $network) {
+            if (! in_array($network, $existingKeys)) {
+                $unassignedNetworks[] = $network;
             }
+        }
+        if (count($unassignedNetworks) > 0) {
+            $this->bulkCreateOrAssignKeys($unassignedNetworks, $identifier);
         }
 
         if ($referenceId) {
@@ -715,6 +676,103 @@ class AkashicPay
     }
 
     /**
+     * Bulk create or assign keys for multiple networks
+     *
+     * @param array $networks Array of NetworkSymbol strings
+     * @param string $identifier User identifier
+     * @throws AkashicException
+     */
+    protected function bulkCreateOrAssignKeys(array $networks, string $identifier): void
+    {
+        $unassignedLedgerIds = [];
+        
+        foreach ($networks as $network) {
+            $response = $this->getByOwnerAndIdentifier([
+                'identifier' => $identifier,
+                'coinSymbol' => $network,
+            ]);
+            
+            $address = $response['address'] ?? null;
+            $unassignedLedgerId = $response['unassignedLedgerId'] ?? null;
+            
+            if ($unassignedLedgerId) {
+                $unassignedLedgerIds[] = $unassignedLedgerId;
+            } elseif (!$address && !$unassignedLedgerId) {
+                $this->createKey($network, $identifier);
+            }
+        }
+        
+        if (count($unassignedLedgerIds) > 0) {
+            $tx = $this->akashicChain->assignKey(
+                $unassignedLedgerIds,
+                $this->otk,
+                $identifier
+            );
+            
+            // Assign key to the user
+            $response = $this->post($this->targetNode['node'], $tx);
+            $assignedKey = $response['data']['$responses'][0] ?? null;
+            
+            if (!$assignedKey) {
+                $this->logger->warning(
+                    "Failed to assign multi key for identifier {$identifier}. AC: " . json_encode($response['data'])
+                );
+                throw new AkashicException(AkashicErrorCode::ASSIGNED_KEY_FAILURE);
+            }
+        }
+    }
+
+    /**
+     * Creates a new key for the specified network and identifier.
+     *
+     * @param string $network The network symbol for which to create the key.
+     * @param string $identifier The user identifier for whom the key is created.
+     * @return array The newly created key data.
+     * @throws AkashicException If key creation or consensus fails.
+     */
+    protected function createKey($network, $identifier) {
+        $tx       = $this->akashicChain->keyCreateTransaction($network, $this->otk);
+        $response = $this->post($this->targetNode["node"], $tx);
+
+        $newKey = $response["data"]['$responses'][0] ?? null;
+        if (! $newKey) {
+            $this->logger->warning(
+                "Key creation on "
+                . $network
+                . " failed for identifier "
+                . $identifier
+                . ". Responses: "
+                . $response["data"]
+            );
+            throw new AkashicException(AkashicErrorCode::KEY_CREATION_FAILURE);
+        }
+
+        $txBody       = $this->akashicChain->differentialConsensusTransaction(
+            $this->otk,
+            $newKey,
+            $identifier
+        );
+        $diffResponse = $this->post($this->targetNode["node"], $txBody)["data"];
+
+        if (
+            isset($diffResponse['$responses'][0])
+            && $diffResponse['$responses'][0] !== "confirmed"
+        ) {
+            $this->logger->warning(
+                "Key creation on "
+                . $network
+                . " failed at differential consensus for identifier "
+                . $identifier
+                . ". Unhealthy key: "
+                . $newKey
+            );
+            throw new AkashicException(AkashicErrorCode::UNHEALTHY_KEY);
+        }
+
+        return $newKey;
+    }
+
+    /**
      * Get the currently supported currencies in AkashicPay
      *
      * @return array with the currency as the keys and a list of networks as the values
@@ -725,6 +783,21 @@ class AkashicPay
             $this->akashicUrl
             . AkashicEndpoints::SUPPORTED_CURRENCIES
         )["data"];
+    }
+
+
+    /**
+     * Get the networks that need to create key or assign pre-seed keys
+     *
+     * @return array
+     */
+    public function getPreseedNetworks(): array
+    {
+        $supportedCurrencies = $this->getSupportedCurrencies();
+        $supportedCurrencySymbols = array_unique(array_merge(...array_values($supportedCurrencies)));
+        return array_filter($supportedCurrencySymbols, function($coinSymbol) {
+            return !in_array($coinSymbol, Networks::NON_ETH_EVM_NETWORKS, true);
+        });
     }
 
     /**

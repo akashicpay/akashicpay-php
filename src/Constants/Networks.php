@@ -20,4 +20,9 @@ class Networks
         NetworkSymbol::ETHEREUM_SEPOLIA,
         NetworkSymbol::BINANCE_SMART_CHAIN_TESTNET,
     ];
+
+    public const NON_ETH_EVM_NETWORKS = [
+        NetworkSymbol::BINANCE_SMART_CHAIN_MAINNET,
+        NetworkSymbol::BINANCE_SMART_CHAIN_TESTNET,
+    ];
 }
