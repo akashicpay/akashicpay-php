@@ -113,12 +113,6 @@ class L1Network
                     'contract'    => 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t',
                     'decimal'     => 6,
                 ],
-                [
-                    'symbol'      => TokenSymbol::USDC,
-                    'displayName' => 'USDC (TRX)',
-                    'contract'    => 'TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8',
-                    'decimal'     => 6,
-                ],
             ],
         ],
         NetworkSymbol::TRON_SHASTA      => [
@@ -133,12 +127,6 @@ class L1Network
                     'symbol'      => TokenSymbol::USDT,
                     'displayName' => 'USDT (Shasta-TRX)',
                     'contract'    => 'TG3XXyExBkPp9nzdajDZsozEu4BkaSJozs',
-                    'decimal'     => 6,
-                ],
-                [
-                    'symbol'      => TokenSymbol::USDC,
-                    'displayName' => 'USDC (Shasta-TRX)',
-                    'contract'    => 'TQ1YTkQMRz6zJCthkC1FQAH49s1fGfoYw8',
                     'decimal'     => 6,
                 ],
             ],
